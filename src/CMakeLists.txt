@@ -2,7 +2,7 @@
 include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/include/openssl ${CMAKE_SOURCE_DIR}/include/wiringPi ${CMAKE_SOURCE_DIR}/zlog)
 
 #自定义库文件
-link_directories(${CMAKE_SOURCE_DIR}/lib/wiringPi ${CMAKE_BINARY_DIR}/zlog)
+link_directories( ${CMAKE_SOURCE_DIR}/lib/wiringPi ${CMAKE_BINARY_DIR}/zlog)
 link_libraries(libzlog.a)
 
 #目录下所有源文件

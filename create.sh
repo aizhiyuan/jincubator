@@ -15,7 +15,7 @@ if [[ $1 == "debug" ]]; then
     cp ./src/jincubator ../
     cp ../src/jincubator.ini ../
     # ssh root@120.48.86.153 -p 10029  "pkill -f ./jincubator"
-    scp  ./src/jincubator root@192.168.3.175:/root/tmp
+    # scp  ./src/jincubator root@192.168.3.174:/root/tmp
     # scp ./src/jincubator root@192.168.3.175:/root/work/io
 fi
 
@@ -24,7 +24,7 @@ if [[ $1 == "build" ]]; then
     cp ./src/jincubator ../
     cp ../src/jincubator.ini ../
     # ssh root@120.48.86.153 -p 10029  "pkill -f ./jincubator"
-    scp  ./src/jincubator root@192.168.3.175:/root/tmp
+    # scp  ./src/jincubator root@192.168.3.174:/root/tmp
     # scp ./src/jincubator root@192.168.3.175:/root/work/io
 fi
 

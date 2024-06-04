@@ -73,71 +73,71 @@ src/CMakeFiles/jincubator.dir/jincubator.cpp.o: src/CMakeFiles/jincubator.dir/fl
 src/CMakeFiles/jincubator.dir/jincubator.cpp.o: /home/zhiyuan/c/jincubator/src/jincubator.cpp
 src/CMakeFiles/jincubator.dir/jincubator.cpp.o: src/CMakeFiles/jincubator.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/CMakeFiles/jincubator.dir/jincubator.cpp.o"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/jincubator.dir/jincubator.cpp.o -MF CMakeFiles/jincubator.dir/jincubator.cpp.o.d -o CMakeFiles/jincubator.dir/jincubator.cpp.o -c /home/zhiyuan/c/jincubator/src/jincubator.cpp
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/jincubator.dir/jincubator.cpp.o -MF CMakeFiles/jincubator.dir/jincubator.cpp.o.d -o CMakeFiles/jincubator.dir/jincubator.cpp.o -c /home/zhiyuan/c/jincubator/src/jincubator.cpp
 
 src/CMakeFiles/jincubator.dir/jincubator.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/jincubator.dir/jincubator.cpp.i"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhiyuan/c/jincubator/src/jincubator.cpp > CMakeFiles/jincubator.dir/jincubator.cpp.i
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhiyuan/c/jincubator/src/jincubator.cpp > CMakeFiles/jincubator.dir/jincubator.cpp.i
 
 src/CMakeFiles/jincubator.dir/jincubator.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/jincubator.dir/jincubator.cpp.s"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhiyuan/c/jincubator/src/jincubator.cpp -o CMakeFiles/jincubator.dir/jincubator.cpp.s
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhiyuan/c/jincubator/src/jincubator.cpp -o CMakeFiles/jincubator.dir/jincubator.cpp.s
 
 src/CMakeFiles/jincubator.dir/jlib.cpp.o: src/CMakeFiles/jincubator.dir/flags.make
 src/CMakeFiles/jincubator.dir/jlib.cpp.o: /home/zhiyuan/c/jincubator/src/jlib.cpp
 src/CMakeFiles/jincubator.dir/jlib.cpp.o: src/CMakeFiles/jincubator.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/CMakeFiles/jincubator.dir/jlib.cpp.o"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/jincubator.dir/jlib.cpp.o -MF CMakeFiles/jincubator.dir/jlib.cpp.o.d -o CMakeFiles/jincubator.dir/jlib.cpp.o -c /home/zhiyuan/c/jincubator/src/jlib.cpp
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/jincubator.dir/jlib.cpp.o -MF CMakeFiles/jincubator.dir/jlib.cpp.o.d -o CMakeFiles/jincubator.dir/jlib.cpp.o -c /home/zhiyuan/c/jincubator/src/jlib.cpp
 
 src/CMakeFiles/jincubator.dir/jlib.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/jincubator.dir/jlib.cpp.i"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhiyuan/c/jincubator/src/jlib.cpp > CMakeFiles/jincubator.dir/jlib.cpp.i
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhiyuan/c/jincubator/src/jlib.cpp > CMakeFiles/jincubator.dir/jlib.cpp.i
 
 src/CMakeFiles/jincubator.dir/jlib.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/jincubator.dir/jlib.cpp.s"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhiyuan/c/jincubator/src/jlib.cpp -o CMakeFiles/jincubator.dir/jlib.cpp.s
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhiyuan/c/jincubator/src/jlib.cpp -o CMakeFiles/jincubator.dir/jlib.cpp.s
 
 src/CMakeFiles/jincubator.dir/jshmem.cpp.o: src/CMakeFiles/jincubator.dir/flags.make
 src/CMakeFiles/jincubator.dir/jshmem.cpp.o: /home/zhiyuan/c/jincubator/src/jshmem.cpp
 src/CMakeFiles/jincubator.dir/jshmem.cpp.o: src/CMakeFiles/jincubator.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/CMakeFiles/jincubator.dir/jshmem.cpp.o"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/jincubator.dir/jshmem.cpp.o -MF CMakeFiles/jincubator.dir/jshmem.cpp.o.d -o CMakeFiles/jincubator.dir/jshmem.cpp.o -c /home/zhiyuan/c/jincubator/src/jshmem.cpp
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/jincubator.dir/jshmem.cpp.o -MF CMakeFiles/jincubator.dir/jshmem.cpp.o.d -o CMakeFiles/jincubator.dir/jshmem.cpp.o -c /home/zhiyuan/c/jincubator/src/jshmem.cpp
 
 src/CMakeFiles/jincubator.dir/jshmem.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/jincubator.dir/jshmem.cpp.i"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhiyuan/c/jincubator/src/jshmem.cpp > CMakeFiles/jincubator.dir/jshmem.cpp.i
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhiyuan/c/jincubator/src/jshmem.cpp > CMakeFiles/jincubator.dir/jshmem.cpp.i
 
 src/CMakeFiles/jincubator.dir/jshmem.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/jincubator.dir/jshmem.cpp.s"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhiyuan/c/jincubator/src/jshmem.cpp -o CMakeFiles/jincubator.dir/jshmem.cpp.s
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhiyuan/c/jincubator/src/jshmem.cpp -o CMakeFiles/jincubator.dir/jshmem.cpp.s
 
 src/CMakeFiles/jincubator.dir/md5_file.cpp.o: src/CMakeFiles/jincubator.dir/flags.make
 src/CMakeFiles/jincubator.dir/md5_file.cpp.o: /home/zhiyuan/c/jincubator/src/md5_file.cpp
 src/CMakeFiles/jincubator.dir/md5_file.cpp.o: src/CMakeFiles/jincubator.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/CMakeFiles/jincubator.dir/md5_file.cpp.o"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/jincubator.dir/md5_file.cpp.o -MF CMakeFiles/jincubator.dir/md5_file.cpp.o.d -o CMakeFiles/jincubator.dir/md5_file.cpp.o -c /home/zhiyuan/c/jincubator/src/md5_file.cpp
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/jincubator.dir/md5_file.cpp.o -MF CMakeFiles/jincubator.dir/md5_file.cpp.o.d -o CMakeFiles/jincubator.dir/md5_file.cpp.o -c /home/zhiyuan/c/jincubator/src/md5_file.cpp
 
 src/CMakeFiles/jincubator.dir/md5_file.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/jincubator.dir/md5_file.cpp.i"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhiyuan/c/jincubator/src/md5_file.cpp > CMakeFiles/jincubator.dir/md5_file.cpp.i
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhiyuan/c/jincubator/src/md5_file.cpp > CMakeFiles/jincubator.dir/md5_file.cpp.i
 
 src/CMakeFiles/jincubator.dir/md5_file.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/jincubator.dir/md5_file.cpp.s"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhiyuan/c/jincubator/src/md5_file.cpp -o CMakeFiles/jincubator.dir/md5_file.cpp.s
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhiyuan/c/jincubator/src/md5_file.cpp -o CMakeFiles/jincubator.dir/md5_file.cpp.s
 
 src/CMakeFiles/jincubator.dir/serial.cpp.o: src/CMakeFiles/jincubator.dir/flags.make
 src/CMakeFiles/jincubator.dir/serial.cpp.o: /home/zhiyuan/c/jincubator/src/serial.cpp
 src/CMakeFiles/jincubator.dir/serial.cpp.o: src/CMakeFiles/jincubator.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object src/CMakeFiles/jincubator.dir/serial.cpp.o"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/jincubator.dir/serial.cpp.o -MF CMakeFiles/jincubator.dir/serial.cpp.o.d -o CMakeFiles/jincubator.dir/serial.cpp.o -c /home/zhiyuan/c/jincubator/src/serial.cpp
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/jincubator.dir/serial.cpp.o -MF CMakeFiles/jincubator.dir/serial.cpp.o.d -o CMakeFiles/jincubator.dir/serial.cpp.o -c /home/zhiyuan/c/jincubator/src/serial.cpp
 
 src/CMakeFiles/jincubator.dir/serial.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/jincubator.dir/serial.cpp.i"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhiyuan/c/jincubator/src/serial.cpp > CMakeFiles/jincubator.dir/serial.cpp.i
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zhiyuan/c/jincubator/src/serial.cpp > CMakeFiles/jincubator.dir/serial.cpp.i
 
 src/CMakeFiles/jincubator.dir/serial.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/jincubator.dir/serial.cpp.s"
-	cd /home/zhiyuan/c/jincubator/build/src && /opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhiyuan/c/jincubator/src/serial.cpp -o CMakeFiles/jincubator.dir/serial.cpp.s
+	cd /home/zhiyuan/c/jincubator/build/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zhiyuan/c/jincubator/src/serial.cpp -o CMakeFiles/jincubator.dir/serial.cpp.s
 
 # Object files for target jincubator
 jincubator_OBJECTS = \

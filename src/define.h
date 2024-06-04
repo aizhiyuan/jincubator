@@ -24,12 +24,6 @@
 #define STATUS_STOP_RECV (0x08)
 #define STATUS_PRE_SEND (0x10)
 #define STARTS_PRE_RECV (0x20)
-#define STATUS_CLOSE_ALA_SEND (0x80)
-#define STATUS_CLOSE_ALA_RECV (0x100)
-#define STATUS_INIT_SEND (0x400)
-#define STATUS_INIT_REVV (0x800)
-#define STATUS_CHECK_SEND (0x1000)
-#define STATUS_CHECK_REVV (0x2000)
 
 // 模块状态
 #define STATUS_SYSTEM_TIME (0x01)     // 系统时间线程
@@ -333,40 +327,42 @@
 
 // 控制逻辑
 #define SYSTEM_INIT 250
-#define R_START_SEND 250                //  启动发送地址
-#define R_START_RECV 251                //  启动接收地址
-#define R_STOP_SEND 252                 //  停止发送地址
-#define R_STOP_RECV 253                 //  停止接收地址
-#define R_PRE_SEND 254                  //  预热发送地址
-#define R_PRE_RECV 255                  //  预热接收地址
-#define R_PRE_TIME 256                  //  预热时间（s）
-#define R_CLOSE_ALA_SEND 257            //  消除报警发送地址
-#define R_CLOSE_ALA_RECV 258            //  消除报警接收地址
-#define R_CLOSE_ALA_TIME 259            //  消除报警时间（s）
-#define R_INIT_SEND 260                 //  初始化发送地址
-#define R_INIT_RECV 261                 //  初始化接收地址
-#define R_CHECK_SEND 262                //  校准模式发送地址
-#define R_CHECK_RECV 263                //  校准模式接收地址
-#define R_INIT_TIME_HIGH 264            //  入孵时间-高位
-#define R_INIT_TIME_LOW 265             //  入孵时间-低位
-#define R_SYSTEM_TIME_HIGH 266          // 系统时间-高位
-#define R_SYSTEM_TIME_LOW 267           // 系统时间-低位
-#define S_SYSTEM_TIME_HIGH 268          // 设置系统时间-高位
-#define S_SYSTEM_TIME_LOW 269           // 设置系统时间-低位
-#define R_PRE_START_TIME_HIGH 270       // 预热时间启动时间-高位
-#define R_PRE_START_TIME_LOW 271        // 预热时间启动时间-低位
-#define R_PRE_STOP_TIME_HIGH 272        // 预热时间停止时间-高位
-#define R_PRE_STOP_TIME_LOW 273         // 预热时间停止时间-低位
-#define R_RUN_DAY 274                   // 运行天数和小时
-#define R_RUN_MAX_DAY 275               // 允许运行最大天数
-#define R_RUN_SECOND_HIGH 276           // 运行秒数-高位
-#define R_RUN_SECOND_LOW 277            // 运行秒数-低位
-#define R_RUN_HRAD_SYSTEM_TIME_HIGH 278 // 前一分钟前的时间-高位
-#define R_RUN_HRAD_SYSTEM_TIME_LOW 279  // 前一分钟前的时间-低位
-#define R_RUN_SYSTEM_SECOND_HIGH 280    // 系统运行秒数-高位
-#define R_RUN_SYSTEM_SECOND_LOW 281     // 系统运行秒数-低位
-#define S_RUN_SYSTEM_SECOND_HIGH 282    // 设置系统运行秒数-高位
-#define S_RUN_SYSTEM_SECOND_LOW 283     // 设置系统运行秒数-低位
+#define R_START_SEND 250               // 启动发送地址
+#define R_START_RECV 251               // 启动接收地址
+#define R_STOP_SEND 252                // 停止发送地址
+#define R_STOP_RECV 253                // 停止接收地址
+#define R_PRE_SEND 254                 // 预热发送地址
+#define R_PRE_RECV 255                 // 预热接收地址
+#define R_PRE_STATUS 256               // 预热状态
+#define R_CLOSE_ALA_SEND 257           // 消除报警发送地址
+#define R_CLOSE_ALA_RECV 258           // 消除报警接收地址
+#define R_CLOSE_ALA_TIME 259           // 消除报警时间(s)
+#define R_INIT_SEND 260                // 初始化发送地址
+#define R_INIT_RECV 261                // 初始化接收地址
+#define R_CHECK_SEND 262               // 校准模式发送地址
+#define R_CHECK_RECV 263               // 校准模式接收地址
+#define R_INIT_TIME_HIGH 264           // 入孵时间-高位
+#define R_INIT_TIME_LOW 265            // 入孵时间-低位
+#define R_SYSTEM_TIME_HIGH 266         // 系统时间-高位
+#define R_SYSTEM_TIME_LOW 267          // 系统时间-低位
+#define S_SYSTEM_TIME_HIGH 268         // 设置系统时间-高位
+#define S_SYSTEM_TIME_LOW 269          // 设置系统时间-低位
+#define R_PRE_START_TIME_HIGH 270      // 预热时间启动时间-高位
+#define R_PRE_START_TIME_LOW 271       // 预热时间启动时间-低位
+#define R_PRE_STOP_TIME_HIGH 272       // 预热时间停止时间-高位
+#define R_PRE_STOP_TIME_LOW 273        // 预热时间停止时间-低位
+#define R_RUN_DAY 274                  // 运行天数和小时
+#define R_RUN_MAX_DAY 275              // 允许运行最大天数
+#define S_RUN_SECOND_HIGH 276          // 设置运行秒数-高位
+#define S_RUN_SECOND_LOW 277           // 设置运行秒数-低位
+#define R_RUN_SECOND_STATUS 278        // 运行秒数-状态
+#define R_RUN_SYSTEM_SECOND_STATUS 279 // 系统运行秒数-状态
+#define R_RUN_SYSTEM_SECOND_HIGH 280   // 系统运行秒数-高位
+#define R_RUN_SYSTEM_SECOND_LOW 281    // 系统运行秒数-低位
+#define S_RUN_SYSTEM_SECOND_HIGH 282   // 设置系统运行秒数-高位
+#define S_RUN_SYSTEM_SECOND_LOW 283    // 设置系统运行秒数-低位
+#define R_RUN_SECOND_HIGH 284          // 运行秒数-高位
+#define R_RUN_SECOND_LOW 285           // 运行秒数-低位
 
 #define P_PT1_AO1 300 // 第一个温度
 #define P_PT1_AO2 301 // 第二个温度
@@ -399,25 +395,36 @@
 #define P_PT6_AO4 328 // 第二个通道值
 #define P_PT6_AO5 329 // 温度差值
 
-#define P_HH0_TIME 400            // HH0
-#define P_HH1_TIME 401            // HH1
-#define P_HH2_TIME 402            // HH2
-#define P_HH3_TIME 403            // HH3
-#define P_HH4_TIME 404            // HH4
-#define P_HH5_TIME 405            // HH5
-#define P_HH6_TIME 406            // HH6
-#define P_HH7_TIME 407            // HH7
-#define P_HH8_TIME 408            // HH8
-#define P_HH9_TIME 409            // HH9
-#define P_HH10_TIME 410           // HH10
-#define P_FAN_OPEN_TIME 411       // FAN_OPEN
-#define P_FAN_CLOSE_TIME 412      // FAN_CLOSE
-#define P_CLEAR_ALARM_TIME 413    // CLEAR_ALARM
-#define P_COLD_HOT_WATER_TIME 413 // COLD_HOT_WATER
-#define P_EGG_FLIPPING_TIME 414   // 翻蛋时间
+#define P_HH0_TIME 400                      // HH0
+#define P_HH1_TIME 401                      // HH1
+#define P_HH2_TIME 402                      // HH2
+#define P_HH3_TIME 403                      // HH3
+#define P_HH4_TIME 404                      // HH4
+#define P_HH5_TIME 405                      // HH5
+#define P_HH6_TIME 406                      // HH6
+#define P_HH7_TIME 407                      // HH7
+#define P_HH8_TIME 408                      // HH8
+#define P_HH9_TIME 409                      // HH9
+#define P_HH10_TIME 410                     // HH10
+#define P_FAN_OPEN_TIME 411                 // FAN_OPEN
+#define P_FAN_CLOSE_TIME 412                // FAN_CLOSE
+#define P_CLEAR_ALARM_TIME 413              // CLEAR_ALARM
+#define P_COLD_HOT_WATER_TIME 413           // COLD_HOT_WATER
+#define P_EGG_FLIPPING_TIME 414             // 翻蛋时间
+#define ALARM_SUPPRESSION_TIME 415          // 消警时间
+#define BACKUP_OPERATION_MODE 420           // 备份运行模式
+#define CALIBRATION_RUN_TIME 421            // 校准运行时间
+#define BACKUP_PREHEATING_START_TIME_HIGH 422    // 备份预热开启时间-高位
+#define BACKUP_PREHEATING_START_TIME_LOW 423    // 备份预热开启时间-低位
+#define BACKUP_PREHEATING_SHUTDOWN_TIME_HIGH 424 // 备份预热关闭时间-高位
+#define BACKUP_PREHEATING_SHUTDOWN_TIME_LOW 425 // 备份预热关闭时间-低位
 
-#define P_EGG_FLIPPING_DIRECTION 500        // 翻蛋方向 (1为左 0为右)
-#define P_EGG_FLIPPING_EXECUTION_STATUS 501 // 翻蛋执行状态
+#define P_EGG_FLIPPING_DIRECTION 500              // 翻蛋方向 (1为左 0为右)
+#define P_EGG_FLIPPING_EXECUTION_STATUS 501       // 翻蛋执行状态
+#define EGG_FLIPPING_TRIGGER_STATUS 502           // 翻蛋触发状态
+#define EGG_FLIPPING_ACCUMULATION_STATE 503       // 翻蛋累加状态
+#define THERE_IS_AN_EGG_FLIPPING_SIGNAL_ALARM 504 // 有翻蛋信号报警
+#define NO_EGG_FLIPPING_SIGNAL_ALARM 504          // 没有翻蛋信号报警
 
 #define SENSOR_1_ABNORMAL_ALARM 510 // 传感器1异常报警
 #define SENSOR_2_ABNORMAL_ALARM 511 // 传感器2异常报警
@@ -425,7 +432,85 @@
 #define SENSOR_4_ABNORMAL_ALARM 513 // 传感器4异常报警
 #define SENSOR_5_ABNORMAL_ALARM 514 // 传感器5异常报警
 #define SENSOR_6_ABNORMAL_ALARM 515 // 传感器6异常报警
-#define SENSOR_CO2_ALARM 516 // 传感器CO2报警
+#define SENSOR_CO2_ALARM 516        // 传感器CO2报警
+
+#define TEST_MAIN_HEAT_MODE 520    // 测试模式-主加热
+#define TEST_AUX_HEAT_MODE 521     // 测试模式-辅助加热
+#define TEST_DAMPER_OPEN_MODE 522  // 测试模式-风门开
+#define TEST_DAMPER_CLOSE_MODE 523 // 测试模式-风门关
+#define TEST_SPRAY_MODE 524        // 测试模式-加湿
+#define TEST_FILP_EGG_MODE 525     // 测试模式-翻蛋
+#define TEST_COOL_MODE 526         // 测试模式-水冷
+#define TEST_COOL2_1_MODE 527      // 测试模式-辅助水冷1
+#define TEST_COOL2_2_MODE 528      // 测试模式-辅助水冷2
+#define TEST_COOL2_3_MODE 529      // 测试模式-辅助水冷3
+#define TEST_COOL2_4_MODE 529      // 测试模式-辅助水冷4
+#define TEST_BLOWER_MODE 530       // 测试模式-鼓风机
+#define TEST_CONTROL_MODE 531      // 测试模式-状态
+
+#define EGG_FLIPPING_SIGNAL_RINGING_STATUS 532    // 翻蛋信号响铃状态
+#define NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS 533 // 没有翻蛋信号响铃状态
+#define EGG_FLIPPING_SIGNAL_ALARM_TIME 534        // 翻蛋信号报警时间
+#define NO_EGG_FLIPPING_SIGNAL_ALARM_TIME 535     // 没有翻蛋信号报警时间
+
+#define CARBON_DIOXIDE_WARNING_LIGHT 536 // 二氧化碳报警状态
+
+#define FAN_ALARM_TIME 537         // 风机报警时间
+#define ABNORMAL_SENSOR_STATUS 538 // 传感器异常状态
+
+#define REFLUX_TEMP_1_DELAY_TIME 540             // 回流温度1延迟时间
+#define REFLUX_TEMP_2_DELAY_TIME 541             // 回流温度2延迟时间
+#define REFLUX_TEMP_3_DELAY_TIME 542             // 回流温度3延迟时间
+#define REFLUX_TEMP_4_DELAY_TIME 543             // 回流温度4延迟时间
+#define REFLUX_TEMP_1_WORK_TIME 544              // 回流温度1工作时间
+#define REFLUX_TEMP_2_WORK_TIME 545              // 回流温度2工作时间
+#define REFLUX_TEMP_3_WORK_TIME 546              // 回流温度3工作时间
+#define REFLUX_TEMP_4_WORK_TIME 547              // 回流温度4工作时间
+#define RETURN_TEMP_1_STOP_TIME 548              // 回流温度1停止时间
+#define RETURN_TEMP_2_STOP_TIME 549              // 回流温度2停止时间
+#define RETURN_TEMP_3_STOP_TIME 550              // 回流温度3停止时间
+#define RETURN_TEMP_4_STOP_TIME 551              // 回流温度4停止时间
+#define RETURN_TEMP_1_WORK_CYCLE 552             // 回流温度1工作周期
+#define RETURN_TEMP_2_WORK_CYCLE 553             // 回流温度2工作周期
+#define RETURN_TEMP_3_WORK_CYCLE 554             // 回流温度3工作周期
+#define RETURN_TEMP_4_WORK_CYCLE 555             // 回流温度4工作周期
+#define RETURN_TEMP_1_HOT_WATER_OPERAT_INIT 556  // 回流温度1热水工作初始化
+#define RETURN_TEMP_2_HOT_WATER_OPERAT_INIT 557  // 回流温度2热水工作初始化
+#define RETURN_TEMP_3_HOT_WATER_OPERAT_INIT 558  // 回流温度3热水工作初始化
+#define RETURN_TEMP_4_HOT_WATER_OPERAT_INIT 559  // 回流温度4热水工作初始化
+#define REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT 560 // 回流温度1冷水工作初始化
+#define REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT 561 // 回流温度2冷水工作初始化
+#define REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT 562 // 回流温度3冷水工作初始化
+#define REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT 563 // 回流温度4冷水工作初始化
+
+#define HIGH_TEMP_ALARM_VALUE 570                   // 高温报警值
+#define LOW_TEMP_ALARM_VALUE 571                    // 低温报警值
+#define HIGH_HUMI_ALARM_VALUE 572                   // 高湿报警值
+#define LOW_HUMI_ALARM_VALUE 573                    // 低湿报警值
+#define HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1 574 // 回流温度1高温报警值
+#define LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1 575  // 回流温度1低温报警值
+#define HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_2 576 // 回流温度2高温报警值
+#define LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_2 577  // 回流温度2低温报警值
+#define HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_3 578 // 回流温度3高温报警值
+#define LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_3 579  // 回流温度3低温报警值
+#define HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_4 580 // 回流温度4高温报警值
+#define LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_4 581  // 回流温度4低温报警值
+
+#define HIGH_TEMP_ALARM_STATUS 582                // 高温报警状态
+#define LOW_TEMP_ALARM_STATUS 583                 // 低温报警状态
+#define HIGH_HUMI_ALARM_STATUS 584                // 高湿报警状态
+#define LOW_HUMI_ALARM_STATUS 585                 // 低湿报警状态
+#define RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1 586 // 回流温度高温报警值1
+#define RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1 587   // 回流温度低温报警值1
+#define RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2 588 // 回流温度高温报警值2
+#define RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2 589   // 回流温度低温报警值2
+#define RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3 590 // 回流温度高温报警值3
+#define RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3 591   // 回流温度低温报警值3
+#define RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4 592 // 回流温度高温报警值4
+#define RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4 593   // 回流温度低温报警值4
+
+#define RETURN_TEMP_HIGH_TEMP_ALARM_TIME 594 // 回流温度高温报警时间
+#define RETURN_TEMP_LOW_TEMP_ALARM_TIME 595  // 回流温度低温报警时间
 
 // 指示灯状态
 #define OUT_ST_FAN_STATUS 600      // 风扇

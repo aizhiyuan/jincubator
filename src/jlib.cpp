@@ -7,13 +7,34 @@
 //----------------------------------------------------------------------------------------------------------
 // 延迟函数
 //----------------------------------------------------------------------------------------------------------
-void wait_ms(unsigned int v_w_time)
+void wait_ms(long v_w_time)
 {
   struct timeval tv;
   tv.tv_sec = v_w_time / 1000;
   tv.tv_usec = (v_w_time % 1000) * 1000;
   select(0, NULL, NULL, NULL, &tv);
   return;
+}
+
+void delay_ms(long v_ul_time)
+{
+  struct timespec req, rem;
+  req.tv_sec = v_ul_time / 1000;              // 毫秒转化为秒
+  req.tv_nsec = (v_ul_time % 1000) * 1000000; // 毫秒转化为纳秒
+
+  while (nanosleep(&req, &rem) == -1)
+  {
+    if (errno == EINTR)
+    {
+      // 如果被信号中断，继续剩余的时间
+      req = rem;
+    }
+    else
+    {
+      perror("nanosleep");
+      break;
+    }
+  }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -295,4 +316,73 @@ void print_current_time(char *buf, size_t len)
 
   // 追加毫秒
   sprintf(buf, "%s.%03ld", buffer, tv.tv_usec / 1000);
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 定时器函数
+//----------------------------------------------------------------------------------------------------------
+int set_custom_timer_ms(int milliseconds, TimerCallback callback)
+{
+  struct sigaction sa;
+  sa.sa_handler = callback;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0;
+  sigaction(SIGALRM, &sa, NULL);
+
+  int seconds = milliseconds / 1000;
+  int microseconds = (milliseconds % 1000) * 1000;
+
+  struct itimerval new_value, old_value;
+  new_value.it_value.tv_sec = seconds;
+  new_value.it_value.tv_usec = microseconds;
+  new_value.it_interval.tv_sec = seconds;
+  new_value.it_interval.tv_usec = microseconds;
+
+  if (setitimer(ITIMER_REAL, &new_value, &old_value) == -1)
+  {
+    return -1;
+  }
+
+  return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 设置系统时间的函数
+//----------------------------------------------------------------------------------------------------------
+int set_system_time(time_t timestamp)
+{
+  // 将时间戳转换为struct tm结构
+  struct tm *timeinfo = gmtime(&timestamp);
+
+  // 设置系统时间
+  struct timeval tv;
+  tv.tv_sec = timestamp;
+  tv.tv_usec = 0;
+
+  // 设置系统时间，需要超级用户权限
+  if (settimeofday(&tv, NULL) == 0)
+  {
+    return 0; // 成功
+  }
+  else
+  {
+    return -1; // 失败
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 定时器函数，接受时间戳参数，返回Time结构体
+//----------------------------------------------------------------------------------------------------------
+struct Time timer(time_t timestamp)
+{
+  struct Time result;
+
+  // 计算天数、小时和分钟
+  result.days = timestamp / (24 * 3600);
+  timestamp %= (24 * 3600);
+  result.hours = timestamp / 3600;
+  timestamp %= 3600;
+  result.minutes = timestamp / 60;
+
+  return result;
 }

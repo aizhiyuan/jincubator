@@ -3,6 +3,8 @@
 //----------------------------------------------------------------------------------------------------------
 // 预定义
 //----------------------------------------------------------------------------------------------------------
+// 两天时间
+const int TWO_DAY_SECONDS = (60 * 60 * 24 * 2);
 
 //----------------------------------------------------------------------------------------------------------
 // 全局变量-ZLOG变量
@@ -53,12 +55,12 @@ double get_dval(unsigned short index)
     return shm2double(&shm_out[index]);
 }
 
-short get_X10_val(unsigned short index)
+short get_x10_val(unsigned short index)
 {
     return pidshm2short(&shm_out[index]);
 }
 
-short get_E10_val(unsigned short index)
+short get_e10_val(unsigned short index)
 {
     return shm2shortpid(&shm_out[index]);
 }
@@ -150,22 +152,22 @@ void init_ini_file(const char *ini_path, struct incubator_t *st_incubator)
 //----------------------------------------------------------------------------------------------------------
 int init_zlog_file(zlog_category_t **zlog_zc, const char *conf_zlog_file, const char *process_name)
 {
-    
+
     char date_str[256];
     print_current_time(date_str, sizeof(date_str));
-    fprintf(stderr, "%s %-40s配置文件: %s, 程序名称：%s\n",date_str, "[init_zlog_file]", conf_zlog_file, process_name);
+    fprintf(stderr, "%s %-40s配置文件: %s, 程序名称：%s\n", date_str, "[init_zlog_file]", conf_zlog_file, process_name);
     int i_ret = zlog_init(conf_zlog_file);
     if (i_ret)
     {
-        fprintf(stderr, "%s %-40s打开日志配置文件: ./jlog.conf失败!\n",date_str, "[init_zlog_file]");
+        fprintf(stderr, "%s %-40s打开日志配置文件: ./jlog.conf失败!\n", date_str, "[init_zlog_file]");
         return -1;
     }
 
-    fprintf(stdout, "%s %-40s打开日志配置文件: ./jlog.conf成功!\n",date_str, "[init_zlog_file]");
+    fprintf(stdout, "%s %-40s打开日志配置文件: ./jlog.conf成功!\n", date_str, "[init_zlog_file]");
     *zlog_zc = zlog_get_category(process_name);
     if (!(*zlog_zc))
     {
-        fprintf(stderr, "%s %-40s日志初始化失败!\n",date_str, "[init_zlog_file]");
+        fprintf(stderr, "%s %-40s日志初始化失败!\n", date_str, "[init_zlog_file]");
         zlog_fini();
         return -2;
     }
@@ -200,14 +202,10 @@ void control_electric_light(int status)
 //----------------------------------------------------------------------------------------------------------
 // 主加热控制
 //----------------------------------------------------------------------------------------------------------
-void control_main_heat(int mode, int status)
+void control_main_heat(int status)
 {
     // 测试模式优先
-    if (mode)
-    {
-        set_val(CONTROL_MAIN_HEAT, status);
-    }
-    else
+    if (!get_val(TEST_MAIN_HEAT_MODE) && !get_val(SENSOR_1_ABNORMAL_ALARM))
     {
         set_val(CONTROL_MAIN_HEAT, status);
     }
@@ -216,13 +214,10 @@ void control_main_heat(int mode, int status)
 //----------------------------------------------------------------------------------------------------------
 // 辅助加热控制
 //----------------------------------------------------------------------------------------------------------
-void control_aux_heat(int mode, int status)
+void control_aux_heat(int status)
 {
-    if (mode)
-    {
-        set_val(CONTROL_AUX_HEAT, status);
-    }
-    else
+    // 测试模式优先
+    if (!get_val(TEST_AUX_HEAT_MODE))
     {
         set_val(CONTROL_AUX_HEAT, status);
     }
@@ -239,14 +234,11 @@ void control_fan(int status)
 //----------------------------------------------------------------------------------------------------------
 // 水冷电磁阀2-1
 //----------------------------------------------------------------------------------------------------------
-void control_cool2_1(int mode, int status)
+void control_cool2_1(int status)
 {
-    if (mode)
+    if (!get_val(SENSOR_3_ABNORMAL_ALARM))
     {
-        set_val(CONTROL_COOL2_1, status);
-    }
-    else
-    {
+        // 测试模式优先
         set_val(CONTROL_COOL2_1, status);
     }
 }
@@ -254,14 +246,11 @@ void control_cool2_1(int mode, int status)
 //----------------------------------------------------------------------------------------------------------
 // 水冷电磁阀2-2
 //----------------------------------------------------------------------------------------------------------
-void control_cool2_2(int mode, int status)
+void control_cool2_2(int status)
 {
-    if (mode)
+    if (!get_val(SENSOR_4_ABNORMAL_ALARM))
     {
-        set_val(CONTROL_COOL2_2, status);
-    }
-    else
-    {
+        // 测试模式优先
         set_val(CONTROL_COOL2_2, status);
     }
 }
@@ -269,14 +258,11 @@ void control_cool2_2(int mode, int status)
 //----------------------------------------------------------------------------------------------------------
 // 水冷电磁阀2-3
 //----------------------------------------------------------------------------------------------------------
-void control_cool2_3(int mode, int status)
+void control_cool2_3(int status)
 {
-    if (mode)
+    if (!get_val(SENSOR_5_ABNORMAL_ALARM))
     {
-        set_val(CONTROL_COOL2_3, status);
-    }
-    else
-    {
+        // 测试模式优先
         set_val(CONTROL_COOL2_3, status);
     }
 }
@@ -284,14 +270,11 @@ void control_cool2_3(int mode, int status)
 //----------------------------------------------------------------------------------------------------------
 // 水冷电磁阀2-4
 //----------------------------------------------------------------------------------------------------------
-void control_cool2_4(int mode, int status)
+void control_cool2_4(int status)
 {
-    if (mode)
+    if (!get_val(SENSOR_6_ABNORMAL_ALARM))
     {
-        set_val(CONTROL_COOL2_4, status);
-    }
-    else
-    {
+        // 测试模式优先
         set_val(CONTROL_COOL2_4, status);
     }
 }
@@ -299,22 +282,35 @@ void control_cool2_4(int mode, int status)
 //----------------------------------------------------------------------------------------------------------
 // 水冷电磁阀2
 //----------------------------------------------------------------------------------------------------------
-void control_cool2(int mode, int type, int status)
+void control_cool2(int type, int status)
 {
 
+    // 测试模式优先
     switch (type)
     {
     case 1:
-        control_cool2_1(mode, status);
+        if (!get_val(TEST_COOL2_1_MODE))
+        {
+            control_cool2_1(status);
+        }
         break;
     case 2:
-        control_cool2_2(mode, status);
+        if (!get_val(TEST_COOL2_2_MODE))
+        {
+            control_cool2_2(status);
+        }
         break;
     case 3:
-        control_cool2_3(mode, status);
+        if (!get_val(TEST_COOL2_3_MODE))
+        {
+            control_cool2_3(status);
+        }
         break;
     case 4:
-        control_cool2_4(mode, status);
+        if (!get_val(TEST_COOL2_4_MODE))
+        {
+            control_cool2_4(status);
+        }
         break;
     default:
         break;
@@ -332,13 +328,10 @@ void control_cold_hot_water(int status)
 //----------------------------------------------------------------------------------------------------------
 // 鼓风机
 //----------------------------------------------------------------------------------------------------------
-void control_blower(int mode, int status)
+void control_blower(int status)
 {
-    if (mode)
-    {
-        set_val(CONTROL_BLOWER, status);
-    }
-    else
+    // 测试模式优先
+    if (!get_val(TEST_BLOWER_MODE))
     {
         set_val(CONTROL_BLOWER, status);
     }
@@ -347,7 +340,7 @@ void control_blower(int mode, int status)
 //----------------------------------------------------------------------------------------------------------
 // 风门开控制
 //----------------------------------------------------------------------------------------------------------
-void control_open_damper(int mode, int status)
+void control_open_damper(int status)
 {
     // 检测到开到位停止控制
     if (get_val(DETECT_DAMPER_FULLY_OPEN))
@@ -356,22 +349,16 @@ void control_open_damper(int mode, int status)
     }
     else
     {
+        // 测试模式优先
         set_val(CONTROL_DAMPER_CLOSE, OFF);
-        if (mode)
-        {
-            set_val(CONTROL_DAMPER_OPEN, status);
-        }
-        else
-        {
-            set_val(CONTROL_DAMPER_OPEN, status);
-        }
+        set_val(CONTROL_DAMPER_OPEN, status);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------
 // 风门关控制
 //----------------------------------------------------------------------------------------------------------
-void control_close_damper(int mode, int status, int schedule)
+void control_close_damper(int status, int schedule)
 {
     // 检测到关到位停止控制
     if (get_val(DETECT_DAMPER_FULLY_CLOSE))
@@ -380,38 +367,23 @@ void control_close_damper(int mode, int status, int schedule)
     }
     else
     {
+        // 测试模式优先
         // 风门关开启，风门开关闭
         set_val(CONTROL_DAMPER_OPEN, OFF);
         // 优先处理 测试模式
-        if (mode)
+        // 当schedule为1时，风门小于设定值不会操作
+        if (1 == schedule)
         {
-            set_val(CONTROL_DAMPER_CLOSE, status);
-        }
-        else
-        {
-            // 当schedule为1时，风门小于设定值不会操作
-            if (1 == schedule)
-            {
-                // 当风门测量值大于风门设定值，风门才会操作
-                if (get_val(R_AI_AD) > get_val(P_AO_AD))
-                {
-                    set_val(CONTROL_DAMPER_CLOSE, status);
-                }
-            }
-            // 当schedule为2时，风门会从最小值开到设定值
-            else if (2 == schedule)
-            {
-                // 当风门测量值小于风门设定值，风门才会开
-                if (get_val(R_AI_AD) < get_val(P_AO_AD))
-                {
-                    set_val(CONTROL_DAMPER_CLOSE, ON);
-                }
-            }
-            // 当schedule为0时，风门关到位
-            else
+            // 当风门测量值大于风门设定值，风门才会操作
+            if (get_val(R_AI_AD) > get_val(P_AO_AD))
             {
                 set_val(CONTROL_DAMPER_CLOSE, status);
             }
+        }
+        // 当schedule为0时，风门关到位
+        else
+        {
+            set_val(CONTROL_DAMPER_CLOSE, status);
         }
     }
 }
@@ -419,33 +391,32 @@ void control_close_damper(int mode, int status, int schedule)
 //----------------------------------------------------------------------------------------------------------
 // 风门控制
 //----------------------------------------------------------------------------------------------------------
-void control_damper(int mode, int type, int status, int schedule)
+void control_damper(int type, int status, int schedule)
 {
-
-    // 测试模式优先级最高
-    switch (type)
+    if (!get_val(TEST_DAMPER_OPEN_MODE) && !get_val(TEST_DAMPER_CLOSE_MODE))
     {
-    case 1:
-        control_open_damper(mode, status);
-        break;
-    case 2:
-        control_close_damper(mode, status, schedule);
-        break;
-    default:
-        break;
+        // 测试模式优先级最高
+        switch (type)
+        {
+        case 1:
+            control_open_damper(status);
+            break;
+        case 2:
+            control_close_damper(status, schedule);
+            break;
+        default:
+            break;
+        }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------
 // 水冷控制
 //----------------------------------------------------------------------------------------------------------
-void control_cool(int mode, int status)
+void control_cool(int status)
 {
-    if (mode)
-    {
-        set_val(CONTROL_COOL, status);
-    }
-    else
+    // 测试模式优先
+    if (!get_val(TEST_COOL_MODE))
     {
         set_val(CONTROL_COOL, status);
     }
@@ -454,13 +425,10 @@ void control_cool(int mode, int status)
 //----------------------------------------------------------------------------------------------------------
 // 加湿电磁阀控制
 //----------------------------------------------------------------------------------------------------------
-void control_spray(int mode, int status)
+void control_spray(int status)
 {
-    if (mode)
-    {
-        set_val(CONTROL_SPRAY, status);
-    }
-    else
+    // 测试模式优先
+    if (!get_val(TEST_SPRAY_MODE) && !get_val(SENSOR_2_ABNORMAL_ALARM))
     {
         set_val(CONTROL_SPRAY, status);
     }
@@ -469,16 +437,18 @@ void control_spray(int mode, int status)
 //----------------------------------------------------------------------------------------------------------
 // 翻蛋控制
 //----------------------------------------------------------------------------------------------------------
-void control_egg(int mode)
+void control_egg()
 {
-    // 翻蛋方向
-    unsigned short v_uc_egg_filpping_direction = get_uval(P_EGG_FLIPPING_DIRECTION);
-    // 翻蛋时间
-    unsigned short v_i_egg_filping_time = get_uval(P_HH10) * 60;
+    if (!get_val(TEST_FILP_EGG_MODE))
+    {
+        // 翻蛋方向
+        unsigned short v_uc_egg_filpping_direction = get_uval(P_EGG_FLIPPING_DIRECTION);
+        // 翻蛋时间
+        unsigned short v_i_egg_filping_time = get_uval(P_HH10) * 60;
 
-    zlog_debug(g_zlog_zc, "%-40s翻动方向:[%d]", "[翻蛋控制]", v_uc_egg_filpping_direction);
-    if (mode)
-    {
+        zlog_debug(g_zlog_zc, "%-40s翻动方向:[%d]", "[翻蛋控制]", v_uc_egg_filpping_direction);
+        // 测试模式优先
+
         // 当翻蛋方向为左时
         if (v_uc_egg_filpping_direction)
         {
@@ -499,29 +469,7 @@ void control_egg(int mode)
             // 切换翻蛋方向
             set_val(P_EGG_FLIPPING_DIRECTION, !v_uc_egg_filpping_direction);
         }
-    }
-    else
-    {
-        // 当翻蛋方向为左时
-        if (v_uc_egg_filpping_direction)
-        {
-            // 执行翻蛋控制输出
-            set_val(P_EGG_FLIPPING_EXECUTION_STATUS, ON);
-            // 开始翻蛋计数
-            set_val(P_EGG_FLIPPING_TIME, v_i_egg_filping_time);
-            // 切换翻蛋方向
-            set_val(P_EGG_FLIPPING_DIRECTION, !v_uc_egg_filpping_direction);
-        }
-        // 当翻蛋方向为右时
-        else
-        {
-            // 执行翻蛋控制输出
-            set_val(P_EGG_FLIPPING_EXECUTION_STATUS, ON);
-            // 开始翻蛋计数
-            set_val(P_EGG_FLIPPING_TIME, v_i_egg_filping_time);
-            // 切换翻蛋方向
-            set_val(P_EGG_FLIPPING_DIRECTION, !v_uc_egg_filpping_direction);
-        }
+        set_val(EGG_FLIPPING_TRIGGER_STATUS, ON);
     }
 }
 
@@ -551,6 +499,9 @@ void init_para()
     // 初始化状态灯为空
     //----------------------------------------------------------------------------------------------------------
     memset(&shm_out[OUT_ST_FAN_STATUS], OFF, sizeof(short) * 100);
+
+    // 测试模式为空
+    set_test_mode(0);
 
     //----------------------------------------------------------------------------------------------------------
     // 恢复数据
@@ -1041,6 +992,7 @@ void init_para()
     {
         unsigned short v_i_hh3_time = get_uval(P_HH3);
         set_uval(P_HH3, v_i_hh3_time);
+        set_uold(P_HH3, v_i_hh3_time);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1050,6 +1002,7 @@ void init_para()
     {
         unsigned short v_i_hh4_time = get_uval(P_HH4);
         set_uval(P_HH4, v_i_hh4_time);
+        set_uold(P_HH4, v_i_hh4_time);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1059,6 +1012,7 @@ void init_para()
     {
         unsigned short v_i_hh5_time = get_uval(P_HH5);
         set_uval(P_HH5, v_i_hh5_time);
+        set_uold(P_HH5, v_i_hh5_time);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1068,6 +1022,7 @@ void init_para()
     {
         unsigned short v_i_hh6_time = get_uval(P_HH6);
         set_uval(P_HH6, v_i_hh6_time);
+        set_uold(P_HH6, v_i_hh6_time);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1077,6 +1032,7 @@ void init_para()
     {
         unsigned short v_i_hh7_time = get_uval(P_HH7);
         set_uval(P_HH7, v_i_hh7_time);
+        set_uold(P_HH7, v_i_hh7_time);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1086,6 +1042,7 @@ void init_para()
     {
         unsigned short v_i_hh8_time = get_uval(P_HH8);
         set_uval(P_HH8, v_i_hh8_time);
+        set_uold(P_HH8, v_i_hh8_time);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1095,6 +1052,7 @@ void init_para()
     {
         unsigned short v_i_hh9_time = get_uval(P_HH9);
         set_uval(P_HH9, v_i_hh9_time);
+        set_uold(P_HH9, v_i_hh9_time);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1104,6 +1062,7 @@ void init_para()
     {
         unsigned short v_i_hh10_time = get_uval(P_HH10);
         set_uval(P_HH10, v_i_hh10_time);
+        set_uold(P_HH10, v_i_hh10_time);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1113,12 +1072,30 @@ void init_para()
     {
         unsigned short v_i_hh11_time = get_uval(P_HH11);
         set_uval(P_HH11, v_i_hh11_time);
+        set_uold(P_HH11, v_i_hh11_time);
     }
 
     //----------------------------------------------------------------------------------------------------------
     // 初始化风门校准
     //----------------------------------------------------------------------------------------------------------
     set_uval(STATUS_DAMPER_ALL_CLOSE_CAL, ON);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 启动模式
+    //----------------------------------------------------------------------------------------------------------
+    if (get_val(RUN_MODE_STATUS))
+    {
+        wait_ms(get_val(RUN_MODE_TIME) * 1000);
+    }
+    else
+    {
+        // 关闭启动模式
+        set_val(R_START_SEND, OFF);
+        set_val(R_START_RECV, OFF);
+        // 开启停止模式
+        set_val(R_STOP_SEND, ON);
+        set_val(R_STOP_RECV, OFF);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -1230,13 +1207,3252 @@ unsigned int get_time(unsigned short addr)
     return m_time;
 }
 
+unsigned int get_time_old(unsigned short addr)
+{
+    unsigned int m_time;
+    // 获取设置时间
+    memcpy(&m_time, &shm_old[addr], sizeof(unsigned int));
+    dcba(&m_time, sizeof(unsigned int));
+    return m_time;
+}
+
 //----------------------------------------------------------------------------------------------------------
 // 将当前时间保存到共享内存中
 //----------------------------------------------------------------------------------------------------------
 void set_time(unsigned short addr, unsigned int time)
 {
-    dcba(&time, sizeof(unsigned int));
-    memcpy(&shm_out[addr], &time, sizeof(unsigned int));
+    unsigned int m_time = time;
+    dcba(&m_time, sizeof(unsigned int));
+    memcpy(&shm_out[addr], &m_time, sizeof(unsigned int));
+}
+
+void set_time_old(unsigned short addr, unsigned int time)
+{
+    unsigned int m_time = time;
+    dcba(&m_time, sizeof(unsigned int));
+    memcpy(&shm_old[addr], &m_time, sizeof(unsigned int));
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 更新设置参数
+//----------------------------------------------------------------------------------------------------------
+void update_set_para()
+{
+    // 30天的参数
+    const int SET_PARA_DAY = 30;
+
+    // 当前的入孵天数和小数
+    unsigned short now_para_time = get_uval(R_RUN_DAY);
+    // 更新 温度设置
+    for (size_t index = 0; index < SET_PARA_DAY; index++)
+    {
+        // 获取当前配置时间
+        unsigned short current_para_time = get_uval(P_SET_TP_MAIN_DAY + index * 2);
+
+        // 0~29天
+        if (index < (SET_PARA_DAY - 1))
+        {
+            unsigned short next_para_time = get_uval(P_SET_TP_MAIN_DAY + (index + 1) * 2);
+
+            // 比对符合配置
+            if ((now_para_time >= current_para_time) && ((now_para_time < next_para_time) || (next_para_time <= 0)))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_SET_TP_MAIN_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新温度配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_TP_MAIN, current_para_value);
+                break;
+            }
+        }
+        else
+        {
+            // 比对符合配置
+            if ((now_para_time >= current_para_time))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_SET_TP_MAIN_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新温度配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_TP_MAIN, current_para_value);
+                break;
+            }
+        }
+    }
+
+    // 更新 湿度设置
+    for (size_t index = 0; index < SET_PARA_DAY; index++)
+    {
+        // 获取当前配置时间
+        unsigned short current_para_time = get_uval(P_SET_TP_MAIN_DAY + index * 2);
+
+        // 0~29天
+        if (index < (SET_PARA_DAY - 1))
+        {
+            unsigned short next_para_time = get_uval(P_SET_TP_MAIN_DAY + (index + 1) * 2);
+
+            // 比对符合配置
+            if ((now_para_time >= current_para_time) && ((now_para_time < next_para_time) || (next_para_time <= 0)))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_SET_HM_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新湿度配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_HM, current_para_value);
+                break;
+            }
+        }
+        else
+        {
+            // 比对符合配置
+            if ((now_para_time >= current_para_time))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_SET_HM_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新湿度配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_HM, current_para_value);
+                break;
+            }
+        }
+    }
+
+    // 更新 二氧化碳设置
+    for (size_t index = 0; index < SET_PARA_DAY; index++)
+    {
+        // 获取当前配置时间
+        unsigned short current_para_time = get_uval(P_SET_TP_MAIN_DAY + index * 2);
+
+        // 0~29天
+        if (index < (SET_PARA_DAY - 1))
+        {
+            unsigned short next_para_time = get_uval(P_SET_TP_MAIN_DAY + (index + 1) * 2);
+
+            // 比对符合配置
+            if ((now_para_time >= current_para_time) && ((now_para_time < next_para_time) || (next_para_time <= 0)))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_SET_CO_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新二氧化碳配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_CO, current_para_value);
+                break;
+            }
+        }
+        else
+        {
+            // 比对符合配置
+            if ((now_para_time >= current_para_time))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_SET_CO_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新二氧化碳配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_CO, current_para_value);
+                break;
+            }
+        }
+    }
+
+    // 更新 风门设置
+    for (size_t index = 0; index < SET_PARA_DAY; index++)
+    {
+        // 获取当前配置时间
+        unsigned short current_para_time = get_uval(P_SET_TP_MAIN_DAY + index * 2);
+
+        // 0~29天
+        if (index < (SET_PARA_DAY - 1))
+        {
+            unsigned short next_para_time = get_uval(P_SET_TP_MAIN_DAY + (index + 1) * 2);
+
+            // 比对符合配置
+            if ((now_para_time >= current_para_time) && ((now_para_time < next_para_time) || (next_para_time <= 0)))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_SET_AD_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新风门配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_AD, current_para_value);
+                break;
+            }
+        }
+        else
+        {
+            // 比对符合配置
+            if ((now_para_time >= current_para_time))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_SET_AD_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新风门配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_AD, current_para_value);
+                break;
+            }
+        }
+    }
+
+    // 更新 回流温度1设置
+    for (size_t index = 0; index < SET_PARA_DAY; index++)
+    {
+        // 获取当前配置时间
+        unsigned short current_para_time = get_uval(P_SET_TP_RF1_DAY + index * 2);
+
+        // 0~29天
+        if (index < (SET_PARA_DAY - 1))
+        {
+            unsigned short next_para_time = get_uval(P_SET_TP_RF1_DAY + (index + 1) * 2);
+
+            // 比对符合配置
+            if ((now_para_time >= current_para_time) && ((now_para_time < next_para_time) || (next_para_time <= 0)))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_SET_TP_RF1_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新回流温度1配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_TP_RF1, current_para_value);
+                break;
+            }
+        }
+        else
+        {
+            // 比对符合配置
+            if ((now_para_time >= current_para_time))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_SET_TP_RF1_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新回流温度1配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_TP_RF1, current_para_value);
+                break;
+            }
+        }
+    }
+
+    // 更新 回流温度2设置
+    for (size_t index = 0; index < SET_PARA_DAY; index++)
+    {
+        // 获取当前配置时间
+        unsigned short current_para_time = get_uval(P_SET_TP_RF2_DAY + index * 2);
+
+        // 0~29天
+        if (index < (SET_PARA_DAY - 1))
+        {
+            unsigned short next_para_time = get_uval(P_SET_TP_RF2_DAY + (index + 1) * 2);
+
+            // 比对符合配置
+            if ((now_para_time >= current_para_time) && ((now_para_time < next_para_time) || (next_para_time <= 0)))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_SET_TP_RF2_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新回流温度2配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_TP_RF2, current_para_value);
+                break;
+            }
+        }
+        else
+        {
+            // 比对符合配置
+            if ((now_para_time >= current_para_time))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_SET_TP_RF2_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新回流温度2配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_TP_RF2, current_para_value);
+                break;
+            }
+        }
+    }
+
+    // 更新 回流温度3设置
+    for (size_t index = 0; index < SET_PARA_DAY; index++)
+    {
+        // 获取当前配置时间
+        unsigned short current_para_time = get_uval(P_SET_TP_RF3_DAY + index * 2);
+
+        // 0~29天
+        if (index < (SET_PARA_DAY - 1))
+        {
+            unsigned short next_para_time = get_uval(P_SET_TP_RF3_DAY + (index + 1) * 2);
+
+            // 比对符合配置
+            if ((now_para_time >= current_para_time) && ((now_para_time < next_para_time) || (next_para_time <= 0)))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_SET_TP_RF3_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新回流温度3配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_TP_RF3, current_para_value);
+                break;
+            }
+        }
+        else
+        {
+            // 比对符合配置
+            if ((now_para_time >= current_para_time))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_SET_TP_RF3_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新回流温度3配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_TP_RF3, current_para_value);
+                break;
+            }
+        }
+    }
+
+    // 更新 回流温度4设置
+    for (size_t index = 0; index < SET_PARA_DAY; index++)
+    {
+        // 获取当前配置时间
+        unsigned short current_para_time = get_uval(P_SET_TP_RF4_DAY + index * 2);
+
+        // 0~29天
+        if (index < (SET_PARA_DAY - 1))
+        {
+            unsigned short next_para_time = get_uval(P_SET_TP_RF4_DAY + (index + 1) * 2);
+
+            // 比对符合配置
+            if ((now_para_time >= current_para_time) && ((now_para_time < next_para_time) || (next_para_time <= 0)))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_SET_TP_RF4_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新回流温度4配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_TP_RF4, current_para_value);
+                break;
+            }
+        }
+        else
+        {
+            // 比对符合配置
+            if ((now_para_time >= current_para_time))
+            {
+                // 获取当前配置数值
+                short current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_SET_TP_RF4_VAL + index * 2);
+                zlog_info(g_zlog_zc, "%-40s更新回流温度4配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 设置配置
+                set_uval(P_AO_TP_RF4, current_para_value);
+                break;
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 预热设置参数
+//----------------------------------------------------------------------------------------------------------
+void preheat_set_para()
+{
+    // 预热温度配置
+    short current_para_value = get_val(P_PRE_TP_MAIN);
+    zlog_info(g_zlog_zc, "%-40s更新预热值温度配置 [%d]", "[preheat_set_para]", current_para_value);
+    set_uval(P_AO_TP_MAIN, current_para_value);
+
+    // 预热湿度配置
+    current_para_value = get_val(P_PRE_HM);
+    zlog_info(g_zlog_zc, "%-40s更新预热值湿度配置 [%d]", "[preheat_set_para]", current_para_value);
+    set_uval(P_AO_HM, current_para_value);
+
+    // 预热二氧化碳配置
+    current_para_value = get_val(P_PRE_CO);
+    zlog_info(g_zlog_zc, "%-40s更新预热值二氧化碳配置 [%d]", "[preheat_set_para]", current_para_value);
+    set_uval(P_AO_CO, current_para_value);
+
+    // 预热风门配置
+    current_para_value = get_val(P_PRE_AD);
+    zlog_info(g_zlog_zc, "%-40s更新预热值风门配置 [%d]", "[preheat_set_para]", current_para_value);
+    set_uval(P_AO_AD, current_para_value);
+
+    // 预热回流温度1配置
+    current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF1);
+    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度1配置 [%d]", "[preheat_set_para]", current_para_value);
+    set_uval(P_AO_TP_RF1, current_para_value);
+
+    // 预热回流温度2配置
+    current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF2);
+    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度2配置 [%d]", "[preheat_set_para]", current_para_value);
+    set_uval(P_AO_TP_RF2, current_para_value);
+
+    // 预热回流温度3配置
+    current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF3);
+    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度3配置 [%d]", "[preheat_set_para]", current_para_value);
+    set_uval(P_AO_TP_RF3, current_para_value);
+
+    // 预热回流温度4配置
+    current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF4);
+    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度4配置 [%d]", "[preheat_set_para]", current_para_value);
+    set_uval(P_AO_TP_RF4, current_para_value);
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 系统时间函数
+//----------------------------------------------------------------------------------------------------------
+void run_sys_time()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到系统时间函数", "[run_sys_time]");
+    // 判断设置系统时间是否被更改
+    if (get_time_old(S_SYSTEM_TIME_HIGH) != get_time(S_SYSTEM_TIME_HIGH))
+    {
+        unsigned int set_sys_time = get_time(S_SYSTEM_TIME_HIGH);
+        if (set_sys_time > 0)
+        {
+            // 设置系统时间
+            set_system_time(set_sys_time);
+            system("hwclock -w");
+        }
+        set_time_old(S_SYSTEM_TIME_HIGH, set_sys_time);
+    }
+
+    // 判断程序运行时间是否被修改
+    unsigned int run_sys_second_time = get_time(S_RUN_SYSTEM_SECOND_HIGH);
+    if (run_sys_second_time != 0xffffffff)
+    {
+
+        zlog_debug(g_zlog_zc, "%-40s正在设置程序运行时间 [%u]", "[run_sys_time]", run_sys_second_time);
+        // 设置程序运行时间
+        set_val(R_RUN_SYSTEM_SECOND_STATUS, OFF);
+        set_time(R_RUN_SYSTEM_SECOND_HIGH, run_sys_second_time);
+        set_val(R_RUN_SYSTEM_SECOND_STATUS, ON);
+        set_time(S_RUN_SYSTEM_SECOND_HIGH, 0xffffffff);
+    }
+
+    // 判断入孵时间是否被修改
+    unsigned int run_incubation_second_time = get_time(S_RUN_SECOND_HIGH);
+    if (run_incubation_second_time != 0xffffffff)
+    {
+        zlog_debug(g_zlog_zc, "%-40s正在设置入孵运行时间 [%u]", "[run_sys_time]", run_incubation_second_time);
+        // 设置程序运行时间
+        set_val(R_RUN_SECOND_STATUS, OFF);
+        set_time(R_RUN_SECOND_HIGH, run_incubation_second_time);
+        set_val(R_RUN_SECOND_STATUS, ON);
+        set_time(S_RUN_SECOND_HIGH, 0xffffffff);
+    }
+
+    // 获取运行秒数
+    unsigned int sys_second_time = get_time(R_RUN_SECOND_HIGH);
+
+    // 获取运行时间的天数和小数
+    struct Time sys_time = timer(sys_second_time);
+    unsigned short para_time = sys_time.days * 100 + sys_time.hours;
+
+    // 设置天数和小时
+    set_uval(R_RUN_DAY, para_time);
+
+    // 获取系统时间
+    unsigned int sys_new_time = time(NULL);
+
+    // 获取入孵时间
+    unsigned int init_new_time = sys_new_time - sys_second_time;
+    zlog_debug(g_zlog_zc, "%-40s更新入孵时间 [%u] 系统时间 [%u] 天数和小时 [%u] 运行秒数 [%u]", "[run_sys_time]", init_new_time, sys_new_time, para_time, sys_second_time);
+    set_time(R_INIT_TIME_HIGH, init_new_time);
+
+    // 时间差大于35天入孵时间更新到当前值
+    if (para_time >= get_val(R_RUN_MAX_DAY))
+    {
+        // 开启停止模式
+        set_run_mode(STATUS_STOP_SENT);
+    }
+
+    // 将系统时间输出到共享内存中
+    set_time(R_SYSTEM_TIME_HIGH, sys_new_time);
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 测试控制模式
+//----------------------------------------------------------------------------------------------------------
+void test_control_mode()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到测试控制模式", "[test_control_mode]");
+    unsigned short status_test_control = get_test_mode();
+    if ((status_test_control > 0) && (get_val(TEST_CONTROL_MODE) == 0))
+    {
+        switch (status_test_control)
+        {
+        case 0x01:
+        {
+            // 传感器无异常
+            if (!get_val(SENSOR_1_ABNORMAL_ALARM))
+            {
+                // 主加热按钮
+                set_val(TEST_MAIN_HEAT_MODE, ON);
+                set_val(CONTROL_MAIN_HEAT, ON);
+                zlog_debug(g_zlog_zc, "%-40s触发开启 主加热按钮", "[test_control_mode]");
+                set_val(TEST_CONTROL_MODE, status_test_control);
+                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            break;
+        }
+        case 0x02:
+        {
+            // 附加热按钮
+            set_val(TEST_AUX_HEAT_MODE, ON);
+            set_val(CONTROL_AUX_HEAT, ON);
+            zlog_debug(g_zlog_zc, "%-40s触发开启 附加热按钮", "[test_control_mode]");
+            set_val(TEST_CONTROL_MODE, status_test_control);
+            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            break;
+        }
+        case 0x04:
+        {
+            // 开门按钮
+            set_val(TEST_DAMPER_OPEN_MODE, ON);
+            control_open_damper(ON);
+            zlog_debug(g_zlog_zc, "%-40s触发开启 开门按钮", "[test_control_mode]");
+            set_uval(TEST_CONTROL_MODE, status_test_control);
+            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            break;
+        }
+        case 0x08:
+        {
+            // 关门按钮
+            set_val(TEST_DAMPER_CLOSE_MODE, ON);
+            control_close_damper(ON, 0);
+            zlog_debug(g_zlog_zc, "%-40s触发开启 关门按钮", "[test_control_mode]");
+            set_uval(TEST_CONTROL_MODE, status_test_control);
+            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            break;
+        }
+        case 0x10:
+        {
+            // 传感器无异常
+            if (!get_val(SENSOR_2_ABNORMAL_ALARM))
+            {
+                // 加湿按钮
+                set_val(TEST_SPRAY_MODE, ON);
+                set_val(CONTROL_SPRAY, ON);
+                zlog_debug(g_zlog_zc, "%-40s触发开启 加湿按钮", "[test_control_mode]");
+                set_uval(TEST_CONTROL_MODE, status_test_control);
+                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            break;
+        }
+        case 0x20:
+        {
+            set_val(TEST_FILP_EGG_MODE, ON);
+            // 翻蛋按钮
+            unsigned short v_uc_egg_filpping_direction = get_uval(P_EGG_FLIPPING_DIRECTION);
+            // 翻蛋时间
+            unsigned short v_i_egg_filping_time = get_uval(P_HH10) * 60;
+
+            // 当翻蛋方向为左时
+            if (v_uc_egg_filpping_direction)
+            {
+                // 执行翻蛋控制输出
+                set_val(P_EGG_FLIPPING_EXECUTION_STATUS, ON);
+                // 开始翻蛋计数
+                set_val(P_EGG_FLIPPING_TIME, v_i_egg_filping_time);
+                // 切换翻蛋方向
+                set_val(P_EGG_FLIPPING_DIRECTION, !v_uc_egg_filpping_direction);
+            }
+            // 当翻蛋方向为右时
+            else
+            {
+                // 执行翻蛋控制输出
+                set_val(P_EGG_FLIPPING_EXECUTION_STATUS, ON);
+                // 开始翻蛋计数
+                set_val(P_EGG_FLIPPING_TIME, v_i_egg_filping_time);
+                // 切换翻蛋方向
+                set_val(P_EGG_FLIPPING_DIRECTION, !v_uc_egg_filpping_direction);
+            }
+            set_val(EGG_FLIPPING_TRIGGER_STATUS, ON);
+            zlog_debug(g_zlog_zc, "%-40s触发开启 翻蛋控制", "[test_control_mode]");
+
+            set_uval(TEST_CONTROL_MODE, status_test_control);
+            break;
+        }
+        case 0x40:
+        {
+            // 水冷按钮
+            set_val(TEST_COOL_MODE, ON);
+            set_val(CONTROL_COOL, ON);
+            zlog_debug(g_zlog_zc, "%-40s触发开启 水冷按钮", "[test_control_mode]");
+            set_uval(TEST_CONTROL_MODE, status_test_control);
+            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            break;
+        }
+        case 0x80:
+        {
+            // 传感器无异常
+            if (!get_val(SENSOR_3_ABNORMAL_ALARM))
+            {
+                // 辅助水冷1按钮
+                set_val(TEST_COOL2_1_MODE, ON);
+                control_cool2_1(ON);
+                zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷1按钮", "[test_control_mode]");
+                set_uval(TEST_CONTROL_MODE, status_test_control);
+                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            break;
+        }
+        case 0x100:
+        {
+            // 传感器无异常
+            if (!get_val(SENSOR_4_ABNORMAL_ALARM))
+            {
+                // 辅助水冷2按钮
+                set_val(TEST_COOL2_2_MODE, ON);
+                control_cool2_2(ON);
+                zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷2按钮", "[test_control_mode]");
+                set_uval(TEST_CONTROL_MODE, status_test_control);
+                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            break;
+        }
+        case 0x200:
+        {
+            // 传感器无异常
+            if (!get_val(SENSOR_5_ABNORMAL_ALARM))
+            {
+                // 辅助水冷3按钮
+                set_val(TEST_COOL2_3_MODE, ON);
+                control_cool2_3(ON);
+                zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷3按钮", "[test_control_mode]");
+                set_uval(TEST_CONTROL_MODE, status_test_control);
+                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            break;
+        }
+        case 0x400:
+        {
+            // 传感器无异常
+            if (!get_val(SENSOR_6_ABNORMAL_ALARM))
+            {
+                // 辅助水冷4按钮
+                set_val(TEST_COOL2_4_MODE, ON);
+                control_cool2_4(ON);
+                zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷4按钮", "[test_control_mode]");
+                set_uval(TEST_CONTROL_MODE, status_test_control);
+                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            break;
+        }
+        case 0x800:
+        {
+            // 压板升按钮
+            set_val(TEST_BLOWER_MODE, ON);
+            set_val(CONTROL_BLOWER, ON);
+            zlog_debug(g_zlog_zc, "%-40s触发开启 鼓风机", "[test_control_mode]");
+            set_uval(TEST_CONTROL_MODE, status_test_control);
+            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            break;
+        }
+        default:
+        {
+            set_test_mode(0);
+        }
+        }
+    }
+    else if ((status_test_control == 0) && (get_val(TEST_CONTROL_MODE) > 0))
+    {
+        set_uval(R_BTN_TIME, 0);
+        switch (get_uval(TEST_CONTROL_MODE))
+        {
+        case 0x01:
+        {
+            // 主加热按钮
+            set_val(CONTROL_MAIN_HEAT, OFF);
+            set_val(TEST_MAIN_HEAT_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 主加热按钮", "[test_control_mode]");
+            break;
+        }
+        case 0x02:
+        {
+            // 附加热按钮
+            set_val(CONTROL_AUX_HEAT, OFF);
+            set_val(TEST_AUX_HEAT_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 附加热按钮", "[test_control_mode]");
+            break;
+        }
+        case 0x04:
+        {
+            // 开门按钮
+            control_open_damper(OFF);
+            set_val(TEST_DAMPER_OPEN_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40st触发关闭 开门按钮", "[test_control_mode]");
+            break;
+        }
+        case 0x08:
+        {
+            // 关门按钮
+            control_close_damper(OFF, 0);
+            set_val(TEST_DAMPER_CLOSE_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 关门按钮", "[test_control_mode]");
+            break;
+        }
+        case 0x10:
+        {
+            // 加湿按钮
+            set_val(CONTROL_SPRAY, OFF);
+            set_val(TEST_SPRAY_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 加湿按钮", "[test_control_mode]");
+            break;
+        }
+        case 0x20:
+        {
+            // 翻蛋按钮
+            set_val(P_EGG_FLIPPING_EXECUTION_STATUS, OFF);
+            set_val(EGG_FLIPPING_TRIGGER_STATUS, OFF);
+            set_val(TEST_FILP_EGG_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 翻蛋控制", "[test_control_mode]");
+            break;
+        }
+        case 0x40:
+        {
+            // 水冷按钮
+            set_val(CONTROL_COOL, OFF);
+            set_val(TEST_COOL_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 水冷按钮", "[test_control_mode]");
+            break;
+        }
+        case 0x80:
+        {
+            // 辅助水冷1按钮
+            control_cool2_1(OFF);
+            set_val(TEST_COOL2_1_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 辅助水冷1按钮", "[test_control_mode]");
+            break;
+        }
+        case 0x100:
+        {
+            // 辅助水冷2按钮
+            control_cool2_2(OFF);
+            set_val(TEST_COOL2_2_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 辅助水冷2按钮", "[test_control_mode]");
+            break;
+        }
+        case 0x200:
+        {
+            // 辅助水冷3按钮
+            control_cool2_3(OFF);
+            set_val(TEST_COOL2_3_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 辅助水冷3按钮", "[test_control_mode]");
+            break;
+        }
+        case 0x400:
+        {
+            // 辅助水冷4按钮
+            control_cool2_4(OFF);
+            set_val(TEST_COOL2_4_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 辅助水冷4按钮", "[test_control_mode]");
+            break;
+        }
+        case 0x800:
+        {
+            // 压板升按钮
+            set_val(CONTROL_BLOWER, OFF);
+            set_val(TEST_BLOWER_MODE, OFF);
+            set_test_mode(0);
+            set_val(TEST_CONTROL_MODE, OFF);
+            zlog_debug(g_zlog_zc, "%-40s触发关闭 鼓风机", "[test_control_mode]");
+            break;
+        }
+        default:
+        {
+            set_test_mode(0);
+        }
+        }
+    }
+    else if ((status_test_control > 0) && (get_val(TEST_CONTROL_MODE) > 0) && (status_test_control == get_val(TEST_CONTROL_MODE)))
+    {
+        if (get_uval(R_BTN_TIME) == 0)
+        {
+            switch (get_uval(TEST_CONTROL_MODE))
+            {
+            case 0x01:
+            {
+                // 主加热按钮
+                set_val(CONTROL_MAIN_HEAT, OFF);
+                set_val(TEST_MAIN_HEAT_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 主加热按钮", "[test_control_mode]");
+                break;
+            }
+            case 0x02:
+            {
+                // 附加热按钮
+                set_val(CONTROL_AUX_HEAT, OFF);
+                set_val(TEST_AUX_HEAT_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 附加热按钮", "[test_control_mode]");
+                break;
+            }
+            case 0x04:
+            {
+                // 开门按钮
+                control_open_damper(OFF);
+                set_val(TEST_DAMPER_OPEN_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40st触发关闭 开门按钮", "[test_control_mode]");
+                break;
+            }
+            case 0x08:
+            {
+                // 关门按钮
+                control_close_damper(OFF, 0);
+                set_val(TEST_DAMPER_CLOSE_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 关门按钮", "[test_control_mode]");
+                break;
+            }
+            case 0x10:
+            {
+                // 加湿按钮
+                set_val(CONTROL_SPRAY, OFF);
+                set_val(TEST_SPRAY_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 加湿按钮", "[test_control_mode]");
+                break;
+            }
+            case 0x20:
+            {
+                // 翻蛋按钮
+                set_val(P_EGG_FLIPPING_EXECUTION_STATUS, OFF);
+                set_val(EGG_FLIPPING_TRIGGER_STATUS, OFF);
+                set_val(TEST_FILP_EGG_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 翻蛋控制", "[test_control_mode]");
+                break;
+            }
+            case 0x40:
+            {
+                // 水冷按钮
+                set_val(CONTROL_COOL, OFF);
+                set_val(TEST_COOL_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 水冷按钮", "[test_control_mode]");
+                break;
+            }
+            case 0x80:
+            {
+                // 辅助水冷1按钮
+                control_cool2_1(OFF);
+                set_val(TEST_COOL2_1_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 辅助水冷1按钮", "[test_control_mode]");
+                break;
+            }
+            case 0x100:
+            {
+                // 辅助水冷2按钮
+                control_cool2_2(OFF);
+                set_val(TEST_COOL2_2_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 辅助水冷2按钮", "[test_control_mode]");
+                break;
+            }
+            case 0x200:
+            {
+                // 辅助水冷3按钮
+                control_cool2_3(OFF);
+                set_val(TEST_COOL2_3_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 辅助水冷3按钮", "[test_control_mode]");
+                break;
+            }
+            case 0x400:
+            {
+                // 辅助水冷4按钮
+                control_cool2_4(OFF);
+                set_val(TEST_COOL2_4_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 辅助水冷4按钮", "[test_control_mode]");
+                break;
+            }
+            case 0x800:
+            {
+                // 压板升按钮
+                set_val(CONTROL_BLOWER, OFF);
+                set_val(TEST_BLOWER_MODE, OFF);
+                set_test_mode(0);
+                set_val(TEST_CONTROL_MODE, OFF);
+                zlog_debug(g_zlog_zc, "%-40s触发关闭 鼓风机", "[test_control_mode]");
+                break;
+            }
+            default:
+            {
+                set_test_mode(0);
+            }
+            }
+        }
+    }
+    else if ((status_test_control > 0) && (get_val(TEST_CONTROL_MODE) > 0) && (status_test_control != get_val(TEST_CONTROL_MODE)))
+    {
+        set_uval(R_BTN_TIME, 0);
+        // 关闭主加热
+        set_val(CONTROL_MAIN_HEAT, OFF);
+        set_val(TEST_MAIN_HEAT_MODE, OFF);
+
+        // 关闭附加热
+        set_val(CONTROL_AUX_HEAT, OFF);
+        set_val(TEST_AUX_HEAT_MODE, OFF);
+
+        // 关闭开门
+        control_close_damper(OFF, 0);
+        set_val(TEST_DAMPER_CLOSE_MODE, OFF);
+
+        // 关闭关门
+        set_val(CONTROL_MAIN_HEAT, OFF);
+        set_val(TEST_MAIN_HEAT_MODE, OFF);
+
+        // 关闭加湿
+        set_val(CONTROL_SPRAY, OFF);
+        set_val(TEST_SPRAY_MODE, OFF);
+
+        // 关闭翻蛋
+        set_val(P_EGG_FLIPPING_EXECUTION_STATUS, OFF);
+        set_val(EGG_FLIPPING_TRIGGER_STATUS, OFF);
+        set_val(TEST_FILP_EGG_MODE, OFF);
+
+        // 关闭水冷
+        set_val(CONTROL_COOL, OFF);
+        set_val(TEST_COOL_MODE, OFF);
+
+        // 关闭 辅助水冷1
+        control_cool2_1(OFF);
+        set_val(TEST_COOL2_1_MODE, OFF);
+
+        // 关闭 辅助水冷2
+        control_cool2_2(OFF);
+        set_val(TEST_COOL2_2_MODE, OFF);
+
+        // 关闭 辅助水冷3
+        control_cool2_3(OFF);
+        set_val(TEST_COOL2_3_MODE, OFF);
+
+        // 关闭 辅助水冷4
+        control_cool2_4(OFF);
+        set_val(TEST_COOL2_4_MODE, OFF);
+
+        // 关闭  压板升
+        set_val(CONTROL_BLOWER, OFF);
+        set_val(TEST_BLOWER_MODE, OFF);
+
+        set_test_mode(0);
+        set_val(TEST_CONTROL_MODE, OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 风门控制函数
+//----------------------------------------------------------------------------------------------------------
+void damper_control_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到风门控制函数", "[damper_control_func]");
+    // 正在校正风门，到全关位置，校正完成变量显示0FF
+
+    // 获取风门当前值
+    unsigned short current_fan_value = get_val(R_AI_AD);
+    // 获取风门设定值
+    unsigned short setting_fan_value = get_val(P_AO_AD);
+
+    // 风门设定值为0
+    if (setting_fan_value == 0)
+    {
+    }
+    else
+    {
+        // 风门最小开度
+        // 当风门测量值小于风门设定值，风门才会开
+        if (current_fan_value < setting_fan_value)
+        {
+            control_damper(1, ON, 0);
+        }
+        else
+        {
+
+            // 当设置值等于实际值关闭风门
+            if (current_fan_value == setting_fan_value)
+            {
+                control_damper(1, OFF, 0);
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 逻辑处理线程-主温度
+//----------------------------------------------------------------------------------------------------------
+void logic_process_temp_func()
+{
+    // 获取温度当前值
+    unsigned short current_temp_value = get_val(R_AI_TP_MAIN);
+    // 获取温度设定值
+    unsigned short setting_temp_value = get_val(P_AO_TP_MAIN);
+    // 获取辅助加热动作点
+    unsigned short setting_temp_auh_value = get_val(P_AUH);
+    // 获取温度PID参数的P/2值
+    unsigned short setting_temp_pid_p_value = get_x10_val(P_TEMP_P) / 2;
+
+    zlog_debug(g_zlog_zc, "%-40s进入到逻辑处理线程-主温度", "[logic_process_temp_func]");
+    // 辅助加热依靠AUH辅助加热动作点（设定温度的相对值）。进行控制
+    if (current_temp_value < (setting_temp_value + setting_temp_auh_value))
+    {
+        zlog_debug(g_zlog_zc, "%-40s[PV2<(SP2-AUH)]开启辅助加热", "[logic_process_temp_func]");
+        // 开启辅助加热
+        control_aux_heat(ON);
+    }
+
+    // 辅助加热依靠AUH辅助加热动作点（设定温度的相对值）。进行控制
+    if (current_temp_value >= (setting_temp_value + setting_temp_auh_value))
+    {
+        zlog_debug(g_zlog_zc, "%-40s[PV2>=(SP2-AUH)]关闭辅助加热", "[logic_process_temp_func]");
+        // 关闭辅助加热
+        control_aux_heat(OFF);
+    }
+
+    // PID范围
+    if ((current_temp_value >= (setting_temp_value - setting_temp_pid_p_value)) && (current_temp_value <= (setting_temp_value - setting_temp_pid_p_value)))
+    {
+        zlog_debug(g_zlog_zc, "%-40s[(PV2<SP2-P/2)<=(PV2<=SP2+P/2)]PID范围", "[logic_process_temp_func]");
+    }
+
+    // 当PV2 < SP2-P/2时,风门开始关闭（输出关闭驱动信号,指示灯）,直到设定值。主加热同时动作（输出主温度加热指示灯）
+    if (current_temp_value < (setting_temp_value - setting_temp_pid_p_value))
+    {
+        zlog_debug(g_zlog_zc, "%-40s[PV2<SP2-P/2]关闭水冷和开启主加热", "[logic_process_temp_func]");
+        // 主加热-开启
+        control_main_heat(ON);
+
+        // 水冷关闭
+        control_cool(OFF);
+    }
+
+    // 当PV2>SP2+P/2,水冷电磁阀打开,风门等待20秒后打开（同时输出水冷指示灯,20秒后开门指示灯）。风门打开直到2公分（监测到20mm开关信号输入闭合）时,水冷和风门同时停止。等待30秒（HH9）后再进行比较,再按照1,2,3步输出动作,如果还是PV2>SP2,继续水冷电磁阀打开,风门打开直到风门全部打开,（风门灯闪烁表示全关）
+    if (current_temp_value < (setting_temp_value - setting_temp_pid_p_value))
+    {
+        zlog_debug(g_zlog_zc, "%-40s[PV2>SP2+P/2]开启水冷和关闭主加热", "[logic_process_temp_func]");
+        // 水冷-开启
+        control_cool(ON);
+
+        // 主加热-关闭
+        control_main_heat(OFF);
+    }
+
+    if (current_temp_value < setting_temp_value)
+    {
+        zlog_debug(g_zlog_zc, "%-40s[PV2_VAL<SP2_VAL]关闭水冷", "[logic_process_temp_func]");
+        // 水冷关闭
+        control_cool(OFF);
+    }
+
+    if (current_temp_value > setting_temp_value)
+    {
+        zlog_debug(g_zlog_zc, "%-40s[PV2_VAL>SP2_VAL]关闭主加热", "[logic_process_temp_func]");
+        // 主加热-关闭
+        control_main_heat(OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 逻辑处理线程-湿度
+//----------------------------------------------------------------------------------------------------------
+void logic_process_humi_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到逻辑处理线程-湿度", "[logic_process_humi_func]");
+    // 获取湿度当前值
+    unsigned short current_humi_value = get_val(R_AI_HM);
+    // 获取湿度设定值
+    unsigned short setting_humi_value = get_val(P_AO_HM);
+    // 获取湿度PID参数的P/2值
+    unsigned short setting_humi_pid_p_value = get_x10_val(P_HUM_P) / 2;
+
+    // 获取温度当前值
+    unsigned short current_temp_value = get_val(R_AI_TP_MAIN);
+    // 获取温度最小值
+    unsigned short setting_temp_min_value = 0;
+    // 获取PID的P值
+
+    // 当PV2>=AL2。时，
+    if ((current_temp_value >= setting_temp_min_value))
+    {
+        // 当PV1<SP1-P/2,加湿电磁阀启动,同时输出加湿状态指示灯
+        if (current_humi_value < (setting_humi_value - setting_humi_pid_p_value))
+        {
+            zlog_debug(g_zlog_zc, "%-40s[PV1<(SP1-P/2)]开启加湿电磁阀", "[logic_process_humi_func]");
+            // 开启加湿电磁阀
+            control_spray(ON);
+        }
+
+        // PID范围
+        if ((current_humi_value >= (setting_humi_value - setting_humi_pid_p_value)) && (current_humi_value <= (setting_humi_value - setting_humi_pid_p_value)))
+        {
+            zlog_debug(g_zlog_zc, "%-40s[(PV1<SP1-P/2)<=(PV1<=SP1+P/2)]PID范围", "[logic_process_humi_func]");
+        }
+
+        // PV1>SP1+SPR 。时,强制关闭加湿动作。
+        if (current_humi_value > (setting_humi_value - setting_humi_pid_p_value))
+        {
+            zlog_debug(g_zlog_zc, "%-40s[PV1>(SP1-P/2)]关闭加湿电磁阀", "[logic_process_humi_func]");
+            // 关闭加湿电磁阀
+            control_spray(OFF);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 逻辑处理线程-回流温度1-正常模式
+//----------------------------------------------------------------------------------------------------------
+void normal_logic_process_retemp1_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到回流温度1-正常模式", "[normal_logic_process_retemp1_func]");
+    if (get_uval(REFLUX_TEMPERATURE) & 0x01)
+    {
+        // 获取当前天数和小时
+        short sys_day_hour_time = get_val(R_RUN_DAY);
+        // 获取开启冷水的天数和小数
+        short cool_day_hour_time = get_val(P_PRE_TP_RF1_DAY);
+
+        // 当系统时间大于等于开启冷水的时间时，开启冷水
+        if (sys_day_hour_time >= cool_day_hour_time)
+        {
+            // 热水模式初始化为0
+            set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 0);
+            // 开启冷水
+            control_cold_hot_water(OFF);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_1_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF1);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF1);
+
+                // 冷水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 冷水工作模式初始化为0
+                    if (!get_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_1_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_1_WORK_CYCLE, 0);
+
+                        // 冷水工作模式初始化为1
+                        set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前冷水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_1_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_1_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(1, ON);
+                        }
+                        else
+                        {
+                            // 冷水工作模式为0
+                            if (get_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_1_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置冷水工作模式为1
+                                set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_1_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(1, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_1_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_1_WORK_CYCLE, get_uval(RETURN_TEMP_1_WORK_CYCLE) + 1);
+                                    // 设置冷水工作模式为1
+                                    set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置冷水工作模式为0
+                        set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(1, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(1, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+        // 热水模式
+        else
+        {
+            // 冷水模式初始化为0
+            set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 0);
+            // 开启热水
+            control_cold_hot_water(ON);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_1_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF1);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF1);
+
+                // 热水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 热水工作模式初始化为0
+                    if (!get_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_1_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_1_WORK_CYCLE, 0);
+
+                        // 热水工作模式初始化为1
+                        set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前热水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_1_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_1_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(1, ON);
+                        }
+                        else
+                        {
+                            // 热水工作模式为0
+                            if (get_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_1_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置热水工作模式为1
+                                set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_1_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(1, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_1_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_1_WORK_CYCLE, get_uval(RETURN_TEMP_1_WORK_CYCLE) + 1);
+                                    // 设置热水工作模式为1
+                                    set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置热水工作模式为0
+                        set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(1, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(1, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+    }
+    else
+    {
+        control_cool2(1, OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 逻辑处理线程-回流温度2-正常模式
+//----------------------------------------------------------------------------------------------------------
+void normal_logic_process_retemp2_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到回流温度2-正常模式", "[normal_logic_process_retemp2_func]");
+    if (get_uval(REFLUX_TEMPERATURE) & 0x02)
+    {
+        // 获取当前天数和小时
+        short sys_day_hour_time = get_val(R_RUN_DAY);
+        // 获取开启冷水的天数和小数
+        short cool_day_hour_time = get_val(P_PRE_TP_RF1_DAY);
+
+        // 当系统时间大于等于开启冷水的时间时，开启冷水
+        if (sys_day_hour_time >= cool_day_hour_time)
+        {
+            // 热水模式初始化为0
+            set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 0);
+            // 开启冷水
+            control_cold_hot_water(OFF);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_2_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF2);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF2);
+
+                // 冷水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 冷水工作模式初始化为0
+                    if (!get_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_2_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_2_WORK_CYCLE, 0);
+
+                        // 冷水工作模式初始化为1
+                        set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前冷水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_2_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_2_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(2, ON);
+                        }
+                        else
+                        {
+                            // 冷水工作模式为0
+                            if (get_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_2_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置冷水工作模式为1
+                                set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_2_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(2, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_2_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_2_WORK_CYCLE, get_uval(RETURN_TEMP_2_WORK_CYCLE) + 1);
+                                    // 设置冷水工作模式为1
+                                    set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置冷水工作模式为0
+                        set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(2, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(2, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+        // 热水模式
+        else
+        {
+            // 冷水模式初始化为0
+            set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 0);
+            // 开启热水
+            control_cold_hot_water(ON);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_2_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF2);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF2);
+
+                // 热水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 热水工作模式初始化为0
+                    if (!get_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_2_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_2_WORK_CYCLE, 0);
+
+                        // 热水工作模式初始化为1
+                        set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前热水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_2_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_1_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(2, ON);
+                        }
+                        else
+                        {
+                            // 热水工作模式为0
+                            if (get_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_2_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置热水工作模式为1
+                                set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_2_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(2, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_2_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_2_WORK_CYCLE, get_uval(RETURN_TEMP_2_WORK_CYCLE) + 1);
+                                    // 设置热水工作模式为1
+                                    set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置热水工作模式为0
+                        set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(2, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(2, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+    }
+    else
+    {
+        control_cool2(2, OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 逻辑处理线程-回流温度3-正常模式
+//----------------------------------------------------------------------------------------------------------
+void normal_logic_process_retemp3_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到回流温度3-正常模式", "[normal_logic_process_retemp3_func]");
+    if (get_uval(REFLUX_TEMPERATURE) & 0x04)
+    {
+
+        // 获取当前天数和小时
+        short sys_day_hour_time = get_val(R_RUN_DAY);
+        // 获取开启冷水的天数和小数
+        short cool_day_hour_time = get_val(P_PRE_TP_RF1_DAY);
+
+        // 当系统时间大于等于开启冷水的时间时，开启冷水
+        if (sys_day_hour_time >= cool_day_hour_time)
+        {
+            // 热水模式初始化为0
+            set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 0);
+            // 开启冷水
+            control_cold_hot_water(OFF);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_3_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF3);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF3);
+
+                // 冷水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 冷水工作模式初始化为0
+                    if (!get_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_3_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_3_WORK_CYCLE, 0);
+
+                        // 冷水工作模式初始化为1
+                        set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前冷水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_3_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_3_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(3, ON);
+                        }
+                        else
+                        {
+                            // 冷水工作模式为0
+                            if (get_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_3_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置冷水工作模式为1
+                                set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_3_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(3, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_3_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_3_WORK_CYCLE, get_uval(RETURN_TEMP_3_WORK_CYCLE) + 1);
+                                    // 设置冷水工作模式为1
+                                    set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置冷水工作模式为0
+                        set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(3, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(3, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+        // 热水模式
+        else
+        {
+            // 冷水模式初始化为0
+            set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 0);
+            // 开启热水
+            control_cold_hot_water(ON);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_3_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF3);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF3);
+
+                // 热水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 热水工作模式初始化为0
+                    if (!get_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_3_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_3_WORK_CYCLE, 0);
+
+                        // 热水工作模式初始化为1
+                        set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前热水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_3_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_3_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(3, ON);
+                        }
+                        else
+                        {
+                            // 热水工作模式为0
+                            if (get_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_3_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置热水工作模式为1
+                                set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_3_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(3, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_3_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_3_WORK_CYCLE, get_uval(RETURN_TEMP_3_WORK_CYCLE) + 1);
+                                    // 设置热水工作模式为1
+                                    set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置热水工作模式为0
+                        set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(3, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(3, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+    }
+    else
+    {
+        control_cool2(3, OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 逻辑处理线程-回流温度4-正常模式
+//----------------------------------------------------------------------------------------------------------
+void normal_logic_process_retemp4_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到回流温度4-正常模式", "[normal_logic_process_retemp4_func]");
+    if (get_uval(REFLUX_TEMPERATURE) & 0x08)
+    {
+        // 获取当前天数和小时
+        short sys_day_hour_time = get_val(R_RUN_DAY);
+        // 获取开启冷水的天数和小数
+        short cool_day_hour_time = get_val(P_PRE_TP_RF1_DAY);
+
+        // 当系统时间大于等于开启冷水的时间时，开启冷水
+        if (sys_day_hour_time >= cool_day_hour_time)
+        {
+            // 热水模式初始化为0
+            set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 0);
+            // 开启冷水
+            control_cold_hot_water(OFF);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_4_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF4);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF4);
+
+                // 冷水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 冷水工作模式初始化为0
+                    if (!get_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_4_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_4_WORK_CYCLE, 0);
+
+                        // 冷水工作模式初始化为1
+                        set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前冷水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_4_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_4_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(1, ON);
+                        }
+                        else
+                        {
+                            // 冷水工作模式为0
+                            if (get_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_4_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置冷水工作模式为1
+                                set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_4_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(4, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_4_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_4_WORK_CYCLE, get_uval(RETURN_TEMP_4_WORK_CYCLE) + 1);
+                                    // 设置冷水工作模式为1
+                                    set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置冷水工作模式为0
+                        set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(4, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(4, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+        // 热水模式
+        else
+        {
+            // 冷水模式初始化为0
+            set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 0);
+            // 开启热水
+            control_cold_hot_water(ON);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_4_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF4);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF4);
+
+                // 热水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 热水工作模式初始化为0
+                    if (!get_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_4_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_4_WORK_CYCLE, 0);
+
+                        // 热水工作模式初始化为1
+                        set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前热水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_4_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_4_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(4, ON);
+                        }
+                        else
+                        {
+                            // 热水工作模式为0
+                            if (get_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_4_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置热水工作模式为1
+                                set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_4_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(4, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_4_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_4_WORK_CYCLE, get_uval(RETURN_TEMP_4_WORK_CYCLE) + 1);
+                                    // 设置热水工作模式为1
+                                    set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置热水工作模式为0
+                        set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(4, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(4, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+    }
+    else
+    {
+        control_cool2(4, OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 逻辑处理线程-回流温度1-预热模式
+//----------------------------------------------------------------------------------------------------------
+void pre_logic_process_retemp1_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到回流温度1-预热模式", "[pre_logic_process_retemp1_func]");
+    if (get_uval(REFLUX_TEMPERATURE) & 0x01)
+    {
+        // 获取当前天数和小时
+        short sys_day_hour_time = get_val(R_RUN_DAY);
+        // 获取预热回流温度值
+        short setting_pre_ref_temp_value = get_val(P_PRE_TP_RF1);
+
+        // 当预热回流温度值大于0时，开启冷水
+        if (setting_pre_ref_temp_value > 0)
+        {
+            // 热水模式初始化为0
+            set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 0);
+            // 开启冷水
+            control_cold_hot_water(OFF);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_1_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF1);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF1);
+
+                // 冷水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 冷水工作模式初始化为0
+                    if (!get_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_1_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_1_WORK_CYCLE, 0);
+
+                        // 冷水工作模式初始化为1
+                        set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前冷水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_1_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_1_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(1, ON);
+                        }
+                        else
+                        {
+                            // 冷水工作模式为0
+                            if (get_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_1_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置冷水工作模式为1
+                                set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_1_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(1, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_1_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_1_WORK_CYCLE, get_uval(RETURN_TEMP_1_WORK_CYCLE) + 1);
+                                    // 设置冷水工作模式为1
+                                    set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置冷水工作模式为0
+                        set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(1, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(1, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+        // 热水模式
+        else
+        {
+            // 冷水模式初始化为0
+            set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 0);
+            // 开启热水
+            control_cold_hot_water(ON);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_1_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF1);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF1);
+
+                // 热水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 热水工作模式初始化为0
+                    if (!get_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_1_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_1_WORK_CYCLE, 0);
+
+                        // 热水工作模式初始化为1
+                        set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前热水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_1_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_1_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(1, ON);
+                        }
+                        else
+                        {
+                            // 热水工作模式为0
+                            if (get_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_1_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置热水工作模式为1
+                                set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_1_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(1, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_1_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_1_WORK_CYCLE, get_uval(RETURN_TEMP_1_WORK_CYCLE) + 1);
+                                    // 设置热水工作模式为1
+                                    set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置热水工作模式为0
+                        set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(1, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(1, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+    }
+    else
+    {
+        control_cool2(1, OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 逻辑处理线程-回流温度2-预热模式
+//----------------------------------------------------------------------------------------------------------
+void pre_logic_process_retemp2_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到回流温度2-预热模式", "[pre_logic_process_retemp2_func]");
+    if (get_uval(REFLUX_TEMPERATURE) & 0x02)
+    {
+        // 获取当前天数和小时
+        short sys_day_hour_time = get_val(R_RUN_DAY);
+        // 获取预热回流温度值
+        short setting_pre_ref_temp_value = get_val(P_PRE_TP_RF2);
+
+        // 当预热回流温度值大于0时，开启冷水
+        if (setting_pre_ref_temp_value > 0)
+        {
+            // 热水模式初始化为0
+            set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 0);
+            // 开启冷水
+            control_cold_hot_water(OFF);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_2_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF2);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF2);
+
+                // 冷水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 冷水工作模式初始化为0
+                    if (!get_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_2_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_2_WORK_CYCLE, 0);
+
+                        // 冷水工作模式初始化为1
+                        set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前冷水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_2_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_2_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(2, ON);
+                        }
+                        else
+                        {
+                            // 冷水工作模式为0
+                            if (get_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_2_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置冷水工作模式为1
+                                set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_2_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(2, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_2_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_2_WORK_CYCLE, get_uval(RETURN_TEMP_2_WORK_CYCLE) + 1);
+                                    // 设置冷水工作模式为1
+                                    set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置冷水工作模式为0
+                        set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(2, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(2, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+        // 热水模式
+        else
+        {
+            // 冷水模式初始化为0
+            set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 0);
+            // 开启热水
+            control_cold_hot_water(ON);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_2_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF2);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF2);
+
+                // 热水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 热水工作模式初始化为0
+                    if (!get_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_2_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_2_WORK_CYCLE, 0);
+
+                        // 热水工作模式初始化为1
+                        set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前热水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_2_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_1_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(2, ON);
+                        }
+                        else
+                        {
+                            // 热水工作模式为0
+                            if (get_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_2_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置热水工作模式为1
+                                set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_2_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(2, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_2_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_2_WORK_CYCLE, get_uval(RETURN_TEMP_2_WORK_CYCLE) + 1);
+                                    // 设置热水工作模式为1
+                                    set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置热水工作模式为0
+                        set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(2, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(2, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+    }
+    else
+    {
+        control_cool2(2, OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 逻辑处理线程-回流温度3-预热模式
+//----------------------------------------------------------------------------------------------------------
+void pre_logic_process_retemp3_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到回流温度3-预热模式", "[pre_logic_process_retemp3_func]");
+    if (get_uval(REFLUX_TEMPERATURE) & 0x04)
+    {
+
+        // 获取当前天数和小时
+        short sys_day_hour_time = get_val(R_RUN_DAY);
+        // 获取预热回流温度值
+        short setting_pre_ref_temp_value = get_val(P_PRE_TP_RF3);
+
+        // 当预热回流温度值大于0时，开启冷水
+        if (setting_pre_ref_temp_value > 0)
+        {
+            // 热水模式初始化为0
+            set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 0);
+            // 开启冷水
+            control_cold_hot_water(OFF);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_3_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF3);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF3);
+
+                // 冷水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 冷水工作模式初始化为0
+                    if (!get_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_3_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_3_WORK_CYCLE, 0);
+
+                        // 冷水工作模式初始化为1
+                        set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前冷水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_3_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_3_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(3, ON);
+                        }
+                        else
+                        {
+                            // 冷水工作模式为0
+                            if (get_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_3_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置冷水工作模式为1
+                                set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_3_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(3, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_3_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_3_WORK_CYCLE, get_uval(RETURN_TEMP_3_WORK_CYCLE) + 1);
+                                    // 设置冷水工作模式为1
+                                    set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置冷水工作模式为0
+                        set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(3, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(3, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+        // 热水模式
+        else
+        {
+            // 冷水模式初始化为0
+            set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 0);
+            // 开启热水
+            control_cold_hot_water(ON);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_3_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF3);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF3);
+
+                // 热水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 热水工作模式初始化为0
+                    if (!get_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_3_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_3_WORK_CYCLE, 0);
+
+                        // 热水工作模式初始化为1
+                        set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前热水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_3_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_3_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(3, ON);
+                        }
+                        else
+                        {
+                            // 热水工作模式为0
+                            if (get_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_3_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置热水工作模式为1
+                                set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_3_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(3, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_3_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_3_WORK_CYCLE, get_uval(RETURN_TEMP_3_WORK_CYCLE) + 1);
+                                    // 设置热水工作模式为1
+                                    set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置热水工作模式为0
+                        set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(3, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(3, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+    }
+    else
+    {
+        control_cool2(3, OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 逻辑处理线程-回流温度4-预热模式
+//----------------------------------------------------------------------------------------------------------
+void pre_logic_process_retemp4_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到回流温度4-预热模式", "[pre_logic_process_retemp4_func]");
+    if (get_uval(REFLUX_TEMPERATURE) & 0x08)
+    {
+        // 获取当前天数和小时
+        short sys_day_hour_time = get_val(R_RUN_DAY);
+        // 获取预热回流温度值
+        short setting_pre_ref_temp_value = get_val(P_PRE_TP_RF4);
+
+        // 当预热回流温度值大于0时，开启冷水
+        if (setting_pre_ref_temp_value > 0)
+        {
+            // 热水模式初始化为0
+            set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 0);
+            // 开启冷水
+            control_cold_hot_water(OFF);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_4_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF4);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_uval(P_AO_TP_RF4);
+
+                // 冷水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 冷水工作模式初始化为0
+                    if (!get_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_4_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_4_WORK_CYCLE, 0);
+
+                        // 冷水工作模式初始化为1
+                        set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前冷水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_4_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_4_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(1, ON);
+                        }
+                        else
+                        {
+                            // 冷水工作模式为0
+                            if (get_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_4_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置冷水工作模式为1
+                                set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_4_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(4, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_4_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_4_WORK_CYCLE, get_uval(RETURN_TEMP_4_WORK_CYCLE) + 1);
+                                    // 设置冷水工作模式为1
+                                    set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置冷水工作模式为0
+                        set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(4, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(4, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+        // 热水模式
+        else
+        {
+            // 冷水模式初始化为0
+            set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 0);
+            // 开启热水
+            control_cold_hot_water(ON);
+
+            // 回流温度延迟时间为0即可进入
+            if (get_uval(REFLUX_TEMP_4_DELAY_TIME) == 0)
+            {
+                // 获取当前值
+                unsigned short current_ref_temp_value = get_uval(R_AI_TP_RF4);
+                // 获取设定值
+                unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF4);
+
+                // 热水模式
+                if (current_ref_temp_value < setting_ref_temp_value)
+                {
+                    // 热水工作模式初始化为0
+                    if (!get_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT))
+                    {
+                        // 设置回流温度电磁阀的工作时间
+                        set_uval(REFLUX_TEMP_4_WORK_TIME, get_uval(P_RTEMP_GZS));
+
+                        // 设置实时工作周期为
+                        set_uval(RETURN_TEMP_4_WORK_CYCLE, 0);
+
+                        // 热水工作模式初始化为1
+                        set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 1);
+                    }
+
+                    // 当前热水工作周期小于工作周期设定值
+                    if (get_uval(RETURN_TEMP_4_WORK_CYCLE) < get_uval(P_RTEMP_ZQS))
+                    {
+                        // 工作时间大于0
+                        if (get_uval(REFLUX_TEMP_4_WORK_TIME) > 0)
+                        {
+                            // 开启回流温度电磁阀
+                            control_cool2(4, ON);
+                        }
+                        else
+                        {
+                            // 热水工作模式为0
+                            if (get_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT) == 1)
+                            {
+                                // 设置回流温度电磁阀的停止时间
+                                unsigned short setting_ref_temp_stop_time = get_uval(P_RTEMP_ZQS) - get_uval(P_RTEMP_GZS);
+                                set_uval(RETURN_TEMP_4_STOP_TIME, setting_ref_temp_stop_time);
+
+                                // 设置热水工作模式为1
+                                set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 2);
+                            }
+
+                            // 停止时间大于0
+                            if (get_uval(RETURN_TEMP_4_STOP_TIME) > 0)
+                            {
+                                // 关闭启回流温度电磁阀
+                                control_cool2(4, OFF);
+                            }
+                            else
+                            {
+                                if (get_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT) == 2)
+                                {
+                                    // 设置回流温度电磁阀的工作时间
+                                    set_uval(REFLUX_TEMP_4_WORK_TIME, get_uval(P_RTEMP_GZS));
+                                    // 回流温度工作周期加1
+                                    set_uval(RETURN_TEMP_4_WORK_CYCLE, get_uval(RETURN_TEMP_4_WORK_CYCLE) + 1);
+                                    // 设置热水工作模式为1
+                                    set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 1);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 设置热水工作模式为0
+                        set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 0);
+
+                        // 开启回流温度电磁阀
+                        control_cool2(4, ON);
+                    }
+                }
+                // 当前值大于等于设定值
+                else
+                {
+                    // 关闭启回流温度电磁阀
+                    control_cool2(4, OFF);
+                    // 设置热水工作模式为0
+                    set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 0);
+                }
+            }
+        }
+    }
+    else
+    {
+        control_cool2(4, OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 获取运行模式
+//----------------------------------------------------------------------------------------------------------
+unsigned short get_run_mode()
+{
+    // 将6个模式状态汇总到一个变量中
+    unsigned short mode = 0;
+    // 将6个模式状态汇总到一个变量中
+    for (size_t i = 0; i < 6; i++)
+    {
+        mode += (get_uval(SYSTEM_INIT + i) << i);
+    }
+    return mode;
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 设置运行模式
+//----------------------------------------------------------------------------------------------------------
+void set_run_mode(unsigned short mode)
+{
+    // 将一个变量更新到6个模式中
+    for (size_t i = 0; i < 6; i++)
+    {
+        // 更新模式
+        set_uval(SYSTEM_INIT + i, (mode >> i) & 0x01);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 获取测试模式
+//----------------------------------------------------------------------------------------------------------
+unsigned short get_test_mode()
+{
+    // 将12个模式状态汇总到一个变量中
+    unsigned short mode = 0;
+    // 将16个模式状态汇总到一个变量中
+    for (size_t i = 0; i < 12; i++)
+    {
+        mode += (get_uval(R_BTN_TP_MAIN + i) << i);
+    }
+    return mode;
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 设置测试模式
+//----------------------------------------------------------------------------------------------------------
+void set_test_mode(unsigned short mode)
+{
+    // 将一个变量更新到12个模式中
+    for (size_t i = 0; i < 12; i++)
+    {
+        // 更新模式
+        set_uval(R_BTN_TP_MAIN + i, (mode >> i) & 0x01);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 初始化启动模式
+//----------------------------------------------------------------------------------------------------------
+void init_start_mode()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 初始化停止模式
+//----------------------------------------------------------------------------------------------------------
+void init_stop_mode()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 初始化预热模式
+//----------------------------------------------------------------------------------------------------------
+void init_preheat_mode()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 温度预警计算
+//----------------------------------------------------------------------------------------------------------
+void temp_update_para_data()
+{
+    if ((get_uval(P_TEMP_ALO) == ON))
+    {
+        // 高温模式-相对值
+        short v_f_tp_high_val = get_val(P_AO_TP_MAIN) + get_val(P_TEMP_AH);
+        // 低温模式-相对值
+        short v_f_tp_low_val = get_val(P_AO_TP_MAIN) - get_val(P_TEMP_AL);
+
+        // 设置高温报警值
+        set_val(HIGH_TEMP_ALARM_VALUE, v_f_tp_high_val);
+        // 设置低温报警值
+        set_val(LOW_TEMP_ALARM_VALUE, v_f_tp_low_val);
+    }
+
+    if ((get_uval(P_TEMP_ALO) == OFF))
+    {
+        // 设置高温报警值
+        set_val(HIGH_TEMP_ALARM_VALUE, get_val(P_TEMP_AH));
+        // 设置低温报警值
+        set_val(LOW_TEMP_ALARM_VALUE, get_val(P_TEMP_AL));
+    }
+
+    if ((get_uval(P_HUM_ALO) == ON))
+    {
+        // 高湿数值-相对值
+        short v_f_hm_high_val = get_val(P_AO_HM) + get_val(P_HUM_AH);
+        // 低湿数值-相对值
+        short v_f_hm_low_val = get_val(P_AO_HM) - get_val(P_HUM_AL);
+
+        // 设置高湿报警值
+        set_val(HIGH_HUMI_ALARM_VALUE, v_f_hm_high_val);
+        // 设置低湿报警值
+        set_val(LOW_HUMI_ALARM_VALUE, v_f_hm_low_val);
+    }
+
+    if ((get_uval(P_HUM_ALO) == OFF))
+    {
+        // 设置高湿报警值
+        set_val(HIGH_HUMI_ALARM_VALUE, get_val(P_HUM_AH));
+        // 设置低湿报警值
+        set_val(LOW_HUMI_ALARM_VALUE, get_val(P_HUM_AL));
+    }
+
+    if ((get_uval(P_RTEMP_ALO) == ON))
+    {
+        // 回流模式1-高温
+        short v_f_retp1_high_val = get_val(P_AO_TP_RF1) + get_val(P_RTEMP_AH);
+        // 回流模式1-低温
+        short v_f_retp1_low_val = get_val(P_AO_TP_RF1) - get_val(P_RTEMP_AL);
+
+        // 设置回流模式1-高温报警值
+        set_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1, v_f_retp1_high_val);
+        // 设置回流模式1-低温报警值
+        set_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1, v_f_retp1_low_val);
+
+        // 回流模式2-高温
+        short v_f_retp2_high_val = get_val(P_AO_TP_RF2) + get_val(P_RTEMP_AH);
+        // 回流模式2-低温
+        short v_f_retp2_low_val = get_val(P_AO_TP_RF2) - get_val(P_RTEMP_AL);
+
+        // 设置回流模式2-高温报警值
+        set_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1, v_f_retp2_high_val);
+        // 设置回流模式2-低温报警值
+        set_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1, v_f_retp2_low_val);
+
+        // 回流模式3-高温
+        short v_f_retp3_high_val = get_val(P_AO_TP_RF3) + get_val(P_RTEMP_AH);
+        // 回流模式3-低温
+        short v_f_retp3_low_val = get_val(P_AO_TP_RF3) - get_val(P_RTEMP_AL);
+
+        // 设置回流模式3-高温报警值
+        set_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_3, v_f_retp3_high_val);
+        // 设置回流模式3-低温报警值
+        set_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_3, v_f_retp3_low_val);
+
+        // 回流模式4-高温
+        short v_f_retp4_high_val = get_val(P_AO_TP_RF4) + get_val(P_RTEMP_AH);
+        // 回流模式4-低温
+        short v_f_retp4_low_val = get_val(P_AO_TP_RF4) - get_val(P_RTEMP_AL);
+
+        // 设置回流模式4-高温报警值
+        set_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_4, v_f_retp4_high_val);
+        // 设置回流模式3-低温报警值
+        set_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_4, v_f_retp4_low_val);
+    }
+
+    if ((get_uval(P_RTEMP_ALO) == OFF))
+    {
+
+        // 设置回流模式1-高温报警值
+        set_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1, get_val(P_RTEMP_AH));
+        // 设置回流模式1-低温报警值
+        set_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1, get_val(P_RTEMP_AL));
+
+        // 设置回流模式2-高温报警值
+        set_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_2, get_val(P_RTEMP_AH));
+        // 设置回流模式2-低温报警值
+        set_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_2, get_val(P_RTEMP_AL));
+
+        // 设置回流模式3-高温报警值
+        set_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_3, get_val(P_RTEMP_AH));
+        // 设置回流模式3-低温报警值
+        set_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_3, get_val(P_RTEMP_AL));
+
+        // 设置回流模式4-高温报警值
+        set_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_4, get_val(P_RTEMP_AH));
+        // 设置回流模式4-低温报警值
+        set_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_4, get_val(P_RTEMP_AL));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// LED灯控制函数
+//----------------------------------------------------------------------------------------------------------
+void direction_func()
+{
+    zlog_debug(g_zlog_zc, "%-40s进入LED灯控制函数!", "[direction_func]");
+    // 风机
+    if (get_uval(CONTROL_FAN))
+    {
+        set_uval(OUT_ST_FAN_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_FAN_STATUS, OFF);
+    }
+
+    // 主加热
+    if (get_uval(CONTROL_MAIN_HEAT))
+    {
+        set_uval(OUT_ST_TP_MAIN_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_TP_MAIN_STATUS, OFF);
+    }
+
+    // 辅助加热
+    if (get_uval(CONTROL_AUX_HEAT))
+    {
+        set_uval(OUT_ST_TP_AID_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_TP_AID_STATUS, OFF);
+    }
+
+    // 加湿
+    if (get_uval(CONTROL_SPRAY))
+    {
+        set_uval(OUT_ST_HM_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_HM_STATUS, OFF);
+    }
+
+    // 翻蛋
+    if (get_uval(DETECT_FLIP_EGG))
+    {
+        set_uval(OUT_ST_EGG_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_EGG_STATUS, OFF);
+    }
+
+    // 风门开启
+    if (get_uval(CONTROL_DAMPER_OPEN))
+    {
+        set_uval(OUT_ST_AD_OPEN_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_AD_OPEN_STATUS, OFF);
+    }
+
+    // 风门关闭
+    if (get_uval(CONTROL_DAMPER_CLOSE))
+    {
+        set_uval(OUT_ST_AD_CLOSE_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_AD_CLOSE_STATUS, OFF);
+    }
+
+    // 水冷
+    if (get_uval(CONTROL_COOL))
+    {
+        set_uval(OUT_ST_WT_CL_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_WT_CL_STATUS, OFF);
+    }
+
+    // 辅助水冷2-1
+    if (get_uval(CONTROL_COOL2_1))
+    {
+        set_uval(OUT_ST_TP_RF1_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_TP_RF1_STATUS, OFF);
+    }
+
+    // 辅助水冷2-2
+    if (get_uval(CONTROL_COOL2_2))
+    {
+        set_uval(OUT_ST_TP_RF2_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_TP_RF2_STATUS, OFF);
+    }
+
+    // 辅助水冷2-3
+    if (get_uval(CONTROL_COOL2_3))
+    {
+        set_uval(OUT_ST_TP_RF3_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_TP_RF3_STATUS, OFF);
+    }
+
+    // 辅助水冷2-4
+    if (get_uval(CONTROL_COOL2_4))
+    {
+        set_uval(OUT_ST_TP_RF4_STATUS, ON);
+    }
+    else
+    {
+        set_uval(OUT_ST_TP_RF4_STATUS, OFF);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 定时器
+//----------------------------------------------------------------------------------------------------------
+void timer_callback_func(int signo)
+{
+    switch (signo)
+    {
+    case SIGALRM:
+    {
+        zlog_debug(g_zlog_zc, "%-40s进入定时器!", "[timer_callback_func]");
+
+        //----------------------------------------------------------------------------------------------------------
+        // 程序时间处理模块
+        //----------------------------------------------------------------------------------------------------------
+        // 孵蛋运行时间累加
+        if (get_val(R_RUN_SECOND_STATUS))
+        {
+            set_time(R_RUN_SECOND_HIGH, get_time(R_RUN_SECOND_HIGH) + 1);
+        }
+
+        // 程序运行时间累加
+        if (get_val(R_RUN_SYSTEM_SECOND_STATUS))
+        {
+            set_time(R_RUN_SYSTEM_SECOND_HIGH, get_time(R_RUN_SYSTEM_SECOND_HIGH) + 1);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 测试控制时间处理模块
+        //----------------------------------------------------------------------------------------------------------
+        if (get_uval(R_BTN_TIME) > 0)
+        {
+            set_uval(R_BTN_TIME, get_uval(R_BTN_TIME) - 1);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 翻蛋控制时间处理模块
+        //----------------------------------------------------------------------------------------------------------
+        // 翻蛋时间
+        if (get_uval(P_EGG_FLIPPING_TIME) > 0)
+        {
+            set_uval(P_EGG_FLIPPING_TIME, get_uval(P_EGG_FLIPPING_TIME) - 1);
+        }
+
+        // 有翻蛋信号报警时间
+        if (get_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME) > 0)
+        {
+            set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME) - 1);
+        }
+
+        // 没有翻蛋信号报警时间
+        if (get_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME) > 0)
+        {
+            set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME) - 1);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 风扇控制时间处理模块
+        //----------------------------------------------------------------------------------------------------------
+        if (get_uval(FAN_ALARM_TIME) > 0)
+        {
+            set_uval(FAN_ALARM_TIME, get_uval(FAN_ALARM_TIME) - 1);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 消警模式处理模块
+        //----------------------------------------------------------------------------------------------------------
+        if (get_uval(ALARM_SUPPRESSION_TIME) > 0)
+        {
+            set_uval(ALARM_SUPPRESSION_TIME, get_uval(ALARM_SUPPRESSION_TIME) - 1);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 校准模式处理模块
+        //----------------------------------------------------------------------------------------------------------
+        if (get_uval(CALIBRATION_RUN_TIME) > 0)
+        {
+            set_uval(CALIBRATION_RUN_TIME, get_uval(CALIBRATION_RUN_TIME) - 1);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 回流温度时间处理模块
+        //----------------------------------------------------------------------------------------------------------
+        // 回流温度1
+        if (get_uval(REFLUX_TEMP_1_WORK_TIME) > 0)
+        {
+            set_uval(REFLUX_TEMP_1_WORK_TIME, get_uval(REFLUX_TEMP_1_WORK_TIME) - 1);
+        }
+
+        if (get_uval(RETURN_TEMP_1_STOP_TIME) > 0)
+        {
+            set_uval(RETURN_TEMP_1_STOP_TIME, get_uval(RETURN_TEMP_1_STOP_TIME) - 1);
+        }
+
+        if (get_uval(REFLUX_TEMP_1_DELAY_TIME) > 0)
+        {
+            set_uval(REFLUX_TEMP_1_DELAY_TIME, get_uval(REFLUX_TEMP_1_DELAY_TIME) - 1);
+        }
+
+        // 回流温度2
+        if (get_uval(REFLUX_TEMP_2_WORK_TIME) > 0)
+        {
+            set_uval(REFLUX_TEMP_2_WORK_TIME, get_uval(REFLUX_TEMP_2_WORK_TIME) - 1);
+        }
+
+        if (get_uval(RETURN_TEMP_2_STOP_TIME) > 0)
+        {
+            set_uval(RETURN_TEMP_2_STOP_TIME, get_uval(RETURN_TEMP_2_STOP_TIME) - 1);
+        }
+
+        if (get_uval(REFLUX_TEMP_2_DELAY_TIME) > 0)
+        {
+            set_uval(REFLUX_TEMP_2_DELAY_TIME, get_uval(REFLUX_TEMP_2_DELAY_TIME) - 1);
+        }
+
+        // 回流温度3
+        if (get_uval(REFLUX_TEMP_3_WORK_TIME) > 0)
+        {
+            set_uval(REFLUX_TEMP_3_WORK_TIME, get_uval(REFLUX_TEMP_3_WORK_TIME) - 1);
+        }
+
+        if (get_uval(RETURN_TEMP_3_STOP_TIME) > 0)
+        {
+            set_uval(RETURN_TEMP_3_STOP_TIME, get_uval(RETURN_TEMP_3_STOP_TIME) - 1);
+        }
+
+        if (get_uval(REFLUX_TEMP_3_DELAY_TIME) > 0)
+        {
+            set_uval(REFLUX_TEMP_3_DELAY_TIME, get_uval(REFLUX_TEMP_3_DELAY_TIME) - 1);
+        }
+
+        // 回流温度4
+        if (get_uval(REFLUX_TEMP_4_WORK_TIME) > 0)
+        {
+            set_uval(REFLUX_TEMP_4_WORK_TIME, get_uval(REFLUX_TEMP_4_WORK_TIME) - 1);
+        }
+
+        if (get_uval(RETURN_TEMP_4_STOP_TIME) > 0)
+        {
+            set_uval(RETURN_TEMP_4_STOP_TIME, get_uval(RETURN_TEMP_4_STOP_TIME) - 1);
+        }
+
+        if (get_uval(REFLUX_TEMP_4_DELAY_TIME) > 0)
+        {
+            set_uval(REFLUX_TEMP_4_DELAY_TIME, get_uval(REFLUX_TEMP_4_DELAY_TIME) - 1);
+        }
+
+        // 回流温度高温报警时间
+        if (get_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME) > 0)
+        {
+            set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, get_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME) - 1);
+        }
+
+        // 回流温度低温报警时间
+        if (get_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME) > 0)
+        {
+            set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, get_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME) - 1);
+        }
+    }
+    break;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -1363,8 +4579,6 @@ void *data_collection_pt100_func(void *pv)
                 unsigned short index = 0;
                 // 修正值的序号
                 unsigned short shm_index = 0;
-                // 传感器异常报警序号
-                unsigned short alarm_index = 0;
                 // 当前值
                 double run_ai_tp_aver = 0.0;
                 // 过滤浮点数
@@ -1384,21 +4598,19 @@ void *data_collection_pt100_func(void *pv)
                     index = R_AI_TP_MAIN + i;
                     shm_index = P_EDIT_TP_MAIN + i;
                 }
-                // 获取当前传感器报警变量
-                alarm_index = SENSOR_1_ABNORMAL_ALARM + i;
                 // 使用滑动窗口获取通道平均值
                 run_ai_tp_aver = run_ai_tp_sum / filter_len;
                 // 设置浮点精度
                 sprintf(d_tp_data, "%0.2f", run_ai_tp_aver);
 
                 // 校准模式标志位
-                float f_tp_data = atof(d_tp_data) + get_val(shm_index);
+                float f_tp_data = atof(d_tp_data) + get_fval(shm_index);
                 // 将浮点数转为无符号整数数据
                 int run_ai_i_tp = f_tp_data * 100;
                 // 过滤异常数据
                 unsigned short run_ao_c_shm = ((run_ai_i_tp > 32767) || (run_ai_i_tp < -32767)) ? 0 : run_ai_i_tp;
                 // zlog_debug(g_zlog_zc,
-                //            "%-40s通道值 [%d] Val-Offset [%0.4f] Val-Divi [%0.4f] Val-slope [%u]  Ref-Std0 [%u] 当前通道值 [%u] 当前温度 [%0.4f] 当前差值[%0.4f] 最终温度 [%0.4f] 最终温度 [%d]",
+                //            "%-40s通道值 [%d] Val-Offset [%0.4f] Val-Divi [%0.4f] Val-slope [%u]  Ref-Std0 [%u] 当前通道值 [%u] 当前温度 [%0.4f] 当前差值[%d] 最终温度 [%0.4f] 最终温度 [%d]",
                 //            "[data_collection_pt100_func]",i + 1, run_ao_r_low, run_ao_r_high, run_ao_c_low,
                 //            run_ao_c_high, run_ai_c_tp,
                 //            atof(d_tp_data), get_val(shm_index), f_tp_data, run_ao_c_shm);
@@ -1406,15 +4618,115 @@ void *data_collection_pt100_func(void *pv)
                 // 无符号温度大于50摄氏度时，触发报警
                 if (run_ao_c_shm > 0x1388)
                 {
-                    // 设置报警变量为ON
-                    set_uval(alarm_index, ON);
+                    switch (i)
+                    {
+                    case 0:
+                    {
+                        // 设置报警变量为ON
+                        set_uval(SENSOR_1_ABNORMAL_ALARM, ON);
+                        break;
+                    }
+                    case 1:
+                    {
+                        // 设置报警变量为ON
+                        set_uval(SENSOR_2_ABNORMAL_ALARM, ON);
+                        break;
+                    }
+                    case 2:
+                    {
+                        if (get_uval(REFLUX_TEMPERATURE) & 0x01)
+                        {
+                            // 设置报警变量为ON
+                            set_uval(SENSOR_3_ABNORMAL_ALARM, ON);
+                        }
+                        break;
+                    }
+                    case 3:
+                    {
+                        if (get_uval(REFLUX_TEMPERATURE) & 0x02)
+                        {
+                            // 设置报警变量为ON
+                            set_uval(SENSOR_4_ABNORMAL_ALARM, ON);
+                        }
+                        break;
+                    }
+                    case 4:
+                    {
+                        if (get_uval(REFLUX_TEMPERATURE) & 0x04)
+                        {
+                            // 设置报警变量为ON
+                            set_uval(SENSOR_5_ABNORMAL_ALARM, ON);
+                        }
+                        break;
+                    }
+                    case 5:
+                    {
+                        if (get_uval(REFLUX_TEMPERATURE) & 0x08)
+                        {
+                            // 设置报警变量为ON
+                            set_uval(SENSOR_6_ABNORMAL_ALARM, ON);
+                        }
+                        break;
+                    }
+                    }
+
                     // 将实时数据设置为-1
                     set_uval(index, 0xffff);
                 }
                 else
                 {
                     // 设置报警变量为OFF
-                    set_uval(alarm_index, OFF);
+                    switch (i)
+                    {
+                    case 0:
+                    {
+                        // 设置报警变量为ON
+                        set_uval(SENSOR_1_ABNORMAL_ALARM, OFF);
+                        break;
+                    }
+                    case 1:
+                    {
+                        // 设置报警变量为ON
+                        set_uval(SENSOR_2_ABNORMAL_ALARM, OFF);
+                        break;
+                    }
+                    case 2:
+                    {
+                        if (get_uval(REFLUX_TEMPERATURE) & 0x01)
+                        {
+                            // 设置报警变量为ON
+                            set_uval(SENSOR_3_ABNORMAL_ALARM, OFF);
+                        }
+                        break;
+                    }
+                    case 3:
+                    {
+                        if (get_uval(REFLUX_TEMPERATURE) & 0x02)
+                        {
+                            // 设置报警变量为ON
+                            set_uval(SENSOR_4_ABNORMAL_ALARM, OFF);
+                        }
+                        break;
+                    }
+                    case 4:
+                    {
+                        if (get_uval(REFLUX_TEMPERATURE) & 0x04)
+                        {
+                            // 设置报警变量为ON
+                            set_uval(SENSOR_5_ABNORMAL_ALARM, OFF);
+                        }
+                        break;
+                    }
+                    case 5:
+                    {
+                        if (get_uval(REFLUX_TEMPERATURE) & 0x08)
+                        {
+                            // 设置报警变量为ON
+                            set_uval(SENSOR_6_ABNORMAL_ALARM, OFF);
+                        }
+                        break;
+                    }
+                    }
                     // 传输实际值
                     set_uval(index, run_ao_c_shm);
                 }
@@ -1477,16 +4789,16 @@ void *data_collection_co2_func(void *pv)
         // 发送数据
         SerialFlush(i_serial_fd);
         SerialWrite(i_serial_fd, b_cmd_sendbuf, 9);
-        zlog_debug(g_zlog_zc, "%-40s[%s] 发送读取数据[9]:", "[data_collection_co2_func]", c_seral_name);
-        hzlog_debug(g_zlog_zc, b_cmd_sendbuf, 9);
+        // zlog_debug(g_zlog_zc, "%-40s[%s] 发送读取数据[9]:", "[data_collection_co2_func]", c_seral_name);
+        // hzlog_debug(g_zlog_zc, b_cmd_sendbuf, 9);
         // 接收数据
         wait_ms(1000);
         i_recv_len = SerialRead(i_serial_fd, b_cmd_recvbuf, 1024, i_cmd_wait_time_out, i_cmd_read_time_out);
 
         if (i_recv_len > 0)
         {
-            zlog_debug(g_zlog_zc, "%-40s[%s] 接收读取数据[%d]:", "[data_collection_co2_func]", c_seral_name, i_recv_len);
-            hzlog_debug(g_zlog_zc, b_cmd_recvbuf, i_recv_len);
+            // zlog_debug(g_zlog_zc, "%-40s[%s] 接收读取数据[%d]:", "[data_collection_co2_func]", c_seral_name, i_recv_len);
+            // hzlog_debug(g_zlog_zc, b_cmd_recvbuf, i_recv_len);
             if (i_recv_len == 9)
             {
                 i_data_count = 0;
@@ -1509,7 +4821,7 @@ void *data_collection_co2_func(void *pv)
 
                 // printf("%d\n", (&shm_out[P_EDIT_CO]));
 
-                zlog_debug(g_zlog_zc, "%-40s[%s] 接收到CO2 [%u]", "[data_collection_co2_func]", c_seral_name, i_data_value);
+                // zlog_debug(g_zlog_zc, "%-40s[%s] 接收到CO2 [%u]", "[data_collection_co2_func]", c_seral_name, i_data_value);
             }
             else
             {
@@ -1533,8 +4845,8 @@ void *data_collection_co2_func(void *pv)
             }
 
             // zlog_error(g_zlog_zc, "[%s] 接收数据超时 超时时间[%u]", c_seral_name, i_cmd_wait_time_out);
-            zlog_error(g_zlog_zc, "%-40s[%s] 发送读取数据[%d]:", "[data_collection_co2_func]", c_seral_name, i_recv_len);
-            hzlog_error(g_zlog_zc, b_cmd_sendbuf, 9);
+            // zlog_error(g_zlog_zc, "%-40s[%s] 发送读取数据[%d]:", "[data_collection_co2_func]", c_seral_name, i_recv_len);
+            // hzlog_error(g_zlog_zc, b_cmd_sendbuf, 9);
             ++i_data_count;
         }
 
@@ -1550,6 +4862,767 @@ void *data_collection_co2_func(void *pv)
             set_val(P_EDIT_CO, 0);
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 翻蛋线程
+//----------------------------------------------------------------------------------------------------------
+void *flip_egg_func(void *pv)
+{
+    zlog_debug(g_zlog_zc, "%-40s翻蛋线程启动", "[flip_egg_func]");
+    unsigned int sys_old_time = 0;
+    unsigned char sys_now_time_status = ON;
+    while (ON)
+    {
+        // 当翻蛋时间等于0时，触发翻蛋
+        if (get_uval(P_EGG_FLIPPING_TIME) == 0)
+        {
+            // 翻蛋控制
+            control_egg();
+        }
+
+        // 获取翻蛋执行状态
+        if (get_uval(P_EGG_FLIPPING_EXECUTION_STATUS))
+        {
+            if (sys_now_time_status)
+            {
+                sys_old_time = time(NULL);
+                sys_now_time_status = OFF;
+            }
+
+            if (!sys_now_time_status)
+            {
+                // 获取当前时间
+                unsigned int sys_now_time = time(NULL);
+                unsigned int sys_sub_time = sys_now_time - sys_old_time;
+                if ((sys_sub_time >= 0) && (sys_sub_time <= get_val(EGG_FLIPP_INGINTERVAL)))
+                {
+                    // 翻蛋方向-左
+                    if (get_uval(P_EGG_FLIPPING_DIRECTION))
+                    {
+                        set_uval(FILP_EGG_ON, ON);
+                        set_uval(FILP_EGG_OFF, OFF);
+                    }
+                    // 翻蛋方向-右
+                    else
+                    {
+                        set_uval(FILP_EGG_ON, OFF);
+                        set_uval(FILP_EGG_OFF, ON);
+                    }
+                }
+                else
+                {
+                    sys_now_time_status = ON;
+                    set_uval(FILP_EGG_ON, OFF);
+                    set_uval(FILP_EGG_OFF, OFF);
+                    set_val(P_EGG_FLIPPING_EXECUTION_STATUS, OFF);
+                }
+            }
+        }
+        else
+        {
+            sys_now_time_status = ON;
+            set_uval(FILP_EGG_ON, OFF);
+            set_uval(FILP_EGG_OFF, OFF);
+        }
+
+        // 翻蛋触发状态为ON
+        if (get_val(EGG_FLIPPING_TRIGGER_STATUS))
+        {
+            // 未监测到翻蛋信号时，翻蛋累加状态为ON
+            if (!get_val(DETECT_FLIP_EGG))
+            {
+                // 翻蛋累加状态为ON
+                set_val(EGG_FLIPPING_ACCUMULATION_STATE, ON);
+            }
+            // 当翻蛋累加状态为ON 且 翻蛋信号为ON
+            if ((get_val(EGG_FLIPPING_ACCUMULATION_STATE) == ON) && (get_val(DETECT_FLIP_EGG) == ON))
+            {
+                // 翻蛋累加
+                set_val(R_AI_TP_EGG, get_val(R_AI_TP_EGG) + 1);
+
+                // 清空状态值
+                set_val(EGG_FLIPPING_ACCUMULATION_STATE, OFF);
+                set_val(EGG_FLIPPING_TRIGGER_STATUS, OFF);
+            }
+        }
+        else
+        {
+            // 未触发翻蛋时，将 翻蛋触发状态为OFF
+            set_val(EGG_FLIPPING_ACCUMULATION_STATE, OFF);
+        }
+
+        // 延迟1秒
+        wait_ms(1000);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 报警线程
+//----------------------------------------------------------------------------------------------------------
+void *thread_alarm_func(void *pv)
+{
+    zlog_debug(g_zlog_zc, "%-40s进入到报警线程", "[thread_alarm_func]");
+    // 传感器突变总和
+    unsigned short us_pt100_val = 0;
+    // 回流温度报警状态
+    int ref_temp_mode_old = 0;
+    int di_fan_status = ON;
+    int di_fan_mode = ON;
+    int status_fan_mode = ON;
+    while (ON)
+    {
+        // 更新报警点数值
+        temp_update_para_data();
+
+        //----------------------------------------------------------------------------------------------------------
+        // 高温报警
+        // 当PV2>AH2+HYS (AH2为高温报警点,由程序可以修改)
+        //----------------------------------------------------------------------------------------------------------
+        if ((get_val(R_AI_TP_MAIN) >= (get_val(HIGH_TEMP_ALARM_VALUE) + get_val(P_HYS))) || (get_val(DETECT_AUX_HIGH_TEMP) == 1))
+        {
+            // 启动高温报警灯
+            set_val(OUT_ST_TP_HIGH_ALARM, ON);
+            set_val(HIGH_TEMP_ALARM_STATUS, ON);
+        }
+
+        if ((get_val(R_AI_TP_MAIN) < get_val(HIGH_TEMP_ALARM_VALUE)) && (get_val(DETECT_AUX_HIGH_TEMP) == 0))
+        {
+            // 关闭高温报警灯
+            set_val(OUT_ST_TP_HIGH_ALARM, OFF);
+            set_val(HIGH_TEMP_ALARM_STATUS, OFF);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 低温 报警
+        // PV2<=AL2-HYS,(AL2为低温报警点,由程序可以修改)时,辅助加热动作（输出辅助加热）,输出低温警报指示灯
+        //----------------------------------------------------------------------------------------------------------
+
+        if ((get_val(R_AI_TP_MAIN) <= (get_val(LOW_TEMP_ALARM_VALUE) - get_val(P_HYS))) && (get_val(DETECT_AUX_HIGH_TEMP) == 0))
+        {
+            // 主温度低值报警指示灯为ON
+            set_val(OUT_ST_TP_LOW_ALARM, ON);
+            set_val(LOW_TEMP_ALARM_STATUS, ON);
+        }
+
+        if ((get_val(R_AI_TP_MAIN) > get_val(LOW_TEMP_ALARM_VALUE)) && (get_val(DETECT_AUX_HIGH_TEMP) == OFF))
+        {
+            // 主温度低值报警指示灯为OFF
+            set_val(OUT_ST_TP_LOW_ALARM, OFF);
+            set_val(LOW_TEMP_ALARM_STATUS, OFF);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 高湿 报警
+        // 当PV1>=AH1+HYS,输出高湿警报指示灯。
+        //----------------------------------------------------------------------------------------------------------
+        if (get_val(R_AI_HM) >= (get_val(HIGH_HUMI_ALARM_VALUE) + get_val(P_HYS)))
+        {
+            // 开启高湿警报状态灯
+            set_val(OUT_ST_HM_HIGH_ALARM, ON);
+            set_val(HIGH_HUMI_ALARM_STATUS, ON);
+        }
+
+        if ((get_val(R_AI_HM) < get_val(HIGH_HUMI_ALARM_VALUE)))
+        {
+            // 关闭高湿警报状态灯
+            set_val(OUT_ST_HM_HIGH_ALARM, OFF);
+            set_val(HIGH_HUMI_ALARM_STATUS, OFF);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 低湿报警
+        // 当PV1 ≤ AL - HYS, 输出低湿警报指示灯
+        //----------------------------------------------------------------------------------------------------------
+        if (get_val(R_AI_HM) < (get_val(HIGH_HUMI_ALARM_VALUE) - get_val(P_HYS)))
+        {
+            // 开启低湿警报状态灯
+            set_val(OUT_ST_HM_LOW_ALARM, ON);
+            set_val(LOW_HUMI_ALARM_STATUS, ON);
+        }
+
+        if (get_val(R_AI_HM) > get_val(HIGH_HUMI_ALARM_VALUE))
+        {
+            // 关闭低湿警报状态灯
+            set_val(OUT_ST_HM_LOW_ALARM, OFF);
+            set_val(LOW_HUMI_ALARM_STATUS, OFF);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 回流温度模式
+        //----------------------------------------------------------------------------------------------------------
+        if (get_uval(REFLUX_TEMPERATURE) & 0x01)
+        {
+            //----------------------------------------------------------------------------------------------------------
+            // 回流高温1 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (get_val(R_AI_TP_RF1) >= (get_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1) + get_val(P_RTEMP_HYS)))
+            {
+                // 启动响铃
+                set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1, ON);
+            }
+
+            if (get_val(R_AI_TP_RF1) < get_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1))
+            {
+                // 关闭响铃
+                set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1, OFF);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 回流低温1 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (get_val(R_AI_TP_RF1) <= (get_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1) - get_val(P_RTEMP_HYS)))
+            {
+                // 开启报警灯
+                set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1, ON);
+            }
+
+            if (get_val(R_AI_TP_RF1) > get_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1))
+            {
+                // 关闭报警灯
+                set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1, OFF);
+            }
+        }
+        else
+        {
+            set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1, OFF); // 初始化 回流温度 高温报警
+            set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1, OFF);   // 初始化 回流温度 低温报警
+            set_val(SENSOR_3_ABNORMAL_ALARM, OFF);
+        }
+
+        if (get_uval(REFLUX_TEMPERATURE) & 0x02)
+        {
+            //----------------------------------------------------------------------------------------------------------
+            // 回流高温2 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (get_val(R_AI_TP_RF2) >= (get_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_2) + get_val(P_RTEMP_HYS)))
+            {
+                // 开启报警灯
+                set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2, ON);
+            }
+
+            if (get_val(R_AI_TP_RF2) < get_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_2))
+            {
+                // 关闭报警灯
+                set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2, OFF);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 回流低温2 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (get_val(R_AI_TP_RF2) <= (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2) - get_val(P_RTEMP_HYS)))
+            {
+                // 开启报警灯
+                set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2, ON);
+            }
+
+            if (get_val(R_AI_TP_RF2) > get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2))
+            {
+                // 关闭报警灯
+                set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2, OFF);
+            }
+        }
+        else
+        {
+            set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2, OFF); // 初始化 回流温度 高温报警
+            set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2, OFF);   // 初始化 回流温度 低温报警
+            set_val(SENSOR_4_ABNORMAL_ALARM, OFF);
+        }
+
+        if (get_uval(REFLUX_TEMPERATURE) & 0x04)
+        {
+            //----------------------------------------------------------------------------------------------------------
+            // 回流高温3 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (get_val(R_AI_TP_RF3) >= (get_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_3) + get_val(P_RTEMP_HYS)))
+            {
+                // 开启报警灯
+                set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3, ON);
+            }
+
+            if (get_val(R_AI_TP_RF3) < get_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_3))
+            {
+                // 关闭报警灯
+                set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3, OFF);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 回流低温3 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (get_val(R_AI_TP_RF3) <= (get_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_3) - get_val(P_RTEMP_HYS)))
+            {
+                // 一直输出报警灯
+                set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3, ON);
+            }
+
+            if (get_val(R_AI_TP_RF3) > get_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_3))
+            {
+                // 一直输出报警灯
+                set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3, OFF);
+            }
+        }
+        else
+        {
+            set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3, OFF); // 初始化 回流温度 高温报警
+            set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3, OFF);   // 初始化 回流温度 低温报警
+            set_val(SENSOR_5_ABNORMAL_ALARM, OFF);
+        }
+
+        if (get_uval(REFLUX_TEMPERATURE) & 0x08)
+        {
+            //----------------------------------------------------------------------------------------------------------
+            // 回流高温4 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (get_val(R_AI_TP_RF4) >= (get_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_4) + get_val(P_RTEMP_HYS)))
+            {
+                // 开启报警灯
+                set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4, ON);
+            }
+
+            if (get_val(R_AI_TP_RF4) < get_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_4))
+            {
+                // 关闭报警灯
+                set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4, OFF);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 回流低温4 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (get_val(R_AI_TP_RF4) <= (get_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_4) - get_val(P_RTEMP_HYS)))
+            {
+                // 开启报警灯
+                set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4, ON);
+            }
+
+            if (get_val(R_AI_TP_RF4) > get_val(LOW_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_4))
+            {
+                // 关闭报警灯
+                set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4, OFF);
+            }
+        }
+        else
+        {
+            set_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4, OFF); // 初始化 回流温度 高温报警
+            set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4, OFF);   // 初始化 回流温度 低温报警
+            set_val(SENSOR_6_ABNORMAL_ALARM, OFF);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 回流温度 报警灯
+        //----------------------------------------------------------------------------------------------------------
+        int ref_temp_mode = get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) + // 回流温度1 高温报警
+                            get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2) + // 回流温度2 高温报警
+                            get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3) + // 回流温度3 高温报警
+                            get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4) + // 回流温度4 高温报警
+                            get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1) +   // 回流温度1 低温报警
+                            get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2) +   // 回流温度2 低温报警
+                            get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3) +   // 回流温度3 低温报警
+                            get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4);    // 回流温度4 低温报警
+
+        if (ref_temp_mode > 0)
+        {
+            // 开启 回流温度 报警灯
+            set_val(OUT_ST_REF_TEMP_ALARM, ON);
+            if (ref_temp_mode != ref_temp_mode_old)
+            {
+                if ((
+                        //----------------------------------------------------------------------------------------------------------
+                        // 回流温度1 低温报警
+                        //----------------------------------------------------------------------------------------------------------
+                        get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1) +
+                        //----------------------------------------------------------------------------------------------------------
+                        // 回流温度2 低温报警
+                        //----------------------------------------------------------------------------------------------------------
+                        get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2) +
+                        //----------------------------------------------------------------------------------------------------------
+                        // 回流温度3 低温报警
+                        //----------------------------------------------------------------------------------------------------------
+                        get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3) +
+                        //----------------------------------------------------------------------------------------------------------
+                        // 回流温度4 低温报警
+                        //----------------------------------------------------------------------------------------------------------
+                        get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4)) > 0)
+                {
+                    // zlog_debug(g_zlog_zc, "%-40s[报警线程] 回流温度低温报警!", "[thread_alarm_func]");
+                    // 设置回流温度低温报警时间
+                    set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, get_val(P_HH0) * 60);
+                }
+
+                if ((
+                        //----------------------------------------------------------------------------------------------------------
+                        // 回流温度1 高温报警
+                        //----------------------------------------------------------------------------------------------------------
+                        get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) +
+                        //----------------------------------------------------------------------------------------------------------
+                        // 回流温度2 高温报警
+                        //----------------------------------------------------------------------------------------------------------
+                        get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2) +
+                        //----------------------------------------------------------------------------------------------------------
+                        // 回流温度3 高温报警
+                        //----------------------------------------------------------------------------------------------------------
+                        get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3) +
+                        //----------------------------------------------------------------------------------------------------------
+                        // 回流温度4 高温报警
+                        //----------------------------------------------------------------------------------------------------------
+                        get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4)) > 0)
+                {
+                    //  zlog_debug(g_zlog_zc, "%-40s[报警线程] 回流温度高温报警!", "[thread_alarm_func]");
+                    // 设置 回流温度 高温报警时间
+                    set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, get_val(P_HH5) * 60);
+                }
+                ref_temp_mode_old = ref_temp_mode;
+            }
+        }
+        else
+        {
+            set_val(OUT_ST_REF_TEMP_ALARM, OFF);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 翻蛋 指示灯
+        //----------------------------------------------------------------------------------------------------------
+        // 接收到翻蛋信号
+        if (get_uval(DETECT_FLIP_EGG) == ON)
+        {
+            // 翻蛋响铃赋值状态为TRUE
+            if (get_val(EGG_FLIPPING_SIGNAL_RINGING_STATUS) == ON)
+            {
+                // 设置有翻蛋信号报警时间为 HH1_VAL * 60
+                set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(P_HH1) * 60);
+
+                // 设置没有翻蛋信号报警时间为0
+                set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, OFF);
+
+                // 翻蛋响铃赋值状态为FALSE
+                set_uval(EGG_FLIPPING_SIGNAL_RINGING_STATUS, OFF);
+            }
+
+            // 当翻蛋赋值状态为FALSE 翻蛋响铃时间为0
+            if (
+                // 翻蛋响铃 状态值 = FALSE 时
+                (!get_val(EGG_FLIPPING_SIGNAL_RINGING_STATUS)) &&
+                // 有翻蛋信号报警时间 <= 0 时
+                (get_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME) == 0))
+            {
+                // 开启 翻蛋报警灯
+                set_uval(OUT_ST_EGG_ALARM, ON);
+            }
+            else
+            {
+                // 关闭 翻蛋报警
+                set_uval(OUT_ST_EGG_ALARM, OFF);
+            }
+
+            set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, ON);
+        }
+        else
+        {
+            // 在固定时间内 没有使没有翻蛋信号报警灯 初始化为TRUE 会触发报警
+            if (get_val(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS) == ON)
+            {
+                // 设置 没有 翻蛋报警信号的时间为  (HH8_VAL * 60)
+                set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(P_HH8) * 60);
+                // 设置 有翻蛋 报警信号的时间为0
+                set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
+                // 设置 没有使没有翻蛋信号报警灯 状态为FALSE 防止重复 赋值
+                set_uval(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
+            }
+            // 开启 翻蛋报警灯
+            set_uval(OUT_ST_EGG_ALARM, ON);
+            set_uval(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // CO2报警
+        //----------------------------------------------------------------------------------------------------------
+        if ((get_val(R_AI_CO) >= (
+                                     // 二氧化碳设定值
+                                     get_val(P_AO_CO) +
+                                     // 二氧化碳 最低报警值
+                                     get_val(P_CO2_AH) +
+                                     // 二氧化碳 报警差值
+                                     get_val(P_CO2_HYS))) &&
+            (get_val(P_CO2_STATUS)))
+        {
+            set_uval(OUT_ST_CO2_ALARM, ON);
+            // 一直输出报警灯
+            set_uval(CARBON_DIOXIDE_WARNING_LIGHT, ON);
+        }
+
+        if (get_val(R_AI_CO) < (get_val(P_AO_CO) + get_val(P_CO2_AH)))
+        {
+            set_uval(OUT_ST_CO2_ALARM, OFF);
+            // 一直输出报警灯
+            set_uval(CARBON_DIOXIDE_WARNING_LIGHT, OFF);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 风扇停止 报警
+        //----------------------------------------------------------------------------------------------------------
+        // 先判断是否接通电源
+        if (get_val(DETECT_FAN))
+        {
+            di_fan_status = ON;
+            set_uval(FAN_ALARM_TIME, 0);
+            di_fan_mode = 0;
+            set_uval(OUT_ST_FAN_ALARM, OFF);
+            // 接收到电流互感和风机停止信号立即报警
+            if ((get_val(DETECT_FAN_STOP) == ON) || (get_val(NANOPI_GPIO_PG_11) == ON))
+            {
+                // 接收到风扇停止后
+                di_fan_mode = 1;
+                set_uval(OUT_ST_FAN_ALARM, ON);
+            }
+        }
+        else
+        {
+            // 立即报警
+            set_uval(OUT_ST_FAN_ALARM, ON);
+            // 如果是停止模式则10分钟后报警
+            if ((get_val(R_STOP_RECV) == ON))
+            {
+                if (status_fan_mode)
+                {
+                    set_uval(FAN_ALARM_TIME, get_val(P_HH7) * 60);
+                    di_fan_mode = 1;
+                    status_fan_mode = OFF;
+                }
+            }
+            else if ((get_val(R_START_RECV) == ON) || (get_val(R_PRE_RECV) == ON))
+            {
+                status_fan_mode = ON;
+                // 接收到风扇停止后
+                set_uval(FAN_ALARM_TIME, 0);
+                di_fan_mode = 1;
+            }
+            else
+            {
+                di_fan_mode = 0;
+            }
+        }
+
+        //-----------------------------------------------------------------------------------------------------------
+        // 上位机清除操作 当40084为1时，触发传感器报警
+        //----------------------------------------------------------------------------------------------------------
+        if (get_val(SENSOR_MUTATION_STATUS) == ON)
+        {
+            us_pt100_val = ON;
+        }
+        else
+        {
+            us_pt100_val = OFF;
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 传感器异常 指示灯
+        //----------------------------------------------------------------------------------------------------------
+        unsigned short status_ref_temp_alarm = get_val(SENSOR_1_ABNORMAL_ALARM) +
+                                               (get_val(SENSOR_2_ABNORMAL_ALARM) << 1) +
+                                               (get_val(SENSOR_3_ABNORMAL_ALARM) << 2) +
+                                               (get_val(SENSOR_4_ABNORMAL_ALARM) << 3) +
+                                               (get_val(SENSOR_5_ABNORMAL_ALARM) << 4) +
+                                               (get_val(SENSOR_6_ABNORMAL_ALARM) << 5) +
+                                               (get_val(SENSOR_CO2_ALARM) << 6) +
+                                               (us_pt100_val << 7) +
+                                               (CARBON_DIOXIDE_WARNING_LIGHT << 8);
+
+        set_uval(ALARM_PT100_TOTAL, status_ref_temp_alarm);
+
+        if ((status_ref_temp_alarm) > 0)
+        {
+            // zlog_info(g_zlog_zc, "[报警线程]\t传感器异常 指示灯 报警 [%d]", ALARM_PV_VAL);
+            set_uval(OUT_ST_SENSOR_MUTATION_ALARM, ON);
+        }
+        else
+        {
+            // 传感器异常
+            set_uval(OUT_ST_SENSOR_MUTATION_ALARM, OFF);
+        }
+
+        // 启动报警灯
+        if ((
+                //----------------------------------------------------------------------------------------------------------
+                // 翻蛋 报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(OUT_ST_EGG_ALARM) +
+                //----------------------------------------------------------------------------------------------------------
+                // 高温 报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(OUT_ST_TP_HIGH_ALARM) +
+                //----------------------------------------------------------------------------------------------------------
+                // 低温 报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(OUT_ST_TP_LOW_ALARM) +
+                //----------------------------------------------------------------------------------------------------------
+                // 高湿 报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(OUT_ST_HM_HIGH_ALARM) +
+                //----------------------------------------------------------------------------------------------------------
+                // 低湿 报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(OUT_ST_HM_LOW_ALARM) +
+                //----------------------------------------------------------------------------------------------------------
+                // 回流温度 报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(OUT_ST_REF_TEMP_ALARM) +
+                //----------------------------------------------------------------------------------------------------------
+                // 二氧化碳 报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(OUT_ST_CO2_ALARM) +
+                //----------------------------------------------------------------------------------------------------------
+                // 传感器异常 报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(OUT_ST_SENSOR_MUTATION_ALARM) +
+                //----------------------------------------------------------------------------------------------------------
+                // 风扇 报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(OUT_ST_FAN_ALARM)) > 0)
+
+        {
+            unsigned short g_us_temp_mode = 0;
+            //----------------------------------------------------------------------------------------------------------
+            // 高温 报警
+            //----------------------------------------------------------------------------------------------------------
+            if ((get_val(OUT_ST_TP_HIGH_ALARM)) > 0)
+            {
+                g_us_temp_mode |= 0x01;
+            }
+            else
+            {
+                g_us_temp_mode &= ~(0x01);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 风扇 报警
+            //----------------------------------------------------------------------------------------------------------
+            if ((get_val(FAN_ALARM_TIME) <= 0) && (di_fan_mode == 1))
+            {
+                g_us_temp_mode |= 0x02;
+            }
+            else
+            {
+                g_us_temp_mode &= ~(0x02);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 传感器异常 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (status_ref_temp_alarm > 0)
+            {
+                g_us_temp_mode |= 0x04;
+            }
+            else
+            {
+                g_us_temp_mode &= ~(0x04);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 回流温度 高温 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (((get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) +
+                  get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2) +
+                  get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3) +
+                  get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4)) > 0) &&
+                (get_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME) == 0))
+            {
+                g_us_temp_mode |= 0x08;
+            }
+            else
+            {
+                g_us_temp_mode &= ~(0x08);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 回流温度 低温 报警
+            //----------------------------------------------------------------------------------------------------------
+            if (((get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1) +
+                  get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2) +
+                  get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3) +
+                  get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4)) > 0) &&
+                (get_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME) == 0))
+            {
+                g_us_temp_mode |= 0x10;
+            }
+            else
+            {
+                g_us_temp_mode &= ~(0x10);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 翻蛋有信号 报警
+            //----------------------------------------------------------------------------------------------------------
+            if ((get_val(EGG_FLIPPING_SIGNAL_RINGING_STATUS) == OFF) && (get_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME) == 0))
+            {
+                g_us_temp_mode |= 0x40;
+            }
+            else
+            {
+                g_us_temp_mode &= ~(0x40);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 翻蛋无信号 报警
+            //----------------------------------------------------------------------------------------------------------
+            if ((get_val(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS) == OFF) && (get_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME) == 0))
+            {
+                // zlog_error(g_zlog_zc, "[报警线程]\t 翻蛋无信号 [%0.2x]", g_us_eggfilp_alarm_count);
+                g_us_temp_mode |= 0x80;
+            }
+            else
+            {
+                g_us_temp_mode &= ~(0x80);
+            }
+
+            // 将报警状态
+            set_uval(ALARM_MODULE, g_us_temp_mode);
+            //----------------------------------------------------------------------------------------------------------
+            // 报警灯 常亮 低温报警 高湿报警 低湿报警 翻蛋报警 风门报警
+            //----------------------------------------------------------------------------------------------------------
+            int v_i_alarm_status = get_val(LOW_TEMP_ALARM_VALUE) + get_val(HIGH_HUMI_ALARM_VALUE) + get_val(LOW_HUMI_ALARM_VALUE) + get_val(OUT_ST_EGG_ALARM) + get_val(OUT_ST_FAN_ALARM);
+
+            //----------------------------------------------------------------------------------------------------------
+            // 报警灯 闪烁 响铃
+            //----------------------------------------------------------------------------------------------------------
+            // zlog_error(g_zlog_zc, "[报警线程]\t 闪烁报警值 [%0.2x]", g_us_temp_mode);
+            if ((g_us_temp_mode > 0))
+            {
+                // 消警时间为0 时 ，触发 报警灯闪烁
+                if (get_uval(ALARM_SUPPRESSION_TIME) == 0)
+                {
+                    // 报警灯闪烁
+                    // set_uval(CONTROL_WARN_LIGHT, !get_val(CONTROL_WARN_LIGHT));
+                    control_warn_light(!get_val(CONTROL_WARN_LIGHT));
+                    control_electric_light(ON);
+                }
+                else
+                {
+                    control_warn_light(ON);
+                    control_electric_light(OFF);
+                }
+            }
+
+            // zlog_error(g_zlog_zc, "[报警线程]\t 常量报警值 [%0.2x]", v_i_alarm_status);
+            else if (v_i_alarm_status > 0)
+            {
+                // 报警灯常亮
+                control_warn_light(ON);
+                control_electric_light(OFF);
+            }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 报警灯 停止
+            //----------------------------------------------------------------------------------------------------------
+            else if ((g_us_temp_mode == 0) && ((get_val(LOW_TEMP_ALARM_STATUS) + get_val(HIGH_HUMI_ALARM_STATUS) + get_val(LOW_HUMI_ALARM_STATUS) + get_val(OUT_ST_EGG_ALARM) + get_val(OUT_ST_FAN_ALARM)) == 0))
+            {
+                control_warn_light(OFF);
+                control_electric_light(OFF);
+            }
+        }
+
+        wait_ms(1000);
+    }
+
+    return NULL;
 }
 
 int main(int argc, char *argv[])
@@ -1645,6 +5718,12 @@ int main(int argc, char *argv[])
     zlog_info(g_zlog_zc, "%-40s参数初始化成功!", "[main]");
 
     //----------------------------------------------------------------------------------------------------------
+    // 定时器
+    //----------------------------------------------------------------------------------------------------------
+    int timer_value = 1000; // 定时器的时间间隔为1秒
+    set_custom_timer_ms(timer_value, timer_callback_func);
+
+    //----------------------------------------------------------------------------------------------------------
     // 备份线程
     //----------------------------------------------------------------------------------------------------------
     pthread_t sync_client_thread;
@@ -1656,38 +5735,380 @@ int main(int argc, char *argv[])
     //----------------------------------------------------------------------------------------------------------
     pthread_t data_collection_thread;
     pthread_create(&data_collection_thread, NULL, data_collection_pt100_func, NULL);
-    pthread_detach(data_collection_thread);
 
     //----------------------------------------------------------------------------------------------------------
     // 数据采集线程-CO2
     //----------------------------------------------------------------------------------------------------------
     pthread_t co2_collection_thread;
     pthread_create(&co2_collection_thread, NULL, data_collection_co2_func, NULL);
-    pthread_detach(co2_collection_thread);
-    while (1)
+
+    //----------------------------------------------------------------------------------------------------------
+    // 翻蛋线程
+    //----------------------------------------------------------------------------------------------------------
+    pthread_t flip_egg_thread;
+    pthread_create(&flip_egg_thread, NULL, flip_egg_func, NULL);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 报警线程
+    //----------------------------------------------------------------------------------------------------------
+    pthread_t alarm_thread;
+    pthread_create(&alarm_thread, NULL, thread_alarm_func, NULL);
+
+    wait_ms(100);
+
+    while (ON)
     {
+
+        //----------------------------------------------------------------------------------------------------------
+        // 实时执行区域
+        //----------------------------------------------------------------------------------------------------------
+        // 时间函数
+        run_sys_time();
+
+        // 开启运行灯
+        control_run_light(ON);
+
         //----------------------------------------------------------------------------------------------------------
         // 启动模式
         //----------------------------------------------------------------------------------------------------------
+        if (get_val(R_START_SEND) == ON)
+        {
+            zlog_info(g_zlog_zc, "%-40s初始化启动模式!", "[main]");
+            // 设置回流温度的初始化为0
+            set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 0);
+            set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 0);
+            set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 0);
+            set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 0);
+            set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 0);
+            set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 0);
+            set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 0);
+            set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 0);
+
+            // 设置回流温度的延迟为30秒
+            set_uval(REFLUX_TEMP_1_DELAY_TIME, 30);
+            set_uval(REFLUX_TEMP_2_DELAY_TIME, 30);
+            set_uval(REFLUX_TEMP_3_DELAY_TIME, 30);
+            set_uval(REFLUX_TEMP_4_DELAY_TIME, 30);
+
+            // 开启启动模式
+            set_run_mode(STATUS_START_RECV);
+        }
+
+        if (get_val(R_START_RECV) == ON)
+        {
+            zlog_info(g_zlog_zc, "%-40s执行启动模式!", "[main]");
+
+            // 启动风机
+            control_fan(ON);
+
+            // 启动鼓风机
+            control_blower(ON);
+
+            // 更新配置
+            update_set_para();
+
+            // 主温度
+            logic_process_temp_func();
+
+            // 湿度
+            logic_process_humi_func();
+
+            // 回流温度
+            normal_logic_process_retemp1_func();
+            normal_logic_process_retemp2_func();
+            normal_logic_process_retemp3_func();
+            normal_logic_process_retemp4_func();
+        }
 
         //----------------------------------------------------------------------------------------------------------
         // 停止模式
         //----------------------------------------------------------------------------------------------------------
+        if (get_val(R_STOP_SEND) == ON)
+        {
+            zlog_info(g_zlog_zc, "%-40s初始化停止模式!", "[main]");
+            // 开启停止模式
+            set_run_mode(STATUS_STOP_RECV);
+        }
+
+        if (get_val(R_STOP_RECV) == ON)
+        {
+            zlog_info(g_zlog_zc, "%-40s执行停止模式!", "[main]");
+
+            // 更新配置
+            update_set_para();
+
+            // 风机关闭
+            control_fan(OFF);
+
+            // 主加热-关闭
+            control_main_heat(OFF);
+
+            // 关闭辅助加热
+            control_aux_heat(OFF);
+
+            // 水冷关闭
+            control_cool(OFF);
+
+            // 加湿关闭
+            control_spray(OFF);
+
+            // 回流温度关闭
+            control_cool2(1, OFF);
+            control_cool2(2, OFF);
+            control_cool2(3, OFF);
+            control_cool2(4, OFF);
+
+            // 冷热水切换阀关闭
+            control_cold_hot_water(OFF);
+
+            // 鼓风机关闭
+            control_blower(OFF);
+
+            // 风门关闭
+            control_damper(1, OFF, 0);
+            control_damper(2, OFF, 0);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 预热模式
+        //----------------------------------------------------------------------------------------------------------
+        // 当预热开启时间和停止时间不为0
+        if ((get_time(R_PRE_START_TIME_HIGH) != 0) && (get_time(R_PRE_STOP_TIME_HIGH) != 0))
+        {
+            // 预热开启时间小于预热停止时间
+            if ((get_time(R_PRE_START_TIME_HIGH) < get_time(R_PRE_STOP_TIME_HIGH)) &&
+                // 预热时间不能超过2天
+                ((get_time(R_PRE_STOP_TIME_HIGH) - get_time(R_PRE_START_TIME_HIGH)) <= TWO_DAY_SECONDS))
+            {
+                // 获取系统时间
+                unsigned int sys_now_time = time(NULL);
+                // 当预热时间大于等于系统时间，并系统时间小于停止时间 进入到预热时间
+                if ((sys_now_time >= get_time(R_PRE_START_TIME_HIGH)) && (sys_now_time <= get_time(R_PRE_STOP_TIME_HIGH)))
+                {
+                    zlog_info(g_zlog_zc, "%-40s正在进行预热模式!", "[main]");
+                    if (get_uval(R_PRE_STATUS))
+                    {
+                        // 设置回流温度的初始化为0
+                        set_uval(RETURN_TEMP_1_HOT_WATER_OPERAT_INIT, 0);
+                        set_uval(RETURN_TEMP_2_HOT_WATER_OPERAT_INIT, 0);
+                        set_uval(RETURN_TEMP_3_HOT_WATER_OPERAT_INIT, 0);
+                        set_uval(RETURN_TEMP_4_HOT_WATER_OPERAT_INIT, 0);
+                        set_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT, 0);
+                        set_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT, 0);
+                        set_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT, 0);
+                        set_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT, 0);
+
+                        // 设置回流温度的延迟为30秒
+                        set_uval(REFLUX_TEMP_1_DELAY_TIME, 30);
+                        set_uval(REFLUX_TEMP_2_DELAY_TIME, 30);
+                        set_uval(REFLUX_TEMP_3_DELAY_TIME, 30);
+                        set_uval(REFLUX_TEMP_4_DELAY_TIME, 30);
+                        set_uval(R_PRE_STATUS, 0);
+                    }
+
+                    // 启动风机
+                    control_fan(ON);
+
+                    // 启动鼓风机
+                    control_blower(ON);
+
+                    // 开启预热模式
+                    set_run_mode(STARTS_PRE_RECV);
+
+                    // 设置预热参数
+                    preheat_set_para();
+
+                    // 主温度
+                    logic_process_temp_func();
+
+                    // 湿度
+                    logic_process_humi_func();
+
+                    // 回流温度
+                    pre_logic_process_retemp1_func();
+                    pre_logic_process_retemp2_func();
+                    pre_logic_process_retemp3_func();
+                    pre_logic_process_retemp4_func();
+                }
+                // 系统时间大于预热停止模式，自动退出预热模式，进行入到启动模式
+                else if (sys_now_time > get_time(R_PRE_STOP_TIME_HIGH))
+                {
+                    // 开启启动模式
+                    set_run_mode(STATUS_START_SEND);
+
+                    // 设置预热时间为0
+                    set_time(R_PRE_START_TIME_HIGH, 0);
+                    set_time(R_PRE_STOP_TIME_HIGH, 0);
+                }
+                // 突然断开进入到停止模式
+                else
+                {
+                    // 开启停止模式
+                    set_run_mode(STATUS_STOP_SENT);
+
+                    // 设置预热时间为0
+                    set_time(R_PRE_START_TIME_HIGH, 0);
+                    set_time(R_PRE_STOP_TIME_HIGH, 0);
+                }
+            }
+            // 当预热开启时间等于预热停止时间，则进入到停止模式
+            else if (get_time(R_PRE_START_TIME_HIGH) == get_time(R_PRE_STOP_TIME_HIGH))
+            {
+                // 开启停止模式
+                set_run_mode(STATUS_STOP_SENT);
+
+                // 设置预热时间为0
+                set_time(R_PRE_START_TIME_HIGH, 0);
+                set_time(R_PRE_STOP_TIME_HIGH, 0);
+            }
+            // 其他条件也进入到停止模式
+            else
+            {
+                // 预热状态为1
+                set_uval(R_PRE_STATUS, 1);
+
+                // 开启停止模式
+                set_run_mode(STATUS_STOP_SENT);
+
+                // 设置预热时间为0
+                set_time(R_PRE_START_TIME_HIGH, 0);
+                set_time(R_PRE_STOP_TIME_HIGH, 0);
+            }
+        }
 
         //----------------------------------------------------------------------------------------------------------
         // 消警模式
         //----------------------------------------------------------------------------------------------------------
+        if ((get_val(R_CLOSE_ALA_SEND) == ON) && (get_val(R_CLOSE_ALA_RECV) == OFF))
+        {
+            zlog_info(g_zlog_zc, "%-40s消警模式!", "[main]");
+            set_val(R_CLOSE_ALA_SEND, ON);
+            set_val(R_CLOSE_ALA_RECV, ON);
+            set_uval(ALARM_SUPPRESSION_TIME, get_uval(R_CLOSE_ALA_TIME));
+        }
 
-        //----------------------------------------------------------------------------------------------------------
-        // 校准模式
-        //----------------------------------------------------------------------------------------------------------
+        if ((get_val(R_CLOSE_ALA_SEND) == ON) && (get_val(R_CLOSE_ALA_RECV) == ON))
+        {
+            if (get_uval(ALARM_SUPPRESSION_TIME) == 0)
+            {
+                set_val(R_CLOSE_ALA_SEND, OFF);
+                set_val(R_CLOSE_ALA_RECV, OFF);
+            }
+        }
+
+        if ((get_val(R_CLOSE_ALA_SEND) == OFF) && (get_val(R_CLOSE_ALA_RECV) == ON))
+        {
+            set_uval(ALARM_SUPPRESSION_TIME, 0);
+            set_val(R_CLOSE_ALA_SEND, OFF);
+            set_val(R_CLOSE_ALA_RECV, OFF);
+        }
 
         //----------------------------------------------------------------------------------------------------------
         // 初始化模式
         //----------------------------------------------------------------------------------------------------------
+        if (get_val(R_INIT_SEND) == ON)
+        {
+            zlog_info(g_zlog_zc, "%-40s初始化模式!", "[main]");
+            set_time(R_RUN_SECOND_HIGH, 0);
+            // 开启启动模式
+            set_run_mode(STATUS_START_SEND);
+            set_val(R_INIT_SEND, OFF);
+        }
 
-        wait_ms(100);
+        //----------------------------------------------------------------------------------------------------------
+        // 校准模式
+        //----------------------------------------------------------------------------------------------------------
+        if ((get_val(R_CHECK_SEND) == ON) && (get_val(R_CHECK_RECV) == OFF))
+        {
+            zlog_info(g_zlog_zc, "%-40s校准模式!", "[main]");
+            set_uval(BACKUP_OPERATION_MODE, get_run_mode());
+            set_uval(CALIBRATION_RUN_TIME, get_uval(R_CLOSE_ALA_TIME));
+            set_time(BACKUP_PREHEATING_START_TIME_HIGH, get_time(R_PRE_START_TIME_HIGH));
+            set_time(BACKUP_PREHEATING_SHUTDOWN_TIME_HIGH, get_time(R_PRE_STOP_TIME_HIGH));
+
+            // 启动风机
+            control_fan(ON);
+
+            // 启动鼓风机
+            control_blower(ON);
+
+            // 主加热-关闭
+            control_main_heat(OFF);
+
+            // 关闭辅助加热
+            control_aux_heat(OFF);
+
+            // 水冷关闭
+            control_cool(OFF);
+
+            // 加湿关闭
+            control_spray(OFF);
+
+            // 回流温度关闭
+            control_cool2(1, OFF);
+            control_cool2(2, OFF);
+            control_cool2(3, OFF);
+            control_cool2(4, OFF);
+
+            // 冷热水切换阀关闭
+            control_cold_hot_water(OFF);
+
+            // 风门关闭
+            control_damper(1, OFF, 0);
+            control_damper(2, OFF, 0);
+
+            set_run_mode(0);
+            set_time(R_PRE_START_TIME_HIGH, 0);
+            set_time(R_PRE_STOP_TIME_HIGH, 0);
+            set_val(R_CHECK_SEND, ON);
+            set_val(R_CHECK_RECV, ON);
+        }
+
+        if ((get_val(R_CHECK_SEND) == ON) && (get_val(R_CHECK_RECV) == ON))
+        {
+            if (get_uval(CALIBRATION_RUN_TIME) == 0)
+            {
+                set_run_mode(get_uval(BACKUP_OPERATION_MODE));
+                set_time(R_PRE_START_TIME_HIGH, get_time(BACKUP_PREHEATING_START_TIME_HIGH));
+                set_time(R_PRE_STOP_TIME_HIGH, get_time(BACKUP_PREHEATING_SHUTDOWN_TIME_HIGH));
+                set_val(R_CHECK_SEND, OFF);
+                set_val(R_CHECK_RECV, OFF);
+            }
+        }
+
+        if ((get_val(R_CHECK_SEND) == OFF) && (get_val(R_CHECK_RECV) == ON))
+        {
+            set_run_mode(get_uval(BACKUP_OPERATION_MODE));
+            set_time(R_PRE_START_TIME_HIGH, get_time(BACKUP_PREHEATING_START_TIME_HIGH));
+            set_time(R_PRE_STOP_TIME_HIGH, get_time(BACKUP_PREHEATING_SHUTDOWN_TIME_HIGH));
+            set_uval(CALIBRATION_RUN_TIME, 0);
+            set_val(R_CHECK_SEND, OFF);
+            set_val(R_CHECK_RECV, OFF);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+        // 测试控制模式
+        //----------------------------------------------------------------------------------------------------------
+        test_control_mode();
+
+        //----------------------------------------------------------------------------------------------------------
+        // LED灯控制函数
+        //----------------------------------------------------------------------------------------------------------
+        direction_func();
+
+        // 主线程使用nanosleep延迟
+        delay_ms(250);
     }
 
+    // 数据采集线程
+    pthread_join(data_collection_thread, NULL);
+    // 二氧化碳采集线程
+    pthread_join(co2_collection_thread, NULL);
+    // 翻蛋线程
+    pthread_join(flip_egg_thread, NULL);
+    // 报警线程
+    pthread_join(alarm_thread, NULL);
+    // 注销ZLOG
+    zlog_fini();
     return 0;
 }

@@ -5,7 +5,7 @@
 //----------------------------------------------------------------------------------------------------------
 int j_shmem_init(jshmem_t *pjshmem, key_t v_i_key, size_t v_ul_size)
 {
-    if ((pjshmem->v_shmem_id = shmget(v_i_key, v_ul_size, IPC_CREAT|0666)) == -1)
+    if ((pjshmem->v_shmem_id = shmget(v_i_key, v_ul_size, IPC_CREAT)) == -1)
     {
         return -1;
     }
