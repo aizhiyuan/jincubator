@@ -1,5 +1,6 @@
-src/CMakeFiles/jincubator.dir/jincubator.cpp.o: \
- /home/zhiyuan/c/jincubator/src/jincubator.cpp /usr/include/stdc-predef.h \
+src/CMakeFiles/jincubator.dir/job_tc.cpp.o: \
+ /home/zhiyuan/c/jincubator/src/job_tc.cpp /usr/include/stdc-predef.h \
+ /home/zhiyuan/c/jincubator/src/job.h \
  /home/zhiyuan/c/jincubator/src/jincubator.h \
  /usr/include/x86_64-linux-gnu/asm/ioctls.h \
  /usr/include/asm-generic/ioctls.h /usr/include/linux/ioctl.h \
@@ -303,5 +304,4 @@ src/CMakeFiles/jincubator.dir/jincubator.cpp.o: \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
  /usr/include/c++/13/bits/fstream.tcc /usr/include/c++/13/cassert \
  /usr/include/assert.h /home/zhiyuan/c/jincubator/src/define.h \
- /home/zhiyuan/c/jincubator/src/serial.h \
- /home/zhiyuan/c/jincubator/src/job.h
+ /home/zhiyuan/c/jincubator/src/serial.h

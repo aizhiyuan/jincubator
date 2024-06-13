@@ -1,23 +1,20 @@
 //--------------------------------------------------------------------
 #include "job.h"
-#include "jshmem.h"
+#include "jincubator.h"
 #include "define.h"
 #include "../zlog/zlog.h"
 //--------------------------------------------------------------------
 
-extern unsigned short *shm_out;
-extern uint32_t g_us_pid_ad_open_start_count;
-extern uint32_t g_us_pid_ad_close_start_count;
-
-extern uint32_t g_us_pid_humi_curr_main;
-extern int16_t g_us_pid_humi_arr[128];
+int g_us_pid_humi_arr[15];
 
 // zlog输出
 extern zlog_category_t *g_zlog_zc;
 
 // PID 累加
-long pid_temp_sum_en = 0L;
-long pid_humi_sum_en = 0L;
+// extern int pid_temp_sum_en;
+// extern int pid_humi_sum_en;
+
+extern unsigned short *shm_out;
 //================================================================================================================================
 //	Out Range:[0,10000]
 //================================================================================================================================
@@ -26,21 +23,21 @@ int pid_calc1(int pv, int sp)
 {
 	int en;
 
-	long xp;
-	long xi;
-	long xd;
+	int xp;
+	int xi;
+	int xd;
 
-	long vn;
-	long wn;
-	long yn;
+	int vn;
+	int wn;
+	int yn;
 
 	int pidv;
 
-	static long vn_1 = 0L;
-	static long wn_1 = 0L;
-	static long yn_1 = 0L;
+	static int vn_1 = 0L;
+	static int wn_1 = 0L;
+	static int yn_1 = 0L;
 
-	long iv, jv;
+	int iv, jv;
 
 	// if(ERR_PT2 || pv<0) return(0);	// (*Outer[1]) * 100;
 	en = (sp - pv); // Difference
@@ -49,13 +46,13 @@ int pid_calc1(int pv, int sp)
 	//--------------------------------------------------------------------
 	//	P:
 	//--------------------------------------------------------------------
-	if ((pidshm2short(&shm_out[P_TEMP_P])) > 0)
+	if ((get_x10_val(P_TEMP_P)) > 0)
 	{
-		zlog_error(g_zlog_zc, "[PID温度]\t TEMP[P]:[%d]", pidshm2short(&shm_out[P_TEMP_P]));
-		if (abs(en) <= (pidshm2short(&shm_out[P_TEMP_P]) / 2))
+		zlog_error(g_zlog_zc, "[PID温度]\t TEMP[P]:[%d]", get_x10_val(P_TEMP_P));
+		if (abs(en) <= (get_x10_val(P_TEMP_P) / 2))
 		{
 			//
-			xp = (10000L) * en / (pidshm2short(&shm_out[P_TEMP_P])) + (5000L);
+			xp = (10000L) * en / (get_x10_val(P_TEMP_P)) + (5000L);
 		}
 		else if (sp > pv)
 		{
@@ -82,18 +79,20 @@ int pid_calc1(int pv, int sp)
 	//--------------------------------------------------------------------
 	// I:
 	//--------------------------------------------------------------------
-	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[I]:[%d]", shm2shortpid(&shm_out[P_TEMP_I]));
-	if ((shm2shortpid(&shm_out[P_TEMP_I])) > 0 && abs(en) <= (pidshm2short(&shm_out[P_TEMP_P]) / 2))
+	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[I]:[%d]", get_e10_val(P_TEMP_I));
+	if ((get_e10_val(P_TEMP_I)) > 0 && abs(en) <= (get_x10_val(P_TEMP_P) / 2))
 	{
 		iv = (5000L); // iv=(10000L)*(SAMPLE/SCONST)/(1000L);
 
-		pid_temp_sum_en += en;											   // -200000L ~ 300000L
-		xi = (50L) * pid_temp_sum_en / (shm2shortpid(&shm_out[P_TEMP_I])); // xi=iv*pid_temp_sum_en/gMain_I/ 100L;
+		// pid_temp_sum_en += en;
+		set_int(PID_TEMP_SUM, get_int(PID_TEMP_SUM) + en);			  // -200000L ~ 300000L
+		xi = (50L) * get_int(PID_TEMP_SUM) / (get_e10_val(P_TEMP_I)); // xi=iv*pid_temp_sum_en/gMain_I/ 100L;
 	}
 	else
 	{
 		xi = 0L;
-		pid_temp_sum_en = 0L;
+		// pid_temp_sum_en = 0L;
+		set_int(PID_TEMP_SUM, 0);
 	}
 
 	if (xi < (-10000L))
@@ -107,11 +106,12 @@ int pid_calc1(int pv, int sp)
 	vn = xp + xi; // -10000L ~ 20000L
 	if ((vn > (15000L)) || (vn < (-5000L)))
 	{
-		pid_temp_sum_en -= en;
+		// pid_temp_sum_en -= en;
+		set_int(PID_TEMP_SUM, get_int(PID_TEMP_SUM) - en);	
 	}
 
 	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[XI]:[%d]", xi);
-	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[SUM]:[%d]", pid_temp_sum_en);
+	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[SUM]:[%d]", get_int(PID_TEMP_SUM));
 	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[VN]:[%d]", vn);
 
 	// XI[0]=xi;
@@ -121,11 +121,11 @@ int pid_calc1(int pv, int sp)
 	//--------------------------------------------------------------------
 	//	D:
 	//--------------------------------------------------------------------
-	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[D]:[%d]", shm2shortpid(&shm_out[P_TEMP_D]));
-	if ((shm2shortpid(&shm_out[P_TEMP_D])) > 0 && abs(en) <= (pidshm2short(&shm_out[P_TEMP_P]) / 2))
+	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[D]:[%d]", get_e10_val(P_TEMP_D));
+	if ((get_e10_val(P_TEMP_D)) > 0 && abs(en) <= (get_x10_val(P_TEMP_P) / 2))
 	{
 
-		xd = (2L) * (shm2shortpid(&shm_out[P_TEMP_D])) * (vn - vn_1); //	-30000 ~ 30000	// xd=1000L*gMain_D*(vn - vn_1)/(SAMPLE/SCONST);
+		xd = (2L) * (get_e10_val(P_TEMP_D)) * (vn - vn_1); //	-30000 ~ 30000	// xd=1000L*gMain_D*(vn - vn_1)/(SAMPLE/SCONST);
 	}
 	else
 	{
@@ -142,8 +142,8 @@ int pid_calc1(int pv, int sp)
 	// XD[0]=xd;
 	// WN[0]=wn;
 
-	iv = wn + ((shm2shortpid(&shm_out[P_TEMP_D])) * 100 * wn_1) / 500; // PID����//iv = wn + (gMain_D * wn_1 * 1000) / 10 / (SAMPLE/SCONST);
-	jv = 1L + ((shm2shortpid(&shm_out[P_TEMP_D])) * 100) / 500;		   // PID��ĸ//jv = 1L + gMain_D * 1000 / 10 / (SAMPLE/SCONST);
+	iv = wn + ((get_e10_val(P_TEMP_D)) * 100 * wn_1) / 500; // PID����//iv = wn + (gMain_D * wn_1 * 1000) / 10 / (SAMPLE/SCONST);
+	jv = 1L + ((get_e10_val(P_TEMP_D)) * 100) / 500;		// PID��ĸ//jv = 1L + gMain_D * 1000 / 10 / (SAMPLE/SCONST);
 	yn = iv / jv;
 
 	//------------------------------------------------
@@ -175,13 +175,13 @@ int pid_calc1(int pv, int sp)
 	//------------------------------------------------
 	// pidv=(10000)-pidv;
 	// pidv = (pidv - MAIN_PIDVAL_OFFSET) * 2;// 2010-05-26
-	if (pidv > ((shm2short(&shm_out[P_TEMP_OHI])) * 100))
+	if (pidv > (get_val(P_TEMP_OHI) * 100))
 	{
-		pidv = ((shm2short(&shm_out[P_TEMP_OHI])) * 100);
+		pidv = (get_val(P_TEMP_OHI) * 100);
 	}
-	if (pidv < ((shm2short(&shm_out[P_TEMP_OLO])) * 100))
+	if (pidv < (get_val(P_TEMP_OLO) * 100))
 	{
-		pidv = ((shm2short(&shm_out[P_TEMP_OLO])) * 100);
+		pidv = (get_val(P_TEMP_OLO) * 100);
 	}
 	return (pidv);
 }
@@ -196,32 +196,40 @@ int pid_calc1(int pv, int sp)
 
 int main_heater(int pid)
 {
-	long duty, DUTY_HI = (10L) * (shm2short(&shm_out[P_TEMP_OHI])), DUTY_LO = (10L) * (shm2short(&shm_out[P_TEMP_OLO]));
-	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[OHI]:[%d]", shm2short(&shm_out[P_TEMP_OHI]));
-	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[OLO]:[%d]", shm2short(&shm_out[P_TEMP_OLO]));
+	int duty, DUTY_HI = (10L) * (get_val(P_TEMP_OHI)), DUTY_LO = (10L) * (get_val(P_TEMP_OLO));
+	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[OHI]:[%d]", get_val(P_TEMP_OHI));
+	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[OLO]:[%d]", get_val(P_TEMP_OLO));
 	// Valid Range: 5500 ~ 8000
-	duty = (100L) * ((pid / 10) - shm2short(&shm_out[P_TEMP_OLO]) * 10) / (shm2short(&shm_out[P_TEMP_OHI]) - shm2short(&shm_out[P_TEMP_OLO]) * 10); // Range: -2200 ~ 1800
+	int difference = get_val(P_TEMP_OHI) - get_val(P_TEMP_OLO) * 10;
+	if (difference > 0)
+	{
+		duty = (100L) * ((pid / 10) - get_val(P_TEMP_OLO) * 10) / (get_val(P_TEMP_OHI) - get_val(P_TEMP_OLO) * 10); // Range: -2200 ~ 1800
+	}
+	else
+	{
+		duty = 0;
+	}
 
-	if (duty > DUTY_HI)
+	if (duty >= DUTY_HI)
 	{
 		duty = DUTY_HI;
 	}
-	else if (duty < DUTY_LO)
+	else if (duty <= DUTY_LO)
 	{
 		duty = DUTY_LO;
 	}
 	//--------------------------------------------------------------------
 	//
 	//--------------------------------------------------------------------
-	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[AI]:[%d]", shm2short(&shm_out[R_AI_TP_MAIN]));
-	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[AO]:[%d]", shm2short(&shm_out[P_AO_TP_MAIN]));
-	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[P]:[%d]", pidshm2short(&shm_out[P_TEMP_P]));
+	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[AI]:[%d]", get_val(R_AI_TP_MAIN));
+	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[AO]:[%d]", get_val(P_AO_TP_MAIN));
+	zlog_error(g_zlog_zc, "[PID温度]\t TEMP[P]:[%d]", get_x10_val(P_TEMP_P));
 
-	if ((shm2short(&shm_out[R_AI_TP_MAIN])) >= (shm2short(&shm_out[P_AO_TP_MAIN])))
+	if ((get_val(R_AI_TP_MAIN)) >= (get_val(P_AO_TP_MAIN)))
 	{
 		return (0);
 	}
-	else if (shm2short(&shm_out[R_AI_TP_MAIN]) < (shm2short(&shm_out[P_AO_TP_MAIN]) - (pidshm2short(&shm_out[P_TEMP_P]) / 2)))
+	else if (get_val(R_AI_TP_MAIN) < (get_val(P_AO_TP_MAIN) - (get_x10_val(P_TEMP_P) / 2)))
 	{
 		return (DUTY_HI);
 	}
@@ -237,13 +245,13 @@ char aux_heater()
 	static char retf;
 	int sp;
 
-	sp = (shm2short(&shm_out[P_AO_TP_MAIN])) - (shm2short(&shm_out[P_AUH])); // Note: Aux_he == AL_lo[1]
+	sp = (get_val(P_AO_TP_MAIN)) - (get_val(P_AUH)); // Note: Aux_he == AL_lo[1]
 	if (sp < 0)
 		sp = 0;
 
-	if ((shm2short(&shm_out[R_AI_TP_MAIN])) > (sp + shm2short(&shm_out[P_HYS])))
+	if ((get_val(R_AI_TP_MAIN)) > (sp + get_val(P_HYS)))
 		retf = 0;
-	if ((shm2short(&shm_out[R_AI_TP_MAIN])) <= sp)
+	if ((get_val(R_AI_TP_MAIN)) <= sp)
 		retf = 1;
 
 	return (retf);
@@ -263,10 +271,10 @@ char cool(int pid)
 	//--------------------------------------------------------------------
 	//
 	//--------------------------------------------------------------------
-	zlog_error(g_zlog_zc, "[PID温度-水冷1]\t TEMP[CLO]:[%d]", shm2short(&shm_out[P_COL]));
-	sp = shm2short(&shm_out[P_COL]) * 100;
+	zlog_error(g_zlog_zc, "[PID温度-水冷1]\t TEMP[CLO]:[%d]", get_val(P_COL));
+	sp = get_val(P_COL) * 100;
 	zlog_error(g_zlog_zc, "[PID温度-水冷1]\t TEMP[SP]:[%d]", sp);
-	if (pid < sp)
+	if (pid <= sp)
 		op = 1000;
 	else
 		op = 0;
@@ -288,12 +296,12 @@ char cool(int pid)
 			nn--;
 	}
 	zlog_error(g_zlog_zc, "[PID温度-水冷1]\t TEMP[PID]:[%d]", pid);
-	zlog_error(g_zlog_zc, "[PID温度-水冷1]\t TEMP[TCO]:[%d]", shm2short(&shm_out[P_TCO]));
+	zlog_error(g_zlog_zc, "[PID温度-水冷1]\t TEMP[TCO]:[%d]", get_val(P_TCO));
 	zlog_error(g_zlog_zc, "[PID温度-水冷1]\t TEMP[NN]:[%d]", nn);
 	zlog_error(g_zlog_zc, "[PID温度-水冷1]\t TEMP[OP]:[%d]", op);
 	zlog_error(g_zlog_zc, "[PID温度-水冷1]\t TEMP[RETF]:[%d]", retf);
 
-	if (nn > shm2short(&shm_out[P_COL]))
+	if (nn > get_val(P_COL))
 		retf = 1;
 	if (nn <= 0)
 	{
@@ -304,7 +312,7 @@ char cool(int pid)
 	//--------------------------------------------------------------------
 	//
 	//--------------------------------------------------------------------
-	if ((shm2short(&shm_out[R_AI_TP_MAIN])) <= (shm2short(&shm_out[P_AO_TP_MAIN])))
+	if ((get_val(R_AI_TP_MAIN)) <= (get_val(P_AO_TP_MAIN)))
 	{
 		return (0);
 	}
@@ -325,7 +333,7 @@ char blower(int pid)
 	//
 	//--------------------------------------------------------------------
 
-	sp = shm2short(&shm_out[P_BLO]) * 100;
+	sp = get_val(P_BLO) * 100;
 	if (pid < sp)
 		op = 1000;
 	else
@@ -350,7 +358,7 @@ char blower(int pid)
 
 	// if(Setter_sw) nn=0;	// �������޴˿���
 
-	if (nn > shm2short(&shm_out[P_BLO]))
+	if (nn > get_val(P_BLO))
 		retf = 1;
 	if (nn <= 0)
 	{
@@ -361,7 +369,7 @@ char blower(int pid)
 	//--------------------------------------------------------------------
 	//
 	//--------------------------------------------------------------------
-	if ((shm2short(&shm_out[R_AI_TP_MAIN])) <= (shm2short(&shm_out[P_AO_TP_MAIN])))
+	if ((get_val(R_AI_TP_MAIN)) <= (get_val(P_AO_TP_MAIN)))
 	{
 		return (0);
 	}
@@ -375,19 +383,19 @@ char blower(int pid)
 //	DB:
 //--------------------------------------------------------------------------------------------------
 
-unsigned int DB_STROKE = 10000; // No control
+unsigned int db_stoke = 10000; // No control
 
 char db_open(int pid)
 {
 
-	static int nn = 0;	  // �����תʱ�����
-	static char retf = 0; // ����ֵ
+	static int nn = 0;	  // 
+	static char retf = 0; // 
 	int sp, op, tmin;
 
 	//--------------------------------------------------------------------
 	//
 	//--------------------------------------------------------------------
-	sp = shm2short(&shm_out[P_OPE]) * 100;
+	sp = get_val(P_OPE) * 100;
 	zlog_error(g_zlog_zc, "[PID温度-风门开]\t TEMP[SP]:[%d]", sp);
 	if (pid < sp)
 		op = 1000;
@@ -411,16 +419,16 @@ char db_open(int pid)
 			nn--;
 	}
 
-	if (g_us_pid_ad_close_start_count)
+	if (get_val(PID_TEMP_DB_CLOSE))
 		nn = 0; // Interlock
 
-	if (DB_STROKE > 10050)
-		tmin = shm2short(&shm_out[P_CLO]);
+	if (db_stoke > 10050)
+		tmin = get_val(P_CLO);
 	// No use
 	else
-		tmin = shm2short(&shm_out[P_OPE]);
+		tmin = get_val(P_OPE);
 	zlog_error(g_zlog_zc, "[PID温度-风门开]\t TEMP[PID]:[%d]", pid);
-	zlog_error(g_zlog_zc, "[PID温度-风门开]\t TEMP[OPE]:[%d]", shm2short(&shm_out[P_OPE]));
+	zlog_error(g_zlog_zc, "[PID温度-风门开]\t TEMP[OPE]:[%d]", get_val(P_OPE));
 	zlog_error(g_zlog_zc, "[PID温度-风门开]\t TEMP[NN]:[%d]", nn);
 	zlog_error(g_zlog_zc, "[PID温度-风门开]\t TEMP[OP]:[%d]", op);
 	zlog_error(g_zlog_zc, "[PID温度-风门开]\t TEMP[RETF]:[%d]", retf);
@@ -435,7 +443,7 @@ char db_open(int pid)
 	//--------------------------------------------------------------------
 	//
 	//--------------------------------------------------------------------
-	if ((shm2short(&shm_out[R_AI_TP_MAIN])) <= (shm2short(&shm_out[P_AO_TP_MAIN])))
+	if ((get_val(R_AI_TP_MAIN)) <= (get_val(P_AO_TP_MAIN)))
 	{
 		return (0);
 	}
@@ -448,15 +456,15 @@ char db_open(int pid)
 char db_close(int pid)
 {
 
-	static int nn = 0;	  // �����תʱ����
-	static char retf = 0; // ����ֵ
+	static int nn = 0;	  //
+	static char retf = 0; //
 	int sp, op, tmin;
 
 	//--------------------------------------------------------------------
 	//
 	//--------------------------------------------------------------------
 
-	sp = shm2short(&shm_out[P_OPE]) * 100;
+	sp = get_val(P_OPE) * 100;
 	zlog_error(g_zlog_zc, "[PID温度-风门关]\t TEMP[SP]:[%d]", sp);
 	if (pid > sp)
 		op = 1000;
@@ -480,13 +488,13 @@ char db_close(int pid)
 			nn--;
 	}
 
-	if (g_us_pid_ad_open_start_count)
+	if (get_val(PID_TEMP_DB_OPEN))
 		nn = 0; // Interlock
 
-	if (DB_STROKE < 9950)
-		tmin = shm2short(&shm_out[P_OPE]);
+	if (db_stoke < 9950)
+		tmin = get_val(P_OPE);
 	else
-		tmin = shm2short(&shm_out[P_CLO]);
+		tmin = get_val(P_CLO);
 
 	if (nn > tmin)
 		retf = 1;
@@ -497,14 +505,14 @@ char db_close(int pid)
 	}
 	zlog_error(g_zlog_zc, "[PID温度-风门关]\t TEMP[SP]:[%d]", sp);
 	zlog_error(g_zlog_zc, "[PID温度-风门关]\t TEMP[PID]:[%d]", pid);
-	zlog_error(g_zlog_zc, "[PID温度-风门关]\t TEMP[CLO]:[%d]", shm2short(&shm_out[P_CLO]));
+	zlog_error(g_zlog_zc, "[PID温度-风门关]\t TEMP[CLO]:[%d]", get_val(P_CLO));
 	zlog_error(g_zlog_zc, "[PID温度-风门关]\t TEMP[NN]:[%d]", nn);
 	zlog_error(g_zlog_zc, "[PID温度-风门关]\t TEMP[OP]:[%d]", op);
 	zlog_error(g_zlog_zc, "[PID温度-风门关]\t TEMP[RETF]:[%d]", retf);
 	//--------------------------------------------------------------------
 	//
 	//--------------------------------------------------------------------
-	if ((shm2short(&shm_out[R_AI_TP_MAIN])) >= (shm2short(&shm_out[P_AO_TP_MAIN])))
+	if ((get_val(R_AI_TP_MAIN)) >= (get_val(P_AO_TP_MAIN)))
 	{
 		return (0);
 	}
@@ -521,25 +529,25 @@ char db_close(int pid)
 int pid_calc2(int pv, int sp)
 {
 	int en;
-	// long en;
+	// int en;
 
-	long xp;
-	long xi;
-	long xd;
+	int xp;
+	int xi;
+	int xd;
 
-	long vn;
-	long wn;
-	long yn;
+	int vn;
+	int wn;
+	int yn;
 
 	int pidv;
 
-	static long vn_1 = 0L;
-	static long wn_1 = 0L;
-	static long yn_1 = 0L;
+	static int vn_1 = 0L;
+	static int wn_1 = 0L;
+	static int yn_1 = 0L;
 
-	static long sum_en = 0L;
+	static int sum_en = 0L;
 
-	long iv, jv;
+	int iv, jv;
 
 	// if (ERR_PT3 || pv < 0)
 	// return (0);		// (*Outer[2]) * 100;
@@ -549,13 +557,13 @@ int pid_calc2(int pv, int sp)
 	//------------------------------------------------
 	//	P:
 	//------------------------------------------------
-	zlog_error(g_zlog_zc, "[PID湿度]\t HUMI[P]:[%d]", pidshm2short(&shm_out[P_HUM_P]));
+	zlog_error(g_zlog_zc, "[PID湿度]\t HUMI[P]:[%d]", get_x10_val(P_HUM_P));
 
-	if ((pidshm2short(&shm_out[P_HUM_P])) > 0)
+	if (get_x10_val(P_HUM_P) > 0)
 	{
-		if (abs(en) <= (pidshm2short(&shm_out[P_HUM_P])) / 2)
+		if (abs(en) <= get_x10_val(P_HUM_P) / 2)
 		{
-			xp = (10000L) * en / (pidshm2short(&shm_out[P_HUM_P])) + (5000L);
+			xp = (10000L) * en / get_x10_val(P_HUM_P) + (5000L);
 		}
 		else if (sp > pv)
 		{
@@ -583,18 +591,20 @@ int pid_calc2(int pv, int sp)
 	//------------------------------------------------
 	//	I:
 	//------------------------------------------------
-	zlog_error(g_zlog_zc, "[PID湿度]\t HUMI[I]:[%d]", shm2shortpid(&shm_out[P_HUM_I]));
-	if ((shm2shortpid(&shm_out[P_HUM_I])) > 0 && abs(en) <= (pidshm2short(&shm_out[P_HUM_P])) / 2)
+	zlog_error(g_zlog_zc, "[PID湿度]\t HUMI[I]:[%d]", get_e10_val(P_HUM_I));
+	if (get_e10_val(P_HUM_I) > 0 && abs(en) <= get_x10_val(P_HUM_P) / 2)
 	{
 		iv = (5000L); // iv=(10000L)*(SAMPLE/SCONST)/(1000L);
 
-		pid_humi_sum_en += en;											  // -200000L ~ 300000L
-		xi = (50L) * pid_humi_sum_en / (shm2shortpid(&shm_out[P_HUM_I])); // xi=iv*sum_en/gMain_I/ 100L;
+		// pid_humi_sum_en += en;	
+		set_int(PID_HUMI_SUM, get_int(PID_HUMI_SUM) + en);								 // -200000L ~ 300000L
+		xi = (50L) * get_int(PID_HUMI_SUM) / get_e10_val(P_HUM_I); // xi=iv*sum_en/gMain_I/ 100L;
 	}
 	else
 	{
 		xi = 0L;
-		pid_humi_sum_en = 0L;
+		// pid_humi_sum_en = 0L;
+		set_int(PID_HUMI_SUM, 0);		
 	}
 
 	if (xi < (-10000L))
@@ -608,10 +618,11 @@ int pid_calc2(int pv, int sp)
 	vn = xp + xi; // -10000L ~ 20000L
 	if ((vn > (15000L)) || (vn < (-5000L)))
 	{
-		pid_humi_sum_en -= en;
+		// pid_humi_sum_en -= en;
+		set_int(PID_HUMI_SUM, get_int(PID_HUMI_SUM) - en);		
 	}
 	zlog_error(g_zlog_zc, "[PID湿度]\t HUMI[XI]:[%d]", xi);
-	zlog_error(g_zlog_zc, "[PID湿度]\t HUMI[SUM]:[%d]", pid_humi_sum_en);
+	zlog_error(g_zlog_zc, "[PID湿度]\t HUMI[SUM]:[%d]", get_int(PID_HUMI_SUM));
 	zlog_error(g_zlog_zc, "[PID湿度]\t HUMI[VN]:[%d]", vn);
 
 	// XI[1] = xi;
@@ -621,11 +632,11 @@ int pid_calc2(int pv, int sp)
 	//------------------------------------------------
 	//	D:
 	//------------------------------------------------
-	zlog_error(g_zlog_zc, "[PID湿度]\t HUMI[D]:[%d]", shm2shortpid(&shm_out[P_HUM_D]));
-	if ((shm2shortpid(&shm_out[P_HUM_D])) > 0 && abs(en) <= (pidshm2short(&shm_out[P_HUM_P])) / 2)
+	zlog_error(g_zlog_zc, "[PID湿度]\t HUMI[D]:[%d]", get_e10_val(P_HUM_D));
+	if ((get_e10_val(P_HUM_D)) > 0 && abs(en) <= get_x10_val(P_HUM_P) / 2)
 	{
 
-		xd = (2L) * (shm2shortpid(&shm_out[P_HUM_D])) * (vn - vn_1); //	-30000 ~ 30000	// xd=1000L*gMain_D*(vn - vn_1)/(SAMPLE/SCONST);
+		xd = (2L) * (get_e10_val(P_HUM_D)) * (vn - vn_1); //	-30000 ~ 30000	// xd=1000L*gMain_D*(vn - vn_1)/(SAMPLE/SCONST);
 	}
 	else
 	{
@@ -642,8 +653,8 @@ int pid_calc2(int pv, int sp)
 	// XD[1] = xd;
 	// WN[1] = wn;
 
-	iv = wn + ((shm2shortpid(&shm_out[P_HUM_D])) * 100 * wn_1) / 500; // PID����//iv = wn + (gWet_D * 100 / (SAMPLE/SCONST)) * wn_1;
-	jv = 1L + ((shm2shortpid(&shm_out[P_HUM_D])) * 100) / 500;		  // PID��ĸ//jv = 1L + (gWet_D * 100 / (SAMPLE/SCONST));
+	iv = wn + ((get_e10_val(P_HUM_D)) * 100 * wn_1) / 500; // PID����//iv = wn + (gWet_D * 100 / (SAMPLE/SCONST)) * wn_1;
+	jv = 1L + ((get_e10_val(P_HUM_D)) * 100) / 500;		   // PID��ĸ//jv = 1L + (gWet_D * 100 / (SAMPLE/SCONST));
 	yn = iv / jv;
 
 	//------------------------------------------------
@@ -675,13 +686,13 @@ int pid_calc2(int pv, int sp)
 	//------------------------------------------------
 	pidv = (pidv - 5000) * 2; // -10000 ~ 10000
 
-	if (pidv > ((shm2short(&shm_out[P_HUM_OHI])) * 100))
+	if (pidv > ((get_val(P_HUM_OHI)) * 100))
 	{ // 6000
-		pidv = ((shm2short(&shm_out[P_HUM_OHI])) * 100);
+		pidv = ((get_val(P_HUM_OHI)) * 100);
 	}
-	if (pidv < ((shm2short(&shm_out[P_HUM_OLO])) * 100))
+	if (pidv < ((get_val(P_HUM_OLO)) * 100))
 	{ // 0
-		pidv = ((shm2short(&shm_out[P_HUM_OLO])) * 100);
+		pidv = ((get_val(P_HUM_OLO)) * 100);
 	}
 
 	return (pidv);
@@ -689,42 +700,42 @@ int pid_calc2(int pv, int sp)
 
 int spray_duty(int pid)
 {
-	// static int pout[60];
-	long duty;
+	int duty;
 
-	g_us_pid_humi_curr_main = pid_filter((short)pid, g_us_pid_humi_arr, 60);
+	unsigned int pid_humi_curr_main = pid_filter(pid, (int *)&shm_out[FILTER_PID_HUMI_ARR], 50);
 	zlog_error(g_zlog_zc, "[PID湿度]\t PV1:[%d] SP1:[%d] P/2:[%d] 湿度PID:[%d]",
-			   shm2short(&shm_out[R_AI_HM]), shm2short(&shm_out[P_AO_HM]),
-			   pidshm2short(&shm_out[P_HUM_P]) / 2,
-			   g_us_pid_humi_curr_main);
-	duty = (g_us_pid_humi_curr_main / 10);
+			   get_val(R_AI_HM), get_val(P_AO_HM),
+			   get_x10_val(P_HUM_P) / 2,
+			   pid_humi_curr_main);
+	duty = (pid_humi_curr_main / 10);
 
-	if (duty > (10L) * (shm2short(&shm_out[P_HUM_OHI])))
+	if (duty > (10L) * (get_val(P_HUM_OHI)))
 	{
-		duty = (10L) * (shm2short(&shm_out[P_HUM_OHI])); // 600
+		duty = (10L) * (get_val(P_HUM_OHI)); // 600
 	}
-	else if (duty < (10L) * (shm2short(&shm_out[P_HUM_OLO])))
+	else if (duty < (10L) * (get_val(P_HUM_OLO)))
 	{
-		duty = (10L) * (shm2short(&shm_out[P_HUM_OLO])); // 0
+		duty = (10L) * (get_val(P_HUM_OLO)); // 0
 	}
 
 	//--------------------------------------------------------------------
 	//
 	//--------------------------------------------------------------------
 
-	if (shm2short(&shm_out[R_AI_HM]) < (shm2short(&shm_out[P_AO_HM]) - (pidshm2short(&shm_out[P_HUM_P]) / 2)))
+	if (get_val(R_AI_HM) < (get_val(P_AO_HM) - (get_x10_val(P_HUM_P) / 2)))
 	{
-		// return ((10L) * (shm2short(&shm_out[P_HUM_OHI]))); // 600
+		// return ((10L) * (get_val(P_HUM_OHI))); // 600
 		return (0);
 	}
 
-	if (shm2short(&shm_out[R_AI_HM]) > (shm2short(&shm_out[P_AO_HM])))
+	if (get_val(R_AI_HM) > (get_val(P_AO_HM)))
 	{
 		return (0); // (10L)*(*Outlo[2])
 	}
 
-	if ((shm2short(&shm_out[R_AI_HM]) >= (shm2short(&shm_out[P_AO_HM]) - (pidshm2short(&shm_out[P_HUM_P]) / 2))) && (shm2short(&shm_out[R_AI_HM]) <= (shm2short(&shm_out[P_AO_HM]) + (pidshm2short(&shm_out[P_HUM_P]) / 2))))
+	if ((get_val(R_AI_HM) >= (get_val(P_AO_HM) - (get_x10_val(P_HUM_P) / 2))) && (get_val(R_AI_HM) <= (get_val(P_AO_HM) + (get_x10_val(P_HUM_P) / 2))))
 	{
 		return (duty);
 	}
+	return (0);
 }

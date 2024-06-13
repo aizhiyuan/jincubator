@@ -386,3 +386,38 @@ struct Time timer(time_t timestamp)
 
   return result;
 }
+
+//----------------------------------------------------------------------------------------------------------
+// PID 过滤函数
+//----------------------------------------------------------------------------------------------------------
+int pid_filter(int pid, int *p, unsigned char num)
+{
+  unsigned char i;
+  int sum;
+  short ave;
+
+  for (i = (num - 1); i > 0; i--)
+  {
+    p[i] = p[i - 1];
+  }
+  p[0] = pid;
+
+  sum = 0;
+  for (i = 0; i < num; i++)
+  {
+    sum += p[i];
+  }
+  ave = (sum / num);
+  return (ave);
+}
+
+unsigned short get_sync_time(int pv, int sp, int p, int sycle, int rate)
+{
+  unsigned short v_us_time = 0;
+  float v_s_en = abs(pv - sp);
+  float v_s_p_2 = p / 2;
+  float v_f_prop = (v_s_en / v_s_p_2) * sycle;
+  v_f_prop = v_f_prop * 2 * rate / 100;
+  v_us_time = (v_f_prop < 0) ? 0 : v_f_prop;
+  return v_us_time;
+}

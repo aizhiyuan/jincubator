@@ -55,7 +55,7 @@ if(TARGET_CPU STREQUAL "8100")
 endif() 
 
 #jcore 交叉编译选项
-if(TARGET_CPU STREQUAL "jcore") 
+if(TARGET_CPU STREQUAL "jcore")
     set(CMAKE_SYSTEM_NAME Linux)
     set(CMAKE_SYSTEM_PROCESSOR arm)
     set(TOOLCHAIN_DIR "/opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf")

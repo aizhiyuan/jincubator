@@ -24,7 +24,12 @@
 #define STATUS_STOP_RECV (0x08)
 #define STATUS_PRE_SEND (0x10)
 #define STARTS_PRE_RECV (0x20)
-
+#define STATUS_CLOSE_ALA_SEND (0x80)
+#define STATUS_CLOSE_ALA_RECV (0x100)
+#define STATUS_INIT_SEND (0x400)
+#define STATUS_INIT_REVV (0x800)
+#define STATUS_CHECK_SEND (0x1000)
+#define STATUS_CHECK_REVV (0x2000)
 // 模块状态
 #define STATUS_SYSTEM_TIME (0x01)     // 系统时间线程
 #define STATUS_DAMPER (0x02)          // 风门线程
@@ -193,12 +198,12 @@
 #define MODE_REF_TEMP_STOP_START (0x10)
 #define MODE_REF_TEMP_STOP_END (0x20)
 
-#define P_CO2_STATUS 89 // 二氧化碳模式
-#define P_PT_WAIT 90    // 数据刷新时间
-#define P_PT_PIC 91     // 通道值上下浮动的数值
-#define P_EGG_TIME 92   // 翻蛋时间
-#define P_FAN_TIME 93   // 翻蛋报警模式（1：正常，0：消警）
-
+#define P_CO2_STATUS 89     // 二氧化碳模式
+#define P_PT_WAIT 90        // 数据刷新时间
+#define P_PT_PIC 91         // 通道值上下浮动的数值
+#define P_EGG_TIME 92       // 翻蛋时间
+#define P_FAN_TIME 93       // 翻蛋报警模式（1：正常，0：消警）
+#define P_EDIT_CO2_VALUE 94 // 二氧化碳修正值
 // 参数区
 #define P_INIT 100
 #define P_AO_TP_MAIN 100 // 设定值-温度
@@ -353,16 +358,16 @@
 #define R_PRE_STOP_TIME_LOW 273        // 预热时间停止时间-低位
 #define R_RUN_DAY 274                  // 运行天数和小时
 #define R_RUN_MAX_DAY 275              // 允许运行最大天数
-#define S_RUN_SECOND_HIGH 276          // 设置运行秒数-高位
-#define S_RUN_SECOND_LOW 277           // 设置运行秒数-低位
+#define S_RUN_SECOND_HIGH 284          // 设置运行秒数-高位
+#define S_RUN_SECOND_LOW 285           // 设置运行秒数-低位
 #define R_RUN_SECOND_STATUS 278        // 运行秒数-状态
 #define R_RUN_SYSTEM_SECOND_STATUS 279 // 系统运行秒数-状态
 #define R_RUN_SYSTEM_SECOND_HIGH 280   // 系统运行秒数-高位
 #define R_RUN_SYSTEM_SECOND_LOW 281    // 系统运行秒数-低位
 #define S_RUN_SYSTEM_SECOND_HIGH 282   // 设置系统运行秒数-高位
 #define S_RUN_SYSTEM_SECOND_LOW 283    // 设置系统运行秒数-低位
-#define R_RUN_SECOND_HIGH 284          // 运行秒数-高位
-#define R_RUN_SECOND_LOW 285           // 运行秒数-低位
+#define R_RUN_SECOND_HIGH 276          // 运行秒数-高位
+#define R_RUN_SECOND_LOW 277           // 运行秒数-低位
 
 #define P_PT1_AO1 300 // 第一个温度
 #define P_PT1_AO2 301 // 第二个温度
@@ -395,29 +400,49 @@
 #define P_PT6_AO4 328 // 第二个通道值
 #define P_PT6_AO5 329 // 温度差值
 
-#define P_HH0_TIME 400                      // HH0
-#define P_HH1_TIME 401                      // HH1
-#define P_HH2_TIME 402                      // HH2
-#define P_HH3_TIME 403                      // HH3
-#define P_HH4_TIME 404                      // HH4
-#define P_HH5_TIME 405                      // HH5
-#define P_HH6_TIME 406                      // HH6
-#define P_HH7_TIME 407                      // HH7
-#define P_HH8_TIME 408                      // HH8
-#define P_HH9_TIME 409                      // HH9
-#define P_HH10_TIME 410                     // HH10
-#define P_FAN_OPEN_TIME 411                 // FAN_OPEN
-#define P_FAN_CLOSE_TIME 412                // FAN_CLOSE
-#define P_CLEAR_ALARM_TIME 413              // CLEAR_ALARM
-#define P_COLD_HOT_WATER_TIME 413           // COLD_HOT_WATER
-#define P_EGG_FLIPPING_TIME 414             // 翻蛋时间
-#define ALARM_SUPPRESSION_TIME 415          // 消警时间
-#define BACKUP_OPERATION_MODE 420           // 备份运行模式
-#define CALIBRATION_RUN_TIME 421            // 校准运行时间
+#define P_HH0_TIME 400             // HH0
+#define P_HH1_TIME 401             // HH1
+#define P_HH2_TIME 402             // HH2
+#define P_HH3_TIME 403             // HH3
+#define P_HH4_TIME 404             // HH4
+#define P_HH5_TIME 405             // HH5
+#define P_HH6_TIME 406             // HH6
+#define P_HH7_TIME 407             // HH7
+#define P_HH8_TIME 408             // HH8
+#define P_HH9_TIME 409             // HH9
+#define P_HH10_TIME 410            // HH10
+#define P_FAN_OPEN_TIME 411        // FAN_OPEN
+#define P_FAN_CLOSE_TIME 412       // FAN_CLOSE
+#define P_CLEAR_ALARM_TIME 413     // CLEAR_ALARM
+#define P_COLD_HOT_WATER_TIME 413  // COLD_HOT_WATER
+#define P_EGG_FLIPPING_TIME 414    // 翻蛋时间
+#define ALARM_SUPPRESSION_TIME 415 // 消警时间
+
+#define BACKUP_OPERATION_MODE 420                // 备份运行模式
+#define CALIBRATION_RUN_TIME 421                 // 校准运行时间
 #define BACKUP_PREHEATING_START_TIME_HIGH 422    // 备份预热开启时间-高位
-#define BACKUP_PREHEATING_START_TIME_LOW 423    // 备份预热开启时间-低位
+#define BACKUP_PREHEATING_START_TIME_LOW 423     // 备份预热开启时间-低位
 #define BACKUP_PREHEATING_SHUTDOWN_TIME_HIGH 424 // 备份预热关闭时间-高位
-#define BACKUP_PREHEATING_SHUTDOWN_TIME_LOW 425 // 备份预热关闭时间-低位
+#define BACKUP_PREHEATING_SHUTDOWN_TIME_LOW 425  // 备份预热关闭时间-低位
+
+#define EGG_FLIPPING_SIGNAL_RINGING_STATUS 430    // 翻蛋信号响铃状态
+#define NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS 431 // 没有翻蛋信号响铃状态
+#define EGG_FLIPPING_SIGNAL_ALARM_TIME 432        // 翻蛋信号报警时间
+#define NO_EGG_FLIPPING_SIGNAL_ALARM_TIME 433     // 没有翻蛋信号报警时间
+
+#define CARBON_DIOXIDE_WARNING_LIGHT 440      // 二氧化碳报警状态
+#define CARBON_DIOXIDE_OPERATING_TIME 441     // 二氧化碳运行时间
+#define CARBON_DIOXIDE_STOP_TIME 442          // 二氧化碳停止时间
+#define CARBON_DIOXIDE_INIT 443               // 二氧化碳初始化
+#define CARBON_DIOXIDE_CALIBRATION_STATUS 444 // 二氧化碳校准状态
+
+#define FAN_ALARM_TIME 450         // 风机报警时间
+#define ABNORMAL_SENSOR_STATUS 451 // 传感器异常状态
+
+#define AIR_DOOR_OPEN_RUNNING_TIME 460      // 风门开运行时间
+#define AIR_DOOR_CLOSING_RUNNING_TIME 461   // 风门关运行时间
+#define AIR_DOOR_OPEN_RUNNING_STATUS 462    // 风门开运行状态
+#define AIR_DOOR_CLOSING_RUNNING_STATUS 463 // 风门关运行状态
 
 #define P_EGG_FLIPPING_DIRECTION 500              // 翻蛋方向 (1为左 0为右)
 #define P_EGG_FLIPPING_EXECUTION_STATUS 501       // 翻蛋执行状态
@@ -447,16 +472,6 @@
 #define TEST_COOL2_4_MODE 529      // 测试模式-辅助水冷4
 #define TEST_BLOWER_MODE 530       // 测试模式-鼓风机
 #define TEST_CONTROL_MODE 531      // 测试模式-状态
-
-#define EGG_FLIPPING_SIGNAL_RINGING_STATUS 532    // 翻蛋信号响铃状态
-#define NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS 533 // 没有翻蛋信号响铃状态
-#define EGG_FLIPPING_SIGNAL_ALARM_TIME 534        // 翻蛋信号报警时间
-#define NO_EGG_FLIPPING_SIGNAL_ALARM_TIME 535     // 没有翻蛋信号报警时间
-
-#define CARBON_DIOXIDE_WARNING_LIGHT 536 // 二氧化碳报警状态
-
-#define FAN_ALARM_TIME 537         // 风机报警时间
-#define ABNORMAL_SENSOR_STATUS 538 // 传感器异常状态
 
 #define REFLUX_TEMP_1_DELAY_TIME 540             // 回流温度1延迟时间
 #define REFLUX_TEMP_2_DELAY_TIME 541             // 回流温度2延迟时间
@@ -543,6 +558,41 @@
 
 #define OUT_ST_CO2_ALARM 628             // CO2报警灯
 #define OUT_ST_SENSOR_MUTATION_ALARM 629 // 传感器突变报警灯
+
+// filter
+#define FILTER_PID_TEMP_ARR 700 // PID过滤值
+#define FILTER_PID_HUMI_ARR 800 // PID过滤值
+
+#define PID_TEMP_MODE_STATUS 900         // PID状态
+#define PID_TEMP_SUM 902                 // PID累加
+#define PID_TEMP_VALUE 904               // PID 温度 原始值
+#define PID_TEMP_FILTER_VALUE 906        // PID 温度 过滤值
+#define PID_TEMP_OLD_MAIN_HEATER 908     // PID 温度 旧的主加热
+#define PID_TEMP_NEW_MAIN_HEATER 910     // PID 温度 新的主加热
+#define PID_PERIOD_COUNT_MAIN_HEATER 912 // PID 周期计数主加热
+#define PID_ON_COUNT_MAIN_HEATER 914     // PID 开启计数主加热
+#define PID_ON_COUNT_COOL 916            // PID 开启计数水冷
+#define PID_ON_COUNT_DB_OPEN 918         // PID 开启计数风门开
+#define PID_ON_COUNT_DB_CLOSE 920        // PID 开启计数风门关
+#define PID_TEMP_COOL 922                // PID 温度 水冷
+#define PID_TEMP_DB_OPEN 924             // PID 温度 风门开
+#define PID_TEMP_DB_CLOSE 926            // PID 温度 风门关
+#define PID_HUMI_MODE_STATUS 928         // PID状态
+#define PID_HUMI_SUM 930                 // PID累加
+#define PID_HUMI_VALUE 932               // PID 湿度 值
+#define PID_HUMI_HUMIDIFICATION 934      // PID 湿度 加湿
+#define PID_PERIOD_COUNT_HUMI 936        // PID 周期计数加湿
+#define PID_ON_COUNT_HUMI 938            // PID 开启计数加湿
+
+#define PID_AD_VALUE 940                         // PID风门值
+#define PID_AD_OPEN_STATUS 941                   // PID风门开控制状态
+#define PID_AD_CLOSE_STATUS 942                  // PID风门开控制状态
+#define CONTROL_DB_OPEN_CALIBRATION_STATUS 943   // 风门开到位校准状态
+#define CONTROL_DB_CLISE_CALIBRATION_STATUS 944  // 风门开到位校准状态
+#define CONTROL_DB_CLOSE_TO_OPEN_TIME 945        // 风门从关到开的时间
+#define CONTROL_DB_OPEN_TO_CLOSE_TIME 946        // 风门从开到关的时间
+#define CONTROL_DB_CLOSE_TO_OPEN_TIME_STATUS 947 // 风门从关到开的时间状态
+#define CONTROL_DB_OPEN_TO_CLOSE_TIME_STATUS 948 // 风门从开到关的时间状态
 
 // 预热参数
 #define P_PRE_TP_MAIN 1001 // 预热值-温度

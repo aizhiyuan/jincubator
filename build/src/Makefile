@@ -178,6 +178,30 @@ jlib.cpp.s:
 	cd /home/zhiyuan/c/jincubator/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/jincubator.dir/build.make src/CMakeFiles/jincubator.dir/jlib.cpp.s
 .PHONY : jlib.cpp.s
 
+job_tc.o: job_tc.cpp.o
+.PHONY : job_tc.o
+
+# target to build an object file
+job_tc.cpp.o:
+	cd /home/zhiyuan/c/jincubator/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/jincubator.dir/build.make src/CMakeFiles/jincubator.dir/job_tc.cpp.o
+.PHONY : job_tc.cpp.o
+
+job_tc.i: job_tc.cpp.i
+.PHONY : job_tc.i
+
+# target to preprocess a source file
+job_tc.cpp.i:
+	cd /home/zhiyuan/c/jincubator/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/jincubator.dir/build.make src/CMakeFiles/jincubator.dir/job_tc.cpp.i
+.PHONY : job_tc.cpp.i
+
+job_tc.s: job_tc.cpp.s
+.PHONY : job_tc.s
+
+# target to generate assembly for a file
+job_tc.cpp.s:
+	cd /home/zhiyuan/c/jincubator/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/jincubator.dir/build.make src/CMakeFiles/jincubator.dir/job_tc.cpp.s
+.PHONY : job_tc.cpp.s
+
 jshmem.o: jshmem.cpp.o
 .PHONY : jshmem.o
 
@@ -265,6 +289,9 @@ help:
 	@echo "... jlib.o"
 	@echo "... jlib.i"
 	@echo "... jlib.s"
+	@echo "... job_tc.o"
+	@echo "... job_tc.i"
+	@echo "... job_tc.s"
 	@echo "... jshmem.o"
 	@echo "... jshmem.i"
 	@echo "... jshmem.s"

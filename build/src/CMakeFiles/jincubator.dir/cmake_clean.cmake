@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/jincubator.dir/jincubator.cpp.o.d"
   "CMakeFiles/jincubator.dir/jlib.cpp.o"
   "CMakeFiles/jincubator.dir/jlib.cpp.o.d"
+  "CMakeFiles/jincubator.dir/job_tc.cpp.o"
+  "CMakeFiles/jincubator.dir/job_tc.cpp.o.d"
   "CMakeFiles/jincubator.dir/jshmem.cpp.o"
   "CMakeFiles/jincubator.dir/jshmem.cpp.o.d"
   "CMakeFiles/jincubator.dir/md5_file.cpp.o"

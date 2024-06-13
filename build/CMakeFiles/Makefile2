@@ -114,12 +114,12 @@ zlog/clean: zlog/CMakeFiles/zlog.dir/clean
 src/CMakeFiles/jincubator.dir/all: zlog/CMakeFiles/zlog.dir/all
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/jincubator.dir/build.make src/CMakeFiles/jincubator.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/jincubator.dir/build.make src/CMakeFiles/jincubator.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target jincubator"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=1,2,3,4,5,6,7 "Built target jincubator"
 .PHONY : src/CMakeFiles/jincubator.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/jincubator.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhiyuan/c/jincubator/build/CMakeFiles 28
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhiyuan/c/jincubator/build/CMakeFiles 29
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/jincubator.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhiyuan/c/jincubator/build/CMakeFiles 0
 .PHONY : src/CMakeFiles/jincubator.dir/rule
@@ -140,7 +140,7 @@ src/CMakeFiles/jincubator.dir/clean:
 zlog/CMakeFiles/zlog.dir/all:
 	$(MAKE) $(MAKESILENT) -f zlog/CMakeFiles/zlog.dir/build.make zlog/CMakeFiles/zlog.dir/depend
 	$(MAKE) $(MAKESILENT) -f zlog/CMakeFiles/zlog.dir/build.make zlog/CMakeFiles/zlog.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28 "Built target zlog"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29 "Built target zlog"
 .PHONY : zlog/CMakeFiles/zlog.dir/all
 
 # Build rule for subdir invocation for target.
