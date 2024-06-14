@@ -174,6 +174,7 @@
 #define ALARM_MODULE 77                // 报警状态
 #define EGG_FLIPP_INGINTERVAL 78       // 翻蛋运行时间
 #define CALIBRATION_MODE 79            // 校准模式
+
 // 风门最大开度和最小开度
 #define DAMPER_MAX_LEN 80         // 风门最大长度
 #define DAMPER_MIN_LEN 81         // 风门最小长度
@@ -184,6 +185,7 @@
 #define RUN_MODE_TIME 86          // 停留时间
 #define DAMPER_TIME_OPEN 87       // 风门开单位时间内所需的时间
 #define DAMPER_TIME_CLOSE 88      // 风门关单位时间内所需的时间
+
 // 风门优先级标志位
 #define STATUS_DAMPER_CHECK_ALL_OPEN (0x01)    // 全关->全开
 #define STATUS_DAMPER_CHECK_ALL_CLOSE (0x02)   // 全开->

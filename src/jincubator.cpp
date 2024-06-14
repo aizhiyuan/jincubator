@@ -511,26 +511,6 @@ void init_para()
     // 定义返回值
     int v_i_rc = 0;
 
-    // 初始化PID值
-    set_time(PID_TEMP_SUM, 0);
-    set_time(PID_HUMI_SUM, 0);
-    set_time(PID_PERIOD_COUNT_MAIN_HEATER, 0);
-    set_time(PID_PERIOD_COUNT_HUMI, 0);
-    set_val(PID_TEMP_MODE_STATUS, 0);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 初始化DO输出为空
-    //----------------------------------------------------------------------------------------------------------
-    memset(&shm_out[DO_INIT], 0, sizeof(short) * 24);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 初始化状态灯为空
-    //----------------------------------------------------------------------------------------------------------
-    memset(&shm_out[OUT_ST_FAN_STATUS], OFF, sizeof(short) * 100);
-
-    // 测试模式为空
-    set_test_mode(0);
-
     //----------------------------------------------------------------------------------------------------------
     // 恢复数据
     //----------------------------------------------------------------------------------------------------------
@@ -891,6 +871,39 @@ void init_para()
         zlog_error(g_zlog_zc, "%-40s数据恢复失败!", "[init_para]");
     }
 
+    // 初始化PID值
+    set_time(PID_TEMP_SUM, 0);
+    set_time(PID_HUMI_SUM, 0);
+    set_time(PID_PERIOD_COUNT_MAIN_HEATER, 0);
+    set_time(PID_PERIOD_COUNT_HUMI, 0);
+    set_val(PID_TEMP_MODE_STATUS, 0);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 初始化DO输出为空
+    //----------------------------------------------------------------------------------------------------------
+    memset(&shm_out[DO_INIT], 0, sizeof(short) * 24);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 清除报警状态
+    //----------------------------------------------------------------------------------------------------------
+    memset(&shm_out[P_HH0_TIME], 0, sizeof(short) * 100);
+    memset(&shm_out[P_EGG_FLIPPING_DIRECTION], 0, sizeof(short) * 100);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 初始化状态灯为空
+    //----------------------------------------------------------------------------------------------------------
+    memset(&shm_out[OUT_ST_FAN_STATUS], OFF, sizeof(short) * 100);
+
+    //----------------------------------------------------------------------------------------------------------
+    // PID过滤值
+    //----------------------------------------------------------------------------------------------------------
+    memset(&shm_out[FILTER_PID_TEMP_ARR], 0, sizeof(short) * 100);
+    memset(&shm_out[FILTER_PID_HUMI_ARR], 0, sizeof(short) * 100);
+    memset(&shm_out[PID_TEMP_MODE_STATUS], 0, sizeof(short) * 100);
+
+    // 测试模式为空
+    set_test_mode(0);
+
     //----------------------------------------------------------------------------------------------------------
     // 翻蛋执行时间
     //----------------------------------------------------------------------------------------------------------
@@ -988,6 +1001,16 @@ void init_para()
     // 初始化风门校准
     //----------------------------------------------------------------------------------------------------------
     set_uval(STATUS_DAMPER_ALL_CLOSE_CAL, OFF);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 初始化翻蛋报警模式
+    //----------------------------------------------------------------------------------------------------------
+    set_uval(P_FAN_TIME, ON);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 初始化设置系统时间
+    //----------------------------------------------------------------------------------------------------------
+    set_time(S_SYSTEM_TIME_HIGH, 0);
 
     //----------------------------------------------------------------------------------------------------------
     // 启动模式
@@ -2550,12 +2573,6 @@ void damper_control_func()
                     control_damper(2, ON, 1);
                 }
             }
-
-            // 没有其他控制当前值等于设定值时，关闭风门
-            else if (current_fan_value == setting_fan_value)
-            {
-                control_damper(2, OFF, 0);
-            }
             // 没有其他控制当前值等于设定值时，关闭风门
             else
             {
@@ -3022,6 +3039,23 @@ void logic_process_humi_func()
             set_int(PID_HUMI_SUM, 0);
             set_int(PID_PERIOD_COUNT_HUMI, 0);
         }
+
+        // PV1>SP1+P/2 时,强制关闭加湿动作。
+        else if (current_humi_value > (setting_humi_value + setting_humi_pid_p_value))
+        {
+            zlog_debug(g_zlog_zc, "%-40s[PV1>(SP1+P/2)]关闭加湿电磁阀", "[logic_process_humi_func]");
+            // 关闭加湿电磁阀
+            control_spray(OFF);
+            // pid_humi_sum_en = 0;
+            set_int(PID_HUMI_SUM, 0);
+            set_int(PID_PERIOD_COUNT_HUMI, 0);
+        }
+    }
+    else
+    {
+        control_spray(OFF);
+        set_int(PID_HUMI_SUM, 0);
+        set_int(PID_PERIOD_COUNT_HUMI, 0);
     }
 }
 
@@ -3055,7 +3089,7 @@ void normal_logic_process_retemp1_func()
                 unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF1);
 
                 // 冷水模式
-                if (current_ref_temp_value < setting_ref_temp_value)
+                if (current_ref_temp_value > setting_ref_temp_value)
                 {
                     // 冷水工作模式初始化为0
                     if (!get_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT))
@@ -3255,7 +3289,7 @@ void normal_logic_process_retemp2_func()
                 unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF2);
 
                 // 冷水模式
-                if (current_ref_temp_value < setting_ref_temp_value)
+                if (current_ref_temp_value > setting_ref_temp_value)
                 {
                     // 冷水工作模式初始化为0
                     if (!get_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT))
@@ -3456,7 +3490,7 @@ void normal_logic_process_retemp3_func()
                 unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF3);
 
                 // 冷水模式
-                if (current_ref_temp_value < setting_ref_temp_value)
+                if (current_ref_temp_value > setting_ref_temp_value)
                 {
                     // 冷水工作模式初始化为0
                     if (!get_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT))
@@ -3656,7 +3690,7 @@ void normal_logic_process_retemp4_func()
                 unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF4);
 
                 // 冷水模式
-                if (current_ref_temp_value < setting_ref_temp_value)
+                if (current_ref_temp_value > setting_ref_temp_value)
                 {
                     // 冷水工作模式初始化为0
                     if (!get_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT))
@@ -3856,7 +3890,7 @@ void pre_logic_process_retemp1_func()
                 unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF1);
 
                 // 冷水模式
-                if (current_ref_temp_value < setting_ref_temp_value)
+                if (current_ref_temp_value > setting_ref_temp_value)
                 {
                     // 冷水工作模式初始化为0
                     if (!get_uval(REFLOW_TEMP_1_COLD_WATER_OPERAT_INIT))
@@ -4056,7 +4090,7 @@ void pre_logic_process_retemp2_func()
                 unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF2);
 
                 // 冷水模式
-                if (current_ref_temp_value < setting_ref_temp_value)
+                if (current_ref_temp_value > setting_ref_temp_value)
                 {
                     // 冷水工作模式初始化为0
                     if (!get_uval(REFLOW_TEMP_2_COLD_WATER_OPERAT_INIT))
@@ -4257,7 +4291,7 @@ void pre_logic_process_retemp3_func()
                 unsigned short setting_ref_temp_value = get_val(P_AO_TP_RF3);
 
                 // 冷水模式
-                if (current_ref_temp_value < setting_ref_temp_value)
+                if (current_ref_temp_value > setting_ref_temp_value)
                 {
                     // 冷水工作模式初始化为0
                     if (!get_uval(REFLOW_TEMP_3_COLD_WATER_OPERAT_INIT))
@@ -4457,7 +4491,7 @@ void pre_logic_process_retemp4_func()
                 unsigned short setting_ref_temp_value = get_uval(P_AO_TP_RF4);
 
                 // 冷水模式
-                if (current_ref_temp_value < setting_ref_temp_value)
+                if (current_ref_temp_value > setting_ref_temp_value)
                 {
                     // 冷水工作模式初始化为0
                     if (!get_uval(REFLOW_TEMP_4_COLD_WATER_OPERAT_INIT))
@@ -5880,6 +5914,7 @@ void *thread_alarm_func(void *pv)
     zlog_debug(g_zlog_zc, "%-40s进入到报警线程", "[thread_alarm_func]");
     // 传感器突变总和
     unsigned short us_pt100_val = 0;
+    
     // 回流温度报警状态
     int ref_temp_mode_old = 0;
     int di_fan_status = ON;
@@ -6524,7 +6559,6 @@ void *thread_alarm_func(void *pv)
             if (get_uval(ALARM_SUPPRESSION_TIME) == 0)
             {
                 // 报警灯闪烁
-                // set_uval(CONTROL_WARN_LIGHT, !get_val(CONTROL_WARN_LIGHT));
                 control_warn_light(!get_val(CONTROL_WARN_LIGHT));
                 control_electric_light(ON);
             }
@@ -6721,6 +6755,7 @@ int main(int argc, char *argv[])
 
             // 开启启动模式
             set_run_mode(STATUS_START_RECV);
+
             // 预热状态为1
             set_uval(R_PRE_STATUS, 1);
 
@@ -6979,21 +7014,29 @@ int main(int argc, char *argv[])
                 {
                     // 停止入孵时间计时
                     set_val(R_RUN_SECOND_STATUS, OFF);
+
                     // 清空入孵时间
                     set_time(R_RUN_SECOND_HIGH, 0);
+
                     // 获取运行秒数
                     unsigned int sys_second_time = get_time(R_RUN_SECOND_HIGH);
+
                     // 获取运行时间的天数和小数
                     struct Time sys_time = timer(sys_second_time);
                     unsigned short para_time = sys_time.days * 100 + sys_time.hours;
+
                     // 设置天数和小时
                     set_uval(R_RUN_DAY, para_time);
+
                     // 获取系统时间
                     unsigned int sys_new_time = time(NULL);
+
                     // 获取入孵时间
                     unsigned int init_new_time = sys_new_time - sys_second_time;
+
                     // 设置入孵时间
                     set_time(R_INIT_TIME_HIGH, init_new_time);
+
                     // 开始入孵时间计时
                     set_val(R_RUN_SECOND_STATUS, ON);
 
@@ -7009,6 +7052,7 @@ int main(int argc, char *argv[])
                 {
                     // 开启停止模式
                     set_run_mode(STATUS_STOP_SENT);
+
                     // 开启入孵计时
                     set_val(R_RUN_SECOND_STATUS, ON);
 
@@ -7022,6 +7066,7 @@ int main(int argc, char *argv[])
             {
                 // 开启停止模式
                 set_run_mode(STATUS_STOP_SENT);
+
                 // 开启入孵计时
                 set_val(R_RUN_SECOND_STATUS, ON);
 
@@ -7085,23 +7130,32 @@ int main(int argc, char *argv[])
         if (get_val(R_INIT_SEND) == ON)
         {
             zlog_info(g_zlog_zc, "%-40s初始化模式!", "[main]");
+
             // 停止入孵时间计时
             set_val(R_RUN_SECOND_STATUS, OFF);
+
             // 清空入孵时间
             set_time(R_RUN_SECOND_HIGH, 0);
+
             // 获取运行秒数
             unsigned int sys_second_time = get_time(R_RUN_SECOND_HIGH);
+
             // 获取运行时间的天数和小数
             struct Time sys_time = timer(sys_second_time);
             unsigned short para_time = sys_time.days * 100 + sys_time.hours;
+
             // 设置天数和小时
             set_uval(R_RUN_DAY, para_time);
+
             // 获取系统时间
             unsigned int sys_new_time = time(NULL);
+
             // 获取入孵时间
             unsigned int init_new_time = sys_new_time - sys_second_time;
+
             // 设置入孵时间
             set_time(R_INIT_TIME_HIGH, init_new_time);
+
             // 开始入孵时间计时
             set_val(R_RUN_SECOND_STATUS, ON);
         }
