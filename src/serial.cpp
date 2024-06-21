@@ -24,7 +24,7 @@ int	SerialOpen(const char * cDeviceName)
 	int fd;
 	struct termios tio;
 
-	char c_device[100];
+	char c_device[512];
 	sprintf(c_device,"/dev/%s", cDeviceName);
 
 	fd = open(c_device, O_RDWR|O_NOCTTY);

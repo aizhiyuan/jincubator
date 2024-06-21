@@ -6,6 +6,7 @@
 // 两天时间
 const int TWO_DAY_SECONDS = (60 * 60 * 24 * 2);
 short g_us_pid_temp_arr[15] = {0}; // PID容器
+unsigned short g_sync_data[65535];
 // int pid_temp_sum_en = 0;           // 温度PID积分项
 // int pid_humi_sum_en = 0;           // 湿度PID积分项
 
@@ -133,42 +134,88 @@ void init_ini_file(const char *ini_path, struct incubator_t *st_incubator)
     xini_file_t ini(ini_path);
     strcpy(st_incubator->conf_zlog_file, ini["GENERAL SETTING"]["LOG_CONF_FILE"]);
     fprintf(stdout, "%s %-40sJLOG文件:%s\n", date_str, "[init_ini_file]", st_incubator->conf_zlog_file);
-
     strcpy(st_incubator->conf_sysc_file, ini["GENERAL SETTING"]["SYNC_CONF_FILE"]);
     fprintf(stdout, "%s %-40s同步文件:%s\n", date_str, "[init_ini_file]", st_incubator->conf_sysc_file);
-
     strcpy(st_incubator->serial_device, ini["GENERAL SETTING"]["SERIAL_DEVICE"]);
     fprintf(stdout, "%s %-40s串口设备:%s\n", date_str, "[init_ini_file]", st_incubator->serial_device);
 
     st_incubator->shmem_input_key = ini["GENERAL SETTING"]["SHMEM_INPUT_KEY"];
     fprintf(stdout, "%s %-40s输入共享内存KEY:%d\n", date_str, "[init_ini_file]", st_incubator->shmem_input_key);
-
     st_incubator->shmem_output_key = ini["GENERAL SETTING"]["SHMEM_OUTPUT_KEY"];
     fprintf(stdout, "%s %-40s输出共享内存KEY:%d\n", date_str, "[init_ini_file]", st_incubator->shmem_output_key);
-
     st_incubator->shmem_record_len = ini["GENERAL SETTING"]["SHMEM_RECORD_LEN"];
     fprintf(stdout, "%s %-40s申请共享内存长度:%d\n", date_str, "[init_ini_file]", st_incubator->shmem_record_len);
-
     st_incubator->shmem_record_num = ini["GENERAL SETTING"]["SHMEM_RECORD_NUM"];
     fprintf(stdout, "%s %-40s申请共享内存长度:%d\n", date_str, "[init_ini_file]", st_incubator->shmem_record_num);
 
     strcpy(st_incubator->db_setting_ip, ini["GENERAL SETTING"]["DB_SETTING_IP"]);
     fprintf(stdout, "%s %-40s数据库路径/域名:%s\n", date_str, "[init_ini_file]", st_incubator->db_setting_ip);
-
     strcpy(st_incubator->db_setting_user, ini["GENERAL SETTING"]["DB_SETTING_USER"]);
     fprintf(stdout, "%s %-40s用户名:%s\n", date_str, "[init_ini_file]", st_incubator->db_setting_user);
-
     strcpy(st_incubator->db_setting_passwd, ini["GENERAL SETTING"]["DB_SETTING_PASSWD"]);
     fprintf(stdout, "%s %-40s密码:%s\n", date_str, "[init_ini_file]", st_incubator->db_setting_passwd);
-
     strcpy(st_incubator->db_setting_name, ini["GENERAL SETTING"]["DB_SETTING_NAME"]);
     fprintf(stdout, "%s %-40s数据库名称:%s\n", date_str, "[init_ini_file]", st_incubator->db_setting_name);
+
+    st_incubator->pt1.pt_0_temp = ini["GENERAL SETTING"]["PT1_0_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-1 温度0:%d\n", date_str, "[init_ini_file]", st_incubator->pt1.pt_0_temp);
+    st_incubator->pt1.pt_40_temp = ini["GENERAL SETTING"]["PT1_40_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-1 温度40:%d\n", date_str, "[init_ini_file]", st_incubator->pt1.pt_40_temp);
+    st_incubator->pt1.pt_0_channel = ini["GENERAL SETTING"]["PT1_0_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-1 通道值0:%d\n", date_str, "[init_ini_file]", st_incubator->pt1.pt_0_channel);
+    st_incubator->pt1.pt_40_channel = ini["GENERAL SETTING"]["PT1_40_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-1 通道值40:%d\n", date_str, "[init_ini_file]", st_incubator->pt1.pt_40_channel);
+
+    st_incubator->pt2.pt_0_temp = ini["GENERAL SETTING"]["PT2_0_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-2 温度0:%d\n", date_str, "[init_ini_file]", st_incubator->pt2.pt_0_temp);
+    st_incubator->pt2.pt_40_temp = ini["GENERAL SETTING"]["PT2_40_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-2 温度40:%d\n", date_str, "[init_ini_file]", st_incubator->pt2.pt_40_temp);
+    st_incubator->pt2.pt_0_channel = ini["GENERAL SETTING"]["PT2_0_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-2 通道值0:%d\n", date_str, "[init_ini_file]", st_incubator->pt2.pt_0_channel);
+    st_incubator->pt2.pt_40_channel = ini["GENERAL SETTING"]["PT2_40_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-2 通道值40:%d\n", date_str, "[init_ini_file]", st_incubator->pt2.pt_40_channel);
+
+    st_incubator->pt3.pt_0_temp = ini["GENERAL SETTING"]["PT3_0_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-3 温度0:%d\n", date_str, "[init_ini_file]", st_incubator->pt3.pt_0_temp);
+    st_incubator->pt3.pt_40_temp = ini["GENERAL SETTING"]["PT3_40_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-3 温度40:%d\n", date_str, "[init_ini_file]", st_incubator->pt3.pt_40_temp);
+    st_incubator->pt3.pt_0_channel = ini["GENERAL SETTING"]["PT3_0_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-3 通道值0:%d\n", date_str, "[init_ini_file]", st_incubator->pt3.pt_0_channel);
+    st_incubator->pt3.pt_40_channel = ini["GENERAL SETTING"]["PT3_40_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-3 通道值40:%d\n", date_str, "[init_ini_file]", st_incubator->pt3.pt_40_channel);
+
+    st_incubator->pt4.pt_0_temp = ini["GENERAL SETTING"]["PT4_0_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-4 温度0:%d\n", date_str, "[init_ini_file]", st_incubator->pt4.pt_0_temp);
+    st_incubator->pt4.pt_40_temp = ini["GENERAL SETTING"]["PT4_40_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-4 温度40:%d\n", date_str, "[init_ini_file]", st_incubator->pt4.pt_40_temp);
+    st_incubator->pt4.pt_0_channel = ini["GENERAL SETTING"]["PT4_0_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-4 通道值0:%d\n", date_str, "[init_ini_file]", st_incubator->pt4.pt_0_channel);
+    st_incubator->pt4.pt_40_channel = ini["GENERAL SETTING"]["PT4_40_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-4 通道值40:%d\n", date_str, "[init_ini_file]", st_incubator->pt4.pt_40_channel);
+
+    st_incubator->pt5.pt_0_temp = ini["GENERAL SETTING"]["PT5_0_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-5 温度0:%d\n", date_str, "[init_ini_file]", st_incubator->pt5.pt_0_temp);
+    st_incubator->pt5.pt_40_temp = ini["GENERAL SETTING"]["PT5_40_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-5 温度40:%d\n", date_str, "[init_ini_file]", st_incubator->pt5.pt_40_temp);
+    st_incubator->pt5.pt_0_channel = ini["GENERAL SETTING"]["PT5_0_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-5 通道值0:%d\n", date_str, "[init_ini_file]", st_incubator->pt5.pt_0_channel);
+    st_incubator->pt5.pt_40_channel = ini["GENERAL SETTING"]["PT5_40_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-5 通道值40:%d\n", date_str, "[init_ini_file]", st_incubator->pt5.pt_40_channel);
+
+    st_incubator->pt6.pt_0_temp = ini["GENERAL SETTING"]["PT6_0_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-6 温度0:%d\n", date_str, "[init_ini_file]", st_incubator->pt6.pt_0_temp);
+    st_incubator->pt6.pt_40_temp = ini["GENERAL SETTING"]["PT6_40_TEMP"];
+    fprintf(stdout, "%s %-40sPT100-6 温度40:%d\n", date_str, "[init_ini_file]", st_incubator->pt6.pt_40_temp);
+    st_incubator->pt6.pt_0_channel = ini["GENERAL SETTING"]["PT6_0_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-6 通道值0:%d\n", date_str, "[init_ini_file]", st_incubator->pt6.pt_0_channel);
+    st_incubator->pt6.pt_40_channel = ini["GENERAL SETTING"]["PT6_40_CHANNEL"];
+    fprintf(stdout, "%s %-40sPT100-6 通道值40:%d\n", date_str, "[init_ini_file]", st_incubator->pt6.pt_40_channel);
 }
 
 //----------------------------------------------------------------------------------------------------------
 // ZLOG日志初始化
 //----------------------------------------------------------------------------------------------------------
-int init_zlog_file(zlog_category_t **zlog_zc, const char *conf_zlog_file, const char *process_name)
+int init_zlog_file(const char *conf_zlog_file, const char *process_name)
 {
     char date_str[256];
     print_current_time(date_str, sizeof(date_str));
@@ -176,19 +223,19 @@ int init_zlog_file(zlog_category_t **zlog_zc, const char *conf_zlog_file, const 
     int i_ret = zlog_init(conf_zlog_file);
     if (i_ret)
     {
-        fprintf(stderr, "%s %-40s打开日志配置文件: ./jlog.conf失败!\n", date_str, "[init_zlog_file]");
+        fprintf(stderr, "%s %-40s打开日志配置文件: %s失败!\n", date_str, "[init_zlog_file]", process_name);
         return -1;
     }
 
-    fprintf(stdout, "%s %-40s打开日志配置文件: ./jlog.conf成功!\n", date_str, "[init_zlog_file]");
-    *zlog_zc = zlog_get_category(process_name);
-    if (!(*zlog_zc))
+    fprintf(stdout, "%s %-40s打开日志配置文件: %s成功!\n", date_str, "[init_zlog_file]", process_name);
+    g_zlog_zc = zlog_get_category(process_name);
+    if (!(g_zlog_zc))
     {
         fprintf(stderr, "%s %-40s日志初始化失败!\n", date_str, "[init_zlog_file]");
         zlog_fini();
         return -2;
     }
-    zlog_info(*zlog_zc, "%-40s日志初始化成功!", "[init_zlog_file]");
+    zlog_info(g_zlog_zc, "%-40s日志初始化成功!", "[init_zlog_file]");
     return 0;
 }
 
@@ -301,7 +348,6 @@ void control_cool2_4(int status)
 //----------------------------------------------------------------------------------------------------------
 void control_cool2(int type, int status)
 {
-
     // 测试模式优先
     switch (type)
     {
@@ -328,8 +374,6 @@ void control_cool2(int type, int status)
         {
             control_cool2_4(status);
         }
-        break;
-    default:
         break;
     }
 }
@@ -384,10 +428,8 @@ void control_close_damper(int status, int schedule)
     }
     else
     {
-        // 测试模式优先
         // 风门关开启，风门开关闭
         set_val(CONTROL_DAMPER_OPEN, OFF);
-        // 优先处理 测试模式
         // 当schedule为1时，风门小于设定值不会操作
         if (1 == schedule)
         {
@@ -424,8 +466,6 @@ void control_damper(int type, int status, int schedule)
             break;
         case 2:
             control_close_damper(status, schedule);
-            break;
-        default:
             break;
         }
     }
@@ -529,32 +569,8 @@ void init_para()
         }
         else
         {
-            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0) &&
-                             (get_uval(P_PT1_AO2) > 0) && (get_uval(P_PT1_AO3) > 0) && (get_uval(P_PT1_AO4) > 0) &&
-                             (get_uval(P_PT2_AO2) > 0) && (get_uval(P_PT2_AO3) > 0) && (get_uval(P_PT2_AO4) > 0) &&
-                             (get_uval(P_PT3_AO2) > 0) && (get_uval(P_PT3_AO3) > 0) && (get_uval(P_PT3_AO4) > 0) &&
-                             (get_uval(P_PT4_AO2) > 0) && (get_uval(P_PT4_AO3) > 0) && (get_uval(P_PT4_AO4) > 0) &&
-                             (get_uval(P_PT5_AO2) > 0) && (get_uval(P_PT5_AO3) > 0) && (get_uval(P_PT5_AO4) > 0) &&
-                             (get_uval(P_PT6_AO2) > 0) && (get_uval(P_PT6_AO3) > 0) && (get_uval(P_PT6_AO4) > 0);
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_time(R_RUN_SECOND_HIGH):%ld\n", get_time(R_RUN_SECOND_HIGH));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_time(R_RUN_SYSTEM_SECOND_HIGH):%ld\n", get_time(R_RUN_SYSTEM_SECOND_HIGH));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT1_AO2):%d\n", get_uval(P_PT1_AO2));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT2_AO2):%d\n", get_uval(P_PT2_AO2));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT3_AO2):%d\n", get_uval(P_PT3_AO2));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT4_AO2):%d\n", get_uval(P_PT4_AO2));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT5_AO2):%d\n", get_uval(P_PT5_AO2));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT6_AO2):%d\n", get_uval(P_PT6_AO2));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT1_AO3):%d\n", get_uval(P_PT1_AO3));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT2_AO3):%d\n", get_uval(P_PT2_AO3));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT4_AO3):%d\n", get_uval(P_PT4_AO3));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT5_AO3):%d\n", get_uval(P_PT5_AO3));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT6_AO3):%d\n", get_uval(P_PT6_AO3));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT1_AO4):%d\n", get_uval(P_PT1_AO4));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT2_AO4):%d\n", get_uval(P_PT2_AO4));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT3_AO4):%d\n", get_uval(P_PT3_AO4));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT4_AO4):%d\n", get_uval(P_PT4_AO4));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT5_AO4):%d\n", get_uval(P_PT5_AO4));
-            // zlog_info(g_zlog_zc, "[init_para]%-40sget_uval(P_PT6_AO4):%d\n", get_uval(P_PT6_AO4));
+            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0);
+
             if (!v_i_status)
             {
                 ++sync_file_index;
@@ -581,13 +597,7 @@ void init_para()
         }
         else
         {
-            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0) &&
-                             (get_uval(P_PT1_AO2) > 0) && (get_uval(P_PT1_AO3) > 0) && (get_uval(P_PT1_AO4) > 0) &&
-                             (get_uval(P_PT2_AO2) > 0) && (get_uval(P_PT2_AO3) > 0) && (get_uval(P_PT2_AO4) > 0) &&
-                             (get_uval(P_PT3_AO2) > 0) && (get_uval(P_PT3_AO3) > 0) && (get_uval(P_PT3_AO4) > 0) &&
-                             (get_uval(P_PT4_AO2) > 0) && (get_uval(P_PT4_AO3) > 0) && (get_uval(P_PT4_AO4) > 0) &&
-                             (get_uval(P_PT5_AO2) > 0) && (get_uval(P_PT5_AO3) > 0) && (get_uval(P_PT5_AO4) > 0) &&
-                             (get_uval(P_PT6_AO2) > 0) && (get_uval(P_PT6_AO3) > 0) && (get_uval(P_PT6_AO4) > 0);
+            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0);
             if (!v_i_status)
             {
                 ++sync_file_index;
@@ -614,13 +624,7 @@ void init_para()
         }
         else
         {
-            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0) &&
-                             (get_uval(P_PT1_AO2) > 0) && (get_uval(P_PT1_AO3) > 0) && (get_uval(P_PT1_AO4) > 0) &&
-                             (get_uval(P_PT2_AO2) > 0) && (get_uval(P_PT2_AO3) > 0) && (get_uval(P_PT2_AO4) > 0) &&
-                             (get_uval(P_PT3_AO2) > 0) && (get_uval(P_PT3_AO3) > 0) && (get_uval(P_PT3_AO4) > 0) &&
-                             (get_uval(P_PT4_AO2) > 0) && (get_uval(P_PT4_AO3) > 0) && (get_uval(P_PT4_AO4) > 0) &&
-                             (get_uval(P_PT5_AO2) > 0) && (get_uval(P_PT5_AO3) > 0) && (get_uval(P_PT5_AO4) > 0) &&
-                             (get_uval(P_PT6_AO2) > 0) && (get_uval(P_PT6_AO3) > 0) && (get_uval(P_PT6_AO4) > 0);
+            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0);
             if (!v_i_status)
             {
                 ++sync_file_index;
@@ -647,13 +651,7 @@ void init_para()
         }
         else
         {
-            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0) &&
-                             (get_uval(P_PT1_AO2) > 0) && (get_uval(P_PT1_AO3) > 0) && (get_uval(P_PT1_AO4) > 0) &&
-                             (get_uval(P_PT2_AO2) > 0) && (get_uval(P_PT2_AO3) > 0) && (get_uval(P_PT2_AO4) > 0) &&
-                             (get_uval(P_PT3_AO2) > 0) && (get_uval(P_PT3_AO3) > 0) && (get_uval(P_PT3_AO4) > 0) &&
-                             (get_uval(P_PT4_AO2) > 0) && (get_uval(P_PT4_AO3) > 0) && (get_uval(P_PT4_AO4) > 0) &&
-                             (get_uval(P_PT5_AO2) > 0) && (get_uval(P_PT5_AO3) > 0) && (get_uval(P_PT5_AO4) > 0) &&
-                             (get_uval(P_PT6_AO2) > 0) && (get_uval(P_PT6_AO3) > 0) && (get_uval(P_PT6_AO4) > 0);
+            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0);
             if (!v_i_status)
             {
                 ++sync_file_index;
@@ -680,13 +678,7 @@ void init_para()
         }
         else
         {
-            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0) &&
-                             (get_uval(P_PT1_AO2) > 0) && (get_uval(P_PT1_AO3) > 0) && (get_uval(P_PT1_AO4) > 0) &&
-                             (get_uval(P_PT2_AO2) > 0) && (get_uval(P_PT2_AO3) > 0) && (get_uval(P_PT2_AO4) > 0) &&
-                             (get_uval(P_PT3_AO2) > 0) && (get_uval(P_PT3_AO3) > 0) && (get_uval(P_PT3_AO4) > 0) &&
-                             (get_uval(P_PT4_AO2) > 0) && (get_uval(P_PT4_AO3) > 0) && (get_uval(P_PT4_AO4) > 0) &&
-                             (get_uval(P_PT5_AO2) > 0) && (get_uval(P_PT5_AO3) > 0) && (get_uval(P_PT5_AO4) > 0) &&
-                             (get_uval(P_PT6_AO2) > 0) && (get_uval(P_PT6_AO3) > 0) && (get_uval(P_PT6_AO4) > 0);
+            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0);
             if (!v_i_status)
             {
                 ++sync_file_index;
@@ -698,6 +690,7 @@ void init_para()
             }
         }
     }
+
     //----------------------------------------------------------------------------------------------------------
     // 第六次恢复数据
     //----------------------------------------------------------------------------------------------------------
@@ -712,13 +705,7 @@ void init_para()
         }
         else
         {
-            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0) &&
-                             (get_uval(P_PT1_AO2) > 0) && (get_uval(P_PT1_AO3) > 0) && (get_uval(P_PT1_AO4) > 0) &&
-                             (get_uval(P_PT2_AO2) > 0) && (get_uval(P_PT2_AO3) > 0) && (get_uval(P_PT2_AO4) > 0) &&
-                             (get_uval(P_PT3_AO2) > 0) && (get_uval(P_PT3_AO3) > 0) && (get_uval(P_PT3_AO4) > 0) &&
-                             (get_uval(P_PT4_AO2) > 0) && (get_uval(P_PT4_AO3) > 0) && (get_uval(P_PT4_AO4) > 0) &&
-                             (get_uval(P_PT5_AO2) > 0) && (get_uval(P_PT5_AO3) > 0) && (get_uval(P_PT5_AO4) > 0) &&
-                             (get_uval(P_PT6_AO2) > 0) && (get_uval(P_PT6_AO3) > 0) && (get_uval(P_PT6_AO4) > 0);
+            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0);
             if (!v_i_status)
             {
                 ++sync_file_index;
@@ -745,13 +732,7 @@ void init_para()
         }
         else
         {
-            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0) &&
-                             (get_uval(P_PT1_AO2) > 0) && (get_uval(P_PT1_AO3) > 0) && (get_uval(P_PT1_AO4) > 0) &&
-                             (get_uval(P_PT2_AO2) > 0) && (get_uval(P_PT2_AO3) > 0) && (get_uval(P_PT2_AO4) > 0) &&
-                             (get_uval(P_PT3_AO2) > 0) && (get_uval(P_PT3_AO3) > 0) && (get_uval(P_PT3_AO4) > 0) &&
-                             (get_uval(P_PT4_AO2) > 0) && (get_uval(P_PT4_AO3) > 0) && (get_uval(P_PT4_AO4) > 0) &&
-                             (get_uval(P_PT5_AO2) > 0) && (get_uval(P_PT5_AO3) > 0) && (get_uval(P_PT5_AO4) > 0) &&
-                             (get_uval(P_PT6_AO2) > 0) && (get_uval(P_PT6_AO3) > 0) && (get_uval(P_PT6_AO4) > 0);
+            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0);
             if (!v_i_status)
             {
                 ++sync_file_index;
@@ -778,13 +759,7 @@ void init_para()
         }
         else
         {
-            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0) &&
-                             (get_uval(P_PT1_AO2) > 0) && (get_uval(P_PT1_AO3) > 0) && (get_uval(P_PT1_AO4) > 0) &&
-                             (get_uval(P_PT2_AO2) > 0) && (get_uval(P_PT2_AO3) > 0) && (get_uval(P_PT2_AO4) > 0) &&
-                             (get_uval(P_PT3_AO2) > 0) && (get_uval(P_PT3_AO3) > 0) && (get_uval(P_PT3_AO4) > 0) &&
-                             (get_uval(P_PT4_AO2) > 0) && (get_uval(P_PT4_AO3) > 0) && (get_uval(P_PT4_AO4) > 0) &&
-                             (get_uval(P_PT5_AO2) > 0) && (get_uval(P_PT5_AO3) > 0) && (get_uval(P_PT5_AO4) > 0) &&
-                             (get_uval(P_PT6_AO2) > 0) && (get_uval(P_PT6_AO3) > 0) && (get_uval(P_PT6_AO4) > 0);
+            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0);
             if (!v_i_status)
             {
                 ++sync_file_index;
@@ -811,13 +786,7 @@ void init_para()
         }
         else
         {
-            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0) &&
-                             (get_uval(P_PT1_AO2) > 0) && (get_uval(P_PT1_AO3) > 0) && (get_uval(P_PT1_AO4) > 0) &&
-                             (get_uval(P_PT2_AO2) > 0) && (get_uval(P_PT2_AO3) > 0) && (get_uval(P_PT2_AO4) > 0) &&
-                             (get_uval(P_PT3_AO2) > 0) && (get_uval(P_PT3_AO3) > 0) && (get_uval(P_PT3_AO4) > 0) &&
-                             (get_uval(P_PT4_AO2) > 0) && (get_uval(P_PT4_AO3) > 0) && (get_uval(P_PT4_AO4) > 0) &&
-                             (get_uval(P_PT5_AO2) > 0) && (get_uval(P_PT5_AO3) > 0) && (get_uval(P_PT5_AO4) > 0) &&
-                             (get_uval(P_PT6_AO2) > 0) && (get_uval(P_PT6_AO3) > 0) && (get_uval(P_PT6_AO4) > 0);
+            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0);
             if (!v_i_status)
             {
                 ++sync_file_index;
@@ -844,13 +813,7 @@ void init_para()
         }
         else
         {
-            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0) &&
-                             (get_uval(P_PT1_AO2) > 0) && (get_uval(P_PT1_AO3) > 0) && (get_uval(P_PT1_AO4) > 0) &&
-                             (get_uval(P_PT2_AO2) > 0) && (get_uval(P_PT2_AO3) > 0) && (get_uval(P_PT2_AO4) > 0) &&
-                             (get_uval(P_PT3_AO2) > 0) && (get_uval(P_PT3_AO3) > 0) && (get_uval(P_PT3_AO4) > 0) &&
-                             (get_uval(P_PT4_AO2) > 0) && (get_uval(P_PT4_AO3) > 0) && (get_uval(P_PT4_AO4) > 0) &&
-                             (get_uval(P_PT5_AO2) > 0) && (get_uval(P_PT5_AO3) > 0) && (get_uval(P_PT5_AO4) > 0) &&
-                             (get_uval(P_PT6_AO2) > 0) && (get_uval(P_PT6_AO3) > 0) && (get_uval(P_PT6_AO4) > 0);
+            int v_i_status = (get_time(R_RUN_SECOND_HIGH) > 0) && (get_time(R_RUN_SYSTEM_SECOND_HIGH) > 0);
             if (!v_i_status)
             {
                 ++sync_file_index;
@@ -863,46 +826,399 @@ void init_para()
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------
-    // 超过10次以上不恢复数据
-    //----------------------------------------------------------------------------------------------------------
-    if (sync_file_index > 10)
+    if(sync_file_index>10)
     {
-        zlog_error(g_zlog_zc, "%-40s数据恢复失败!", "[init_para]");
+         snprintf(sync_file_name, 512, "%s_%d", g_st_jincubator.conf_sysc_file, sync_file_index);
+        v_i_rc = syn_ini_to_shm(sync_file_name, 0, 5000);
+        if (v_i_rc != 0)
+        {
+            ++sync_file_index;
+            zlog_error(g_zlog_zc, "%-40s备份文件:%s 恢复失败!", "[init_para]", sync_file_name);
+        }
     }
 
-    // 初始化PID值
-    set_time(PID_TEMP_SUM, 0);
-    set_time(PID_HUMI_SUM, 0);
-    set_time(PID_PERIOD_COUNT_MAIN_HEATER, 0);
-    set_time(PID_PERIOD_COUNT_HUMI, 0);
-    set_val(PID_TEMP_MODE_STATUS, 0);
+    // 温度40
+    if (get_uval(P_PT1_AO2) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT1_AO2:%u", "[init_para]", g_st_jincubator.pt1.pt_40_temp);
+        set_uval(P_PT1_AO2, g_st_jincubator.pt1.pt_40_temp);
+    }
+
+    if (get_uval(P_PT2_AO2) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT2_AO2:%u", "[init_para]", g_st_jincubator.pt2.pt_40_temp);
+        set_uval(P_PT2_AO2, g_st_jincubator.pt2.pt_40_temp);
+    }
+
+    if (get_uval(P_PT3_AO2) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT3_AO2:%u", "[init_para]", g_st_jincubator.pt3.pt_40_temp);
+        set_uval(P_PT3_AO2, g_st_jincubator.pt3.pt_40_temp);
+    }
+
+    if (get_uval(P_PT4_AO2) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT4_AO2:%u", "[init_para]", g_st_jincubator.pt4.pt_40_temp);
+        set_uval(P_PT4_AO2, g_st_jincubator.pt4.pt_40_temp);
+    }
+
+    if (get_uval(P_PT5_AO2) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT5_AO2:%u", "[init_para]", g_st_jincubator.pt5.pt_40_temp);
+        set_uval(P_PT5_AO2, g_st_jincubator.pt5.pt_40_temp);
+    }
+
+    if (get_uval(P_PT6_AO2) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT6_AO2:%u", "[init_para]", g_st_jincubator.pt6.pt_40_temp);
+        set_uval(P_PT6_AO2, g_st_jincubator.pt6.pt_40_temp);
+    }
+
+    // 0温度-通道值
+    if (get_uval(P_PT1_AO3) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT1_AO3:%u", "[init_para]", g_st_jincubator.pt1.pt_0_channel);
+        set_uval(P_PT1_AO3, g_st_jincubator.pt1.pt_0_channel);
+    }
+
+    if (get_uval(P_PT2_AO3) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT2_AO3:%u", "[init_para]", g_st_jincubator.pt2.pt_0_channel);
+        set_uval(P_PT2_AO3, g_st_jincubator.pt2.pt_0_channel);
+    }
+
+    if (get_uval(P_PT3_AO3) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT3_AO3:%u", "[init_para]", g_st_jincubator.pt3.pt_0_channel);
+        set_uval(P_PT3_AO3, g_st_jincubator.pt3.pt_0_channel);
+    }
+
+    if (get_uval(P_PT4_AO3) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT4_AO3:%u", "[init_para]", g_st_jincubator.pt4.pt_0_channel);
+        set_uval(P_PT4_AO3, g_st_jincubator.pt4.pt_0_channel);
+    }
+
+    if (get_uval(P_PT5_AO3) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT5_AO3:%u", "[init_para]", g_st_jincubator.pt5.pt_0_channel);
+        set_uval(P_PT5_AO3, g_st_jincubator.pt5.pt_0_channel);
+    }
+
+    if (get_uval(P_PT6_AO3) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT6_AO3:%u", "[init_para]", g_st_jincubator.pt6.pt_0_channel);
+        set_uval(P_PT6_AO3, g_st_jincubator.pt6.pt_0_channel);
+    }
+
+    // 40温度-通道值
+    if (get_uval(P_PT1_AO4) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT1_AO4:%u", "[init_para]", g_st_jincubator.pt1.pt_40_channel);
+        set_uval(P_PT1_AO4, g_st_jincubator.pt1.pt_40_channel);
+    }
+
+    if (get_uval(P_PT2_AO4) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT2_AO4:%u", "[init_para]", g_st_jincubator.pt2.pt_40_channel);
+        set_uval(P_PT2_AO4, g_st_jincubator.pt2.pt_40_channel);
+    }
+
+    if (get_uval(P_PT3_AO4) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT3_AO4:%u", "[init_para]", g_st_jincubator.pt3.pt_40_channel);
+        set_uval(P_PT3_AO4, g_st_jincubator.pt3.pt_40_channel);
+    }
+
+    if (get_uval(P_PT4_AO4) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT4_AO4:%u", "[init_para]", g_st_jincubator.pt4.pt_40_channel);
+        set_uval(P_PT4_AO4, g_st_jincubator.pt4.pt_40_channel);
+    }
+
+    if (get_uval(P_PT5_AO4) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT5_AO4:%u", "[init_para]", g_st_jincubator.pt5.pt_40_channel);
+        set_uval(P_PT5_AO4, g_st_jincubator.pt5.pt_40_channel);
+    }
+
+    if (get_uval(P_PT6_AO4) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT6_AO4:%u", "[init_para]", g_st_jincubator.pt6.pt_40_channel);
+        set_uval(P_PT6_AO4, g_st_jincubator.pt6.pt_40_channel);
+    }
 
     //----------------------------------------------------------------------------------------------------------
-    // 初始化DO输出为空
+    // 高温警报的设定
     //----------------------------------------------------------------------------------------------------------
-    memset(&shm_out[DO_INIT], 0, sizeof(short) * 24);
+    if (get_uval(P_RTEMP_AH) == 0)
+    {
+        set_uval(P_RTEMP_AH, 150);
+    }
 
     //----------------------------------------------------------------------------------------------------------
-    // 清除报警状态
+    // 低温警报的设定
     //----------------------------------------------------------------------------------------------------------
-    memset(&shm_out[P_HH0_TIME], 0, sizeof(short) * 100);
-    memset(&shm_out[P_EGG_FLIPPING_DIRECTION], 0, sizeof(short) * 100);
+    if (get_uval(P_RTEMP_AL) == 0)
+    {
+        set_uval(P_RTEMP_AL, 150);
+    }
 
     //----------------------------------------------------------------------------------------------------------
-    // 初始化状态灯为空
+    // 低温警报的温度设定模式
     //----------------------------------------------------------------------------------------------------------
-    memset(&shm_out[OUT_ST_FAN_STATUS], OFF, sizeof(short) * 100);
+    if (get_uval(P_RTEMP_ALO) == 0)
+    {
+        set_uval(P_RTEMP_ALO, 1);
+    }
 
     //----------------------------------------------------------------------------------------------------------
-    // PID过滤值
+    // 低温警报的温度设定模式
     //----------------------------------------------------------------------------------------------------------
-    memset(&shm_out[FILTER_PID_TEMP_ARR], 0, sizeof(short) * 100);
-    memset(&shm_out[FILTER_PID_HUMI_ARR], 0, sizeof(short) * 100);
-    memset(&shm_out[PID_TEMP_MODE_STATUS], 0, sizeof(short) * 100);
+    if (get_uval(P_RTEMP_ALO) == 0)
+    {
+        set_uval(P_RTEMP_ALO, 1);
+    }
 
-    // 测试模式为空
-    set_test_mode(0);
+    //----------------------------------------------------------------------------------------------------------
+    // 水冷2周期次数
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_RTEMP_ZQC) == 0)
+    {
+        set_uval(P_RTEMP_ZQC, 3);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 周期时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_RTEMP_ZQS) == 0)
+    {
+        set_uval(P_RTEMP_ZQS, 30);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 水冷2工作时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_RTEMP_GZS) == 0)
+    {
+        set_uval(P_RTEMP_GZS, 20);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 回流温度控制灵敏度
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_RTEMP_HYS) == 0)
+    {
+        set_uval(P_RTEMP_HYS, 3);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 回流温度控制灵敏度
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_RTEMP_HYS) == 0)
+    {
+        set_uval(P_RTEMP_HYS, 3);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 高温警报的设定
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TEMP_AH) == 0)
+    {
+        set_uval(P_TEMP_AH, 50);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 低温警报的设定
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TEMP_AL) == 0)
+    {
+        set_uval(P_TEMP_AL, 50);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 低温警报的温度设定模式
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TEMP_ALO) == 0)
+    {
+        set_uval(P_TEMP_ALO, 1);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // PID控制参数 比例带
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TEMP_P) == 0)
+    {
+        set_uval(P_TEMP_P, 60);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // PID控制参数 积分
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TEMP_I) == 0)
+    {
+        set_uval(P_TEMP_I, 999);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // PID控制参数 微分
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TEMP_D) == 0)
+    {
+        set_uval(P_TEMP_D, 10);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 高湿警报的设定
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_AH) == 0)
+    {
+        set_uval(P_HUM_AH, 100);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 低湿警报的设定
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_AL) == 0)
+    {
+        set_uval(P_HUM_AL, 100);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 低湿警报的温度设定模式
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_ALO) == 0)
+    {
+        set_uval(P_HUM_ALO, 1);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 强制中止加湿控制的温度点
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_SPR) == 0)
+    {
+        set_uval(P_HUM_SPR, 50);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 风门开设定值
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_SPO) == 0)
+    {
+        set_uval(P_HUM_SPO, 80);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 风门开度设定值
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_DBO) == 0)
+    {
+        set_uval(P_HUM_DBO, 30);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 输出警报的滞后温度
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HYS) == 0)
+    {
+        set_uval(P_HYS, 1);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 回流温度传感器忘挂
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH0) == 0)
+    {
+        set_uval(P_HH0, 300);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 翻蛋异常延时
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH1) == 0)
+    {
+        set_uval(P_HH1, 90);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 测试运转时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH3) == 0)
+    {
+        set_uval(P_HH3, 2);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 回流温度控制检测时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH5) == 0)
+    {
+        set_uval(P_HH5, 3);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 风扇停止警报时间长度
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH7) == 0)
+    {
+        set_uval(P_HH7, 10);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 翻蛋警报检测时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH8) == 0)
+    {
+        set_uval(P_HH8, 30);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 校准时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH9) == 0)
+    {
+        set_uval(P_HH9, 30);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 翻蛋时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH10) == 0)
+    {
+        set_uval(P_HH10, 60);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 二氧化碳灵敏度
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_CO2_HYS) == 0)
+    {
+        set_uval(P_CO2_HYS, 30);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 二氧化碳控制风门设定值
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_CO2_AH) == 0)
+    {
+        set_uval(P_CO2_AH, 2000);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 二氧化碳周期时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_CO2_ZQC) == 0)
+    {
+        set_uval(P_CO2_ZQC, 60);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 二氧化碳工作时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_CO2_GZS) == 0)
+    {
+        set_uval(P_CO2_GZS, 50);
+    }
 
     //----------------------------------------------------------------------------------------------------------
     // 翻蛋执行时间
@@ -931,11 +1247,6 @@ void init_para()
     {
         set_uval(REFLUX_TEMPERATURE, 15);
     }
-
-    //----------------------------------------------------------------------------------------------------------
-    // 风门校准状态
-    //----------------------------------------------------------------------------------------------------------
-    set_uval(STATUS_DAMPER_CHECK, OFF);
 
     //----------------------------------------------------------------------------------------------------------
     // 数据刷新时间
@@ -970,18 +1281,6 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
-    // 风门开单位时间内所需要的时间
-    //----------------------------------------------------------------------------------------------------------
-    int v_i_fan_open_time = get_uval(DAMPER_TIME_LEN_ALL_OPEN) / (get_uval(DAMPER_MAX_LEN) - get_uval(DAMPER_MIN_LEN));
-    set_uval(DAMPER_TIME_OPEN, v_i_fan_open_time);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 风门关单位时间内所需要的时间
-    //----------------------------------------------------------------------------------------------------------
-    int v_i_fan_close_time = get_uval(DAMPER_TIME_LEN_ALL_CLOSE) / (get_uval(DAMPER_MAX_LEN) - get_uval(DAMPER_MIN_LEN));
-    set_uval(DAMPER_TIME_CLOSE, v_i_fan_close_time);
-
-    //----------------------------------------------------------------------------------------------------------
     // 风门最大长度
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(DAMPER_MAX_LEN) == 0)
@@ -998,9 +1297,74 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
-    // 初始化风门校准
+    // 风门开单位时间内所需要的时间
     //----------------------------------------------------------------------------------------------------------
-    set_uval(STATUS_DAMPER_ALL_CLOSE_CAL, OFF);
+    int v_i_fan_open_time = get_uval(DAMPER_TIME_LEN_ALL_OPEN) / (get_uval(DAMPER_MAX_LEN) - get_uval(DAMPER_MIN_LEN));
+    set_uval(DAMPER_TIME_OPEN, v_i_fan_open_time);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 风门关单位时间内所需要的时间
+    //----------------------------------------------------------------------------------------------------------
+    int v_i_fan_close_time = get_uval(DAMPER_TIME_LEN_ALL_CLOSE) / (get_uval(DAMPER_MAX_LEN) - get_uval(DAMPER_MIN_LEN));
+    set_uval(DAMPER_TIME_CLOSE, v_i_fan_close_time);
+
+    // 初始化PID值
+    set_time(PID_TEMP_SUM, 0);
+    set_time(PID_HUMI_SUM, 0);
+    set_time(PID_PERIOD_COUNT_MAIN_HEATER, 0);
+    set_time(PID_PERIOD_COUNT_HUMI, 0);
+    set_val(PID_TEMP_MODE_STATUS, 0);
+
+    memset(shm_old, 0, sizeof(short) * 1000);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 初始化DO输出为空
+    //----------------------------------------------------------------------------------------------------------
+    memset(&shm_out[DO_INIT], 0, sizeof(short) * 24);
+    memset(&shm_out[DI_INIT], 0, sizeof(short) * 24);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 清除报警状态
+    //----------------------------------------------------------------------------------------------------------
+    memset(&shm_out[P_HH0_TIME], 0, sizeof(short) * 100);
+    memset(&shm_out[THERE_IS_AN_EGG_FLIPPING_SIGNAL_ALARM], 0, sizeof(short) * 100);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 测试模式初始化
+    //----------------------------------------------------------------------------------------------------------
+    memset(&shm_out[R_BTN_TP_MAIN], 0, sizeof(short) * 14);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 初始化状态灯为空
+    //----------------------------------------------------------------------------------------------------------
+    memset(&shm_out[OUT_ST_FAN_STATUS], OFF, sizeof(short) * 100);
+
+    //----------------------------------------------------------------------------------------------------------
+    // PID过滤值
+    //----------------------------------------------------------------------------------------------------------
+    memset(&shm_out[FILTER_PID_TEMP_ARR], 0, sizeof(short) * 100);
+    memset(&shm_out[FILTER_PID_HUMI_ARR], 0, sizeof(short) * 100);
+    memset(&shm_out[PID_TEMP_MODE_STATUS], 0, sizeof(short) * 100);
+
+    // 重置运行时间
+    // 获取当前入孵日期
+    unsigned int current_incubation_date = get_time(R_INIT_TIME_HIGH);
+    // 获取当前系统日期
+    unsigned int current_system_date = time(NULL);
+    // 获取入孵秒数
+    unsigned int current_running_seconds = current_system_date - current_incubation_date;
+    // 40天秒数
+    unsigned int current_40_days_and_seconds = 60 * 60 * 24 * 40;
+
+    if (current_running_seconds < current_40_days_and_seconds)
+    {
+        set_time(R_RUN_SECOND_HIGH, current_running_seconds);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 风门校准状态
+    //----------------------------------------------------------------------------------------------------------
+    set_uval(STATUS_DAMPER_CHECK, OFF);
 
     //----------------------------------------------------------------------------------------------------------
     // 初始化翻蛋报警模式
@@ -1010,7 +1374,34 @@ void init_para()
     //----------------------------------------------------------------------------------------------------------
     // 初始化设置系统时间
     //----------------------------------------------------------------------------------------------------------
-    set_time(S_SYSTEM_TIME_HIGH, 0);
+    set_time(S_SYSTEM_TIME_HIGH, 0xffffffff);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 有翻蛋信号初始化
+    //----------------------------------------------------------------------------------------------------------
+    set_uval(EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
+    set_uval(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
+    //----------------------------------------------------------------------------------------------------------
+    // 回流温度报警设置初始化
+    //----------------------------------------------------------------------------------------------------------
+    set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, ON);
+    set_uval(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, ON);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 历史事件初始化
+    //----------------------------------------------------------------------------------------------------------
+    set_uold(P_HH0, get_uval(P_HH0));
+    set_uold(P_HH1, get_uval(P_HH1));
+    set_uold(P_HH2, get_uval(P_HH2));
+    set_uold(P_HH3, get_uval(P_HH3));
+    set_uold(P_HH4, get_uval(P_HH4));
+    set_uold(P_HH5, get_uval(P_HH5));
+    set_uold(P_HH6, get_uval(P_HH6));
+    set_uold(P_HH7, get_uval(P_HH7));
+    set_uold(P_HH8, get_uval(P_HH8));
+    set_uold(P_HH9, get_uval(P_HH9));
+    set_uold(P_HH10, get_uval(P_HH10));
+    set_uold(P_HH11, get_uval(P_HH11));
 
     //----------------------------------------------------------------------------------------------------------
     // 启动模式
@@ -1018,15 +1409,19 @@ void init_para()
     if (get_val(RUN_MODE_STATUS))
     {
         wait_ms(get_val(RUN_MODE_TIME) * 1000);
+        // 开启启动模式
+        // set_run_mode(STATUS_START_SEND);
+        unsigned short run_mode = get_run_mode(1);
+        if (!((run_mode & STATUS_START_RECV) || (run_mode & STARTS_PRE_RECV)))
+        {
+            // 开启停止模式
+            set_run_mode(STATUS_STOP_SENT);
+        }
     }
     else
     {
-        // 关闭启动模式
-        set_val(R_START_SEND, OFF);
-        set_val(R_START_RECV, OFF);
         // 开启停止模式
-        set_val(R_STOP_SEND, ON);
-        set_val(R_STOP_RECV, OFF);
+        set_run_mode(STATUS_STOP_SENT);
     }
 }
 
@@ -1035,6 +1430,8 @@ void init_para()
 //----------------------------------------------------------------------------------------------------------
 int syn_shm_to_ini(const char *file_name, unsigned short index, int size)
 {
+    // unsigned short tmp_data[65535];
+    // memcpy(tmp_data, &shm_out[index], sizeof(short) * size);
     FILE *file = NULL, *md5_file = NULL; // 文件指
     // xini_file_t ini(file);
     char c_name[256] = "";
@@ -1051,8 +1448,49 @@ int syn_shm_to_ini(const char *file_name, unsigned short index, int size)
         return -1;
     }
 
+    // if (index >= DI_INIT)
+    // {
+    //     memset(&tmp_data[index], 0, sizeof(short) * 48);
+    // }
+
+    // if (index >= R_BTN_TP_MAIN)
+    // {
+    //     memset(&tmp_data[R_BTN_TP_MAIN], 0, sizeof(short) * 14);
+    // }
+
+    // if (index >= P_HH0_TIME)
+    // {
+    //     memset(&tmp_data[R_BTN_TP_MAIN], 0, sizeof(short) * 100);
+    // }
+
+    // if (index >= P_EGG_FLIPPING_DIRECTION)
+    // {
+    //     memset(&tmp_data[P_EGG_FLIPPING_DIRECTION], 0, sizeof(short) * 100);
+    // }
+
+    // if (index >= OUT_ST_FAN_STATUS)
+    // {
+    //     memset(&tmp_data[OUT_ST_FAN_STATUS], 0, sizeof(short) * 100);
+    // }
+
+    // if (index >= FILTER_PID_TEMP_ARR)
+    // {
+    //     memset(&tmp_data[FILTER_PID_TEMP_ARR], 0, sizeof(short) * 100);
+    // }
+
+    // if (index >= FILTER_PID_HUMI_ARR)
+    // {
+    //     memset(&tmp_data[FILTER_PID_HUMI_ARR], 0, sizeof(short) * 100);
+    // }
+
+    // if (index >= PID_TEMP_MODE_STATUS)
+    // {
+    //     memset(&tmp_data[PID_TEMP_MODE_STATUS], 0, sizeof(short) * 100);
+    // }
+
     // 写入二进制数据
     fwrite(&shm_out[index], sizeof(unsigned short), size, file);
+
     // 关闭文件
     fclose(file);
 
@@ -1090,6 +1528,7 @@ int syn_ini_to_shm(const char *file_name, unsigned short index, int size)
     int i_ret = 0;
     int bytes_read = 0;
     int md5_read = 0;
+    int i_return = 0;
 
     snprintf(c_name, 256, "%s.dat", file_name);
     snprintf(c_md5_name, 256, "%s.md5", file_name);
@@ -1123,9 +1562,11 @@ int syn_ini_to_shm(const char *file_name, unsigned short index, int size)
     {
         // zlog_debug(g_zlog_zc, "%-40s文件:%s 恢复数据","[syn_ini_to_shm]", c_name);
         md5_read = fread(&shm_out[index], sizeof(unsigned short), size, file);
+        fclose(file);
+        return 0;
     }
     fclose(file);
-    return 0;
+    return -1;
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -1614,44 +2055,44 @@ void preheat_set_para()
     set_uval(P_AO_TP_RF4, 0);
 
     // 预热温度配置
-    short current_para_value = get_val(P_PRE_TP_MAIN);
-    zlog_info(g_zlog_zc, "%-40s更新预热值温度配置 [%d]", "[preheat_set_para]", current_para_value);
-    set_uval(P_AO_TP_MAIN, current_para_value);
+    short pre_tp_main = get_val(P_PRE_TP_MAIN);
+    zlog_info(g_zlog_zc, "%-40s更新预热值温度配置 [%d]", "[preheat_set_para]", pre_tp_main);
+    set_uval(P_AO_TP_MAIN, pre_tp_main);
 
     // 预热湿度配置
-    current_para_value = get_val(P_PRE_HM);
-    zlog_info(g_zlog_zc, "%-40s更新预热值湿度配置 [%d]", "[preheat_set_para]", current_para_value);
-    set_uval(P_AO_HM, current_para_value);
+    short pre_hm = get_val(P_PRE_HM);
+    zlog_info(g_zlog_zc, "%-40s更新预热值湿度配置 [%d]", "[preheat_set_para]", pre_hm);
+    set_uval(P_AO_HM, pre_hm);
 
     // 预热二氧化碳配置
-    current_para_value = get_val(P_PRE_CO);
-    zlog_info(g_zlog_zc, "%-40s更新预热值二氧化碳配置 [%d]", "[preheat_set_para]", current_para_value);
-    set_uval(P_AO_CO, current_para_value);
+    short pre_co2 = get_val(P_PRE_CO);
+    zlog_info(g_zlog_zc, "%-40s更新预热值二氧化碳配置 [%d]", "[preheat_set_para]", pre_co2);
+    set_uval(P_AO_CO, pre_co2);
 
     // 预热风门配置
-    current_para_value = get_val(P_PRE_AD);
-    zlog_info(g_zlog_zc, "%-40s更新预热值风门配置 [%d]", "[preheat_set_para]", current_para_value);
-    set_uval(P_AO_AD, current_para_value);
+    short pre_ad = get_val(P_PRE_AD);
+    zlog_info(g_zlog_zc, "%-40s更新预热值风门配置 [%d]", "[preheat_set_para]", pre_ad);
+    set_uval(P_AO_AD, pre_ad);
 
     // 预热回流温度1配置
-    current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF1);
-    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度1配置 [%d]", "[preheat_set_para]", current_para_value);
-    set_uval(P_AO_TP_RF1, current_para_value);
+    short pre_tp_rf1 = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF1);
+    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度1配置 [%d]", "[preheat_set_para]", pre_tp_rf1);
+    set_uval(P_AO_TP_RF1, pre_tp_rf1);
 
     // 预热回流温度2配置
-    current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF2);
-    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度2配置 [%d]", "[preheat_set_para]", current_para_value);
-    set_uval(P_AO_TP_RF2, current_para_value);
+    short pre_tp_rf2 = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF2);
+    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度2配置 [%d]", "[preheat_set_para]", pre_tp_rf2);
+    set_uval(P_AO_TP_RF2, pre_tp_rf2);
 
     // 预热回流温度3配置
-    current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF3);
-    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度3配置 [%d]", "[preheat_set_para]", current_para_value);
-    set_uval(P_AO_TP_RF3, current_para_value);
+    short pre_tp_rf3 = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF3);
+    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度3配置 [%d]", "[preheat_set_para]", pre_tp_rf3);
+    set_uval(P_AO_TP_RF3, pre_tp_rf3);
 
     // 预热回流温度4配置
-    current_para_value = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF4);
-    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度4配置 [%d]", "[preheat_set_para]", current_para_value);
-    set_uval(P_AO_TP_RF4, current_para_value);
+    short pre_tp_rf4 = get_val(P_AO_TP_MAIN) + get_val(P_PRE_TP_RF4);
+    zlog_info(g_zlog_zc, "%-40s更新预热值回流温度4配置 [%d]", "[preheat_set_para]", pre_tp_rf4);
+    set_uval(P_AO_TP_RF4, pre_tp_rf4);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -1659,48 +2100,51 @@ void preheat_set_para()
 //----------------------------------------------------------------------------------------------------------
 void run_sys_time()
 {
-    static unsigned short old_init_new_time = 0;
-    if ((++old_init_new_time) >= 4)
+    zlog_debug(g_zlog_zc, "%-40s进入到系统时间函数", "[run_sys_time]");
+    // 判断设置系统时间是否被更改
+    unsigned int set_sys_time = get_time(S_SYSTEM_TIME_HIGH);
+    if (set_sys_time != 0xffffffff)
     {
-        zlog_debug(g_zlog_zc, "%-40s进入到系统时间函数", "[run_sys_time]");
-        // 判断设置系统时间是否被更改
-        if (get_time_old(S_SYSTEM_TIME_HIGH) != get_time(S_SYSTEM_TIME_HIGH))
+        if (set_sys_time > 0)
         {
-            unsigned int set_sys_time = get_time(S_SYSTEM_TIME_HIGH);
-            if (set_sys_time > 0)
-            {
-                // 设置系统时间
-                set_system_time(set_sys_time);
-                system("hwclock -w");
-            }
-            set_time_old(S_SYSTEM_TIME_HIGH, set_sys_time);
+            // 设置系统时间
+            set_system_time(set_sys_time);
+            system("hwclock -w");
         }
+        set_time(S_SYSTEM_TIME_HIGH, 0xffffffff);
+    }
 
-        // 判断程序运行时间是否被修改
-        unsigned int run_sys_second_time = get_time(S_RUN_SYSTEM_SECOND_HIGH);
-        if (run_sys_second_time != 0xffffffff)
-        {
-            zlog_debug(g_zlog_zc, "%-40s正在设置程序运行时间 [%u]", "[run_sys_time]", run_sys_second_time);
-            // 设置程序运行时间
-            set_val(R_RUN_SYSTEM_SECOND_STATUS, OFF);
-            set_time(R_RUN_SYSTEM_SECOND_HIGH, run_sys_second_time);
-            set_val(R_RUN_SYSTEM_SECOND_STATUS, ON);
-            set_time(S_RUN_SYSTEM_SECOND_HIGH, 0xffffffff);
-        }
+    // 判断程序运行时间是否被修改
+    unsigned int run_sys_second_time = get_time(S_RUN_SYSTEM_SECOND_HIGH);
+    if (run_sys_second_time != 0xffffffff)
+    {
+        zlog_debug(g_zlog_zc, "%-40s正在设置程序运行时间 [%u]", "[run_sys_time]", run_sys_second_time);
+        // 设置程序运行时间
+        set_val(R_RUN_SYSTEM_SECOND_STATUS, OFF);
+        set_time(R_RUN_SYSTEM_SECOND_HIGH, run_sys_second_time);
+        set_val(R_RUN_SYSTEM_SECOND_STATUS, ON);
+        set_time(S_RUN_SYSTEM_SECOND_HIGH, 0xffffffff);
+    }
 
-        // 判断入孵时间是否被修改
-        // unsigned int run_incubation_second_time = get_time(S_RUN_SECOND_HIGH);
-        // if (run_incubation_second_time != 0xffffffff)
-        // {
-        //     zlog_debug(g_zlog_zc, "%-40s正在设置入孵运行时间 [%u]", "[run_sys_time]", run_incubation_second_time);
-        //     // 设置程序运行时间
-        //     set_val(R_RUN_SECOND_STATUS, OFF);
-        //     set_time(R_RUN_SECOND_HIGH, run_incubation_second_time);
+    // 判断入孵时间是否被修改
+    // unsigned int run_incubation_second_time = get_time(S_RUN_SECOND_HIGH);
+    // if (run_incubation_second_time != 0xffffffff)
+    // {
+    //     zlog_debug(g_zlog_zc, "%-40s正在设置入孵运行时间 [%u]", "[run_sys_time]", run_incubation_second_time);
+    //     // 设置程序运行时间
+    //     set_val(R_RUN_SECOND_STATUS, OFF);
+    //     set_time(R_RUN_SECOND_HIGH, run_incubation_second_time);
 
-        //     set_val(R_RUN_SECOND_STATUS, ON);
-        //     set_time(S_RUN_SECOND_HIGH, 0xffffffff);
-        // }
+    //     set_val(R_RUN_SECOND_STATUS, ON);
+    //     set_time(S_RUN_SECOND_HIGH, 0xffffffff);
+    // }
 
+    // 获取系统时间
+    unsigned int sys_new_time = time(NULL);
+
+    // 预热模式不对入孵天数和日期进行计算
+    if (get_val(R_RUN_SECOND_STATUS))
+    {
         // 获取运行秒数
         unsigned int sys_second_time = get_time(R_RUN_SECOND_HIGH);
 
@@ -1710,9 +2154,6 @@ void run_sys_time()
 
         // 设置天数和小时
         set_uval(R_RUN_DAY, para_time);
-
-        // 获取系统时间
-        unsigned int sys_new_time = time(NULL);
 
         // 获取入孵时间
         unsigned int init_new_time = sys_new_time - sys_second_time;
@@ -1727,136 +2168,146 @@ void run_sys_time()
             // 开启停止模式
             set_run_mode(STATUS_STOP_SENT);
         }
+    }
 
-        // 将系统时间输出到共享内存中
-        set_time(R_SYSTEM_TIME_HIGH, sys_new_time);
-        old_init_new_time = 0;
+    // 将系统时间输出到共享内存中
+    set_time(R_SYSTEM_TIME_HIGH, sys_new_time);
 
-        //----------------------------------------------------------------------------------------------------------
-        // 时间改变时 触发数据变更
-        //----------------------------------------------------------------------------------------------------------
-        // 回流温度传感器忘挂
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH0) != get_uold(P_HH0))
+    // 更新风门校正值
+    if ((get_old(P_EDIT_AD) != get_val(P_EDIT_AD)))
+    {
+        if ((get_val(P_EDIT_AD) >= get_val(DAMPER_MIN_LEN)) && (get_val(P_EDIT_AD) <= get_val(DAMPER_MAX_LEN)))
         {
-            // 设置回流温度低温报警时间
-            set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, get_val(P_HH0) * 60);
-            // 设置回流温度高温报警时间
-            set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, 0);
-
-            set_uold(P_HH0, get_uval(P_HH0));
+            // 校准模式更新风门
+            set_val(R_AI_AD, get_val(P_EDIT_AD));
         }
+        set_old(P_EDIT_AD, 0xffff);
+        set_val(P_EDIT_AD, 0xffff);
+    }
 
-        //----------------------------------------------------------------------------------------------------------
-        // 翻蛋异常延时
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH1) != get_uold(P_HH1))
-        {
-            // 设置有翻蛋信号报警时间为 HH1_VAL * 60
-            set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(P_HH1) * 60);
+    //----------------------------------------------------------------------------------------------------------
+    // 时间改变时 触发数据变更
+    //----------------------------------------------------------------------------------------------------------
+    // 回流温度传感器忘挂
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH0) != get_uold(P_HH0))
+    {
+        // 设置回流温度低温报警时间
+        set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, get_val(P_HH0) * 60);
+        // 设置回流温度低温报警时间
+        // set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, 0);
 
-            // 设置没有翻蛋信号报警时间为0
-            set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
+        set_uold(P_HH0, get_uval(P_HH0));
+    }
 
-            set_uold(P_HH1, get_uval(P_HH1));
-        }
+    //----------------------------------------------------------------------------------------------------------
+    // 翻蛋异常延时
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH1) != get_uold(P_HH1))
+    {
+        // 设置有翻蛋信号报警时间为 HH1_VAL * 60
+        set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(P_HH1) * 60);
 
-        //----------------------------------------------------------------------------------------------------------
-        // 出雏器高温报警延时
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH2) != get_uold(P_HH2))
-        {
-            set_uold(P_HH2, get_uval(P_HH2));
-        }
+        // 设置没有翻蛋信号报警时间为0
+        // set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
 
-        //----------------------------------------------------------------------------------------------------------
-        // 测试运转时间
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH3) != get_uold(P_HH3))
-        {
-            // 测试模式时间
-            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
-            set_uold(P_HH3, get_uval(P_HH3));
-        }
+        set_uold(P_HH1, get_uval(P_HH1));
+    }
 
-        //----------------------------------------------------------------------------------------------------------
-        // 消毒时间
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH4) != get_uold(P_HH4))
-        {
-            set_uold(P_HH4, get_uval(P_HH4));
-        }
+    //----------------------------------------------------------------------------------------------------------
+    // 出雏器高温报警延时
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH2) != get_uold(P_HH2))
+    {
+        set_uold(P_HH2, get_uval(P_HH2));
+    }
 
-        //----------------------------------------------------------------------------------------------------------
-        // 回流温度控制检测时间
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH5) != get_uold(P_HH5))
-        {
-            // 设置 回流温度 高温报警时间
-            set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, get_val(P_HH5) * 60);
-            // 设置 回流温度 低温报警时间
-            set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, 0);
+    //----------------------------------------------------------------------------------------------------------
+    // 测试运转时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH3) != get_uold(P_HH3))
+    {
+        // 测试模式时间
+        set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
+        set_uold(P_HH3, get_uval(P_HH3));
+    }
 
-            set_uold(P_HH5, get_uval(P_HH5));
-        }
+    //----------------------------------------------------------------------------------------------------------
+    // 消毒时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH4) != get_uold(P_HH4))
+    {
+        set_uold(P_HH4, get_uval(P_HH4));
+    }
 
-        //----------------------------------------------------------------------------------------------------------
-        // 干燥开关最长运行时间
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH6) != get_uold(P_HH6))
-        {
-            set_uold(P_HH6, get_uval(P_HH6));
-        }
+    //----------------------------------------------------------------------------------------------------------
+    // 回流温度控制检测时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH5) != get_uold(P_HH5))
+    {
+        // 设置 回流温度 高温报警时间
+        set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, get_val(P_HH5) * 60);
+        // 设置 回流温度 低温报警时间
+        // set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, 0);
+        set_uold(P_HH5, get_uval(P_HH5));
+    }
 
-        //----------------------------------------------------------------------------------------------------------
-        // 风扇停止警报时间长度
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH7) != get_uold(P_HH7))
-        {
-            // 风机停止报警时间
-            set_uval(FAN_ALARM_TIME, get_val(P_HH7) * 60);
-            set_uold(P_HH7, get_uval(P_HH7));
-        }
+    //----------------------------------------------------------------------------------------------------------
+    // 干燥开关最长运行时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH6) != get_uold(P_HH6))
+    {
+        set_uold(P_HH6, get_uval(P_HH6));
+    }
 
-        //----------------------------------------------------------------------------------------------------------
-        // 翻蛋警报检测时间
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH8) != get_uold(P_HH8))
-        {
-            // 设置 没有 翻蛋报警信号的时间为  (HH8_VAL * 60)
-            set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(P_HH8) * 60);
-            // 设置 有翻蛋 报警信号的时间为0
-            set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
+    //----------------------------------------------------------------------------------------------------------
+    // 风扇停止警报时间长度
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH7) != get_uold(P_HH7))
+    {
+        // 风机停止报警时间
+        set_uval(FAN_ALARM_TIME, get_val(P_HH7) * 60);
+        set_uold(P_HH7, get_uval(P_HH7));
+    }
 
-            set_uold(P_HH8, get_uval(P_HH8));
-        }
+    //----------------------------------------------------------------------------------------------------------
+    // 翻蛋警报检测时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH8) != get_uold(P_HH8))
+    {
+        // 设置 没有 翻蛋报警信号的时间为  (HH8_VAL * 60)
+        set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(P_HH8) * 60);
+        // 设置 有翻蛋 报警信号的时间为0
+        // set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
 
-        //----------------------------------------------------------------------------------------------------------
-        // 风门开10MM后 再启动的延时时间
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH9) != get_uold(P_HH9))
-        {
-            // 设置校准时间
-            set_uval(CALIBRATION_RUN_TIME, get_uval(P_HH9) * 60);
+        set_uold(P_HH8, get_uval(P_HH8));
+    }
 
-            set_uold(P_HH9, get_uval(P_HH9));
-        }
+    //----------------------------------------------------------------------------------------------------------
+    // 风门开10MM后 再启动的延时时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH9) != get_uold(P_HH9))
+    {
+        // 设置校准时间
+        set_uval(CALIBRATION_RUN_TIME, get_uval(P_HH9) * 60);
 
-        //----------------------------------------------------------------------------------------------------------
-        // 翻蛋时间
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH10) != get_uold(P_HH10))
-        {
-            set_uold(P_HH10, get_uval(P_HH10));
-        }
+        set_uold(P_HH9, get_uval(P_HH9));
+    }
 
-        //----------------------------------------------------------------------------------------------------------
-        // 高湿报警延时时间
-        //----------------------------------------------------------------------------------------------------------
-        if (get_uval(P_HH11) != get_uold(P_HH11))
-        {
-            set_uold(P_HH11, get_uval(P_HH11));
-        }
+    //----------------------------------------------------------------------------------------------------------
+    // 翻蛋时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH10) != get_uold(P_HH10))
+    {
+        set_uold(P_HH10, get_uval(P_HH10));
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 高湿报警延时时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH11) != get_uold(P_HH11))
+    {
+        set_uold(P_HH11, get_uval(P_HH11));
     }
 }
 
@@ -1881,7 +2332,7 @@ void test_control_mode()
                 set_val(CONTROL_MAIN_HEAT, ON);
                 zlog_debug(g_zlog_zc, "%-40s触发开启 主加热按钮", "[test_control_mode]");
                 set_val(TEST_CONTROL_MODE, status_test_control);
-                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+                set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
             break;
         }
@@ -1892,7 +2343,7 @@ void test_control_mode()
             set_val(CONTROL_AUX_HEAT, ON);
             zlog_debug(g_zlog_zc, "%-40s触发开启 附加热按钮", "[test_control_mode]");
             set_val(TEST_CONTROL_MODE, status_test_control);
-            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             break;
         }
         case 0x04:
@@ -1902,7 +2353,7 @@ void test_control_mode()
             control_open_damper(ON);
             zlog_debug(g_zlog_zc, "%-40s触发开启 开门按钮", "[test_control_mode]");
             set_uval(TEST_CONTROL_MODE, status_test_control);
-            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             break;
         }
         case 0x08:
@@ -1912,7 +2363,7 @@ void test_control_mode()
             control_close_damper(ON, 0);
             zlog_debug(g_zlog_zc, "%-40s触发开启 关门按钮", "[test_control_mode]");
             set_uval(TEST_CONTROL_MODE, status_test_control);
-            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             break;
         }
         case 0x10:
@@ -1925,7 +2376,7 @@ void test_control_mode()
                 set_val(CONTROL_SPRAY, ON);
                 zlog_debug(g_zlog_zc, "%-40s触发开启 加湿按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
-                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+                set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
             break;
         }
@@ -1959,7 +2410,7 @@ void test_control_mode()
             }
             set_val(EGG_FLIPPING_TRIGGER_STATUS, ON);
             zlog_debug(g_zlog_zc, "%-40s触发开启 翻蛋控制", "[test_control_mode]");
-
+            set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             set_uval(TEST_CONTROL_MODE, status_test_control);
             break;
         }
@@ -1970,7 +2421,7 @@ void test_control_mode()
             set_val(CONTROL_COOL, ON);
             zlog_debug(g_zlog_zc, "%-40s触发开启 水冷按钮", "[test_control_mode]");
             set_uval(TEST_CONTROL_MODE, status_test_control);
-            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             break;
         }
         case 0x80:
@@ -1983,7 +2434,7 @@ void test_control_mode()
                 control_cool2_1(ON);
                 zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷1按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
-                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+                set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
             break;
         }
@@ -1997,7 +2448,7 @@ void test_control_mode()
                 control_cool2_2(ON);
                 zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷2按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
-                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+                set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
             break;
         }
@@ -2011,7 +2462,7 @@ void test_control_mode()
                 control_cool2_3(ON);
                 zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷3按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
-                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+                set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
             break;
         }
@@ -2025,7 +2476,7 @@ void test_control_mode()
                 control_cool2_4(ON);
                 zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷4按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
-                set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+                set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
             break;
         }
@@ -2036,7 +2487,7 @@ void test_control_mode()
             set_val(CONTROL_BLOWER, ON);
             zlog_debug(g_zlog_zc, "%-40s触发开启 鼓风机", "[test_control_mode]");
             set_uval(TEST_CONTROL_MODE, status_test_control);
-            set_uval(R_BTN_TIME, get_val(P_HH3) * 60);
+            set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             break;
         }
         default:
@@ -2047,7 +2498,7 @@ void test_control_mode()
     }
     else if ((status_test_control == 0) && (get_val(TEST_CONTROL_MODE) > 0))
     {
-        set_uval(R_BTN_TIME, 0);
+        set_uval(TEST_BTN_TIME, 0);
         switch (get_uval(TEST_CONTROL_MODE))
         {
         case 0x01:
@@ -2178,7 +2629,7 @@ void test_control_mode()
     }
     else if ((status_test_control > 0) && (get_val(TEST_CONTROL_MODE) > 0) && (status_test_control == get_val(TEST_CONTROL_MODE)))
     {
-        if (get_uval(R_BTN_TIME) == 0)
+        if (get_uval(TEST_BTN_TIME) == 0)
         {
             switch (get_uval(TEST_CONTROL_MODE))
             {
@@ -2311,7 +2762,8 @@ void test_control_mode()
     }
     else if ((status_test_control > 0) && (get_val(TEST_CONTROL_MODE) > 0) && (status_test_control != get_val(TEST_CONTROL_MODE)))
     {
-        set_uval(R_BTN_TIME, 0);
+        set_uval(TEST_BTN_TIME, 0);
+
         // 关闭主加热
         set_val(CONTROL_MAIN_HEAT, OFF);
         set_val(TEST_MAIN_HEAT_MODE, OFF);
@@ -2321,12 +2773,12 @@ void test_control_mode()
         set_val(TEST_AUX_HEAT_MODE, OFF);
 
         // 关闭开门
-        control_close_damper(OFF, 0);
-        set_val(TEST_DAMPER_CLOSE_MODE, OFF);
+        control_open_damper(OFF);
+        set_val(TEST_DAMPER_OPEN_MODE, OFF);
 
         // 关闭关门
-        set_val(CONTROL_MAIN_HEAT, OFF);
-        set_val(TEST_MAIN_HEAT_MODE, OFF);
+        control_close_damper(OFF, 0);
+        set_val(TEST_DAMPER_CLOSE_MODE, OFF);
 
         // 关闭加湿
         set_val(CONTROL_SPRAY, OFF);
@@ -2363,6 +2815,47 @@ void test_control_mode()
         set_test_mode(0);
         set_val(TEST_CONTROL_MODE, OFF);
     }
+    else if ((status_test_control == 0))
+    {
+        set_uval(TEST_BTN_TIME, 0);
+        // 关闭主加热
+        set_val(TEST_MAIN_HEAT_MODE, OFF);
+
+        // 关闭附加热
+        set_val(TEST_AUX_HEAT_MODE, OFF);
+
+        // 关闭开门
+        set_val(TEST_DAMPER_OPEN_MODE, OFF);
+
+        // 关闭关门
+        set_val(TEST_DAMPER_CLOSE_MODE, OFF);
+
+        // 关闭加湿
+        set_val(TEST_SPRAY_MODE, OFF);
+
+        // 关闭翻蛋
+        set_val(TEST_FILP_EGG_MODE, OFF);
+
+        // 关闭水冷
+        set_val(TEST_COOL_MODE, OFF);
+
+        // 关闭 辅助水冷1
+        set_val(TEST_COOL2_1_MODE, OFF);
+
+        // 关闭 辅助水冷2
+        set_val(TEST_COOL2_2_MODE, OFF);
+
+        // 关闭 辅助水冷3
+        set_val(TEST_COOL2_3_MODE, OFF);
+
+        // 关闭 辅助水冷4
+        set_val(TEST_COOL2_4_MODE, OFF);
+
+        // 关闭  压板升
+        set_val(TEST_BLOWER_MODE, OFF);
+        // 清空
+        set_val(TEST_CONTROL_MODE, OFF);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -2372,20 +2865,6 @@ void damper_control_func()
 {
     zlog_debug(g_zlog_zc, "%-40s进入到风门控制函数", "[damper_control_func]");
     // 正在校正风门，到全关位置，校正完成变量显示0FF
-
-    if (get_old(P_EDIT_AD) != get_val(P_EDIT_AD))
-    {
-        // 校准模式更新风门
-        if (get_val(P_EDIT_AD) > 0)
-        {
-            set_val(R_AI_AD, get_val(P_EDIT_AD));
-        }
-        else
-        {
-            set_val(R_AI_AD, 0);
-        }
-        set_old(P_EDIT_AD, get_val(P_EDIT_AD));
-    }
 
     // 获取风门当前值
     unsigned short current_fan_value = get_val(R_AI_AD);
@@ -2406,14 +2885,17 @@ void damper_control_func()
 
                 // 将时间清空
                 set_val(CONTROL_DB_CLOSE_TO_OPEN_TIME, 0);
+
                 // 开启从关到开计时
                 set_val(CONTROL_DB_CLOSE_TO_OPEN_TIME_STATUS, ON);
 
                 // 改变状态
                 set_val(CONTROL_DB_OPEN_CALIBRATION_STATUS, ON);
+                zlog_debug(g_zlog_zc, "%-40s风门校验 关门到开门 开始计时", "[damper_control_func]");
             }
             else
             {
+                zlog_debug(g_zlog_zc, "%-40s风门校验 风门关", "[damper_control_func]");
                 control_damper(2, ON, 0);
             }
         }
@@ -2438,9 +2920,11 @@ void damper_control_func()
 
                 // 改变状态
                 set_val(CONTROL_DB_CLISE_CALIBRATION_STATUS, ON);
+                zlog_debug(g_zlog_zc, "%-40s风门校验 开门到关门 开始计时", "[damper_control_func]");
             }
             else
             {
+                zlog_debug(g_zlog_zc, "%-40s风门校验 风门关到风门开", "[damper_control_func]");
                 control_damper(1, ON, 0);
             }
         }
@@ -2464,9 +2948,12 @@ void damper_control_func()
 
                 // 清除风门校准状态
                 set_val(STATUS_DAMPER_CHECK, 0);
+
+                zlog_debug(g_zlog_zc, "%-40s风门校验 停止计时退出校验", "[damper_control_func]");
             }
             else
             {
+                zlog_debug(g_zlog_zc, "%-40s风门校验 风门开到风门关", "[damper_control_func]");
                 control_damper(2, ON, 0);
             }
         }
@@ -2487,6 +2974,7 @@ void damper_control_func()
             {
                 // 开启风门
                 control_damper(1, ON, 0);
+                zlog_debug(g_zlog_zc, "%-40s风门设定值0 高温报警 风门开", "[damper_control_func]");
             }
 
             // 二氧化碳报警
@@ -2496,6 +2984,7 @@ void damper_control_func()
                 {
                     // 开启风门
                     control_damper(1, ON, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值0 二氧化碳报警 风门开", "[damper_control_func]");
                 }
                 else
                 {
@@ -2511,8 +3000,9 @@ void damper_control_func()
 
                 if (get_uval(CARBON_DIOXIDE_STOP_TIME) > 0)
                 {
-                    // 开启风门
+                    // 风门停止
                     control_damper(1, OFF, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值0 二氧化碳报警 风门停止", "[damper_control_func]");
                 }
                 else
                 {
@@ -2524,16 +3014,23 @@ void damper_control_func()
                         set_val(CARBON_DIOXIDE_INIT, 0);
                     }
                 }
+
+                if (!get_uval(CARBON_DIOXIDE_STOP_TIME) && !get_uval(CARBON_DIOXIDE_OPERATING_TIME))
+                {
+                    // 风门停止
+                    control_damper(1, OFF, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值0 二氧化碳报警 风门停止", "[damper_control_func]");
+                }
             }
 
             // 触发高湿时，开始开风门。开到DBO位置。
-            else if (get_val(HIGH_HUMI_ALARM_STATUS) && (get_val(R_AI_TP_MAIN) >= get_val(LOW_TEMP_ALARM_VALUE)))
+            else if (get_val(HIGH_HUMI_ALARM_STATUS) && (get_val(R_AI_TP_MAIN) > get_val(LOW_TEMP_ALARM_VALUE)))
             {
-
                 if (current_fan_value == get_val(P_HUM_DBO))
                 {
-                    // 开启风门
+                    // 风门停止
                     control_damper(1, OFF, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值0 高湿报警 风门停止", "[damper_control_func]");
                 }
 
                 // 风门当前值小于DBO设定值
@@ -2541,23 +3038,26 @@ void damper_control_func()
                 {
                     // 开启风门
                     control_damper(1, ON, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值0 高湿报警 风门开", "[damper_control_func]");
                 }
 
                 if (current_fan_value > get_val(P_HUM_DBO))
                 {
                     // 关闭风门
-                    control_damper(2, ON, 1);
+                    control_damper(2, ON, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值0 高湿报警 风门关", "[damper_control_func]");
                 }
             }
 
             // 实际湿度在（设定湿度+SPO）值以上时，开始开风门。开到DBO位置。
-            else if ((get_val(R_AI_HM) >= (get_val(P_AO_HM) + get_val(P_HUM_SPO))) && (get_val(R_AI_TP_MAIN) >= get_val(LOW_TEMP_ALARM_VALUE)))
+            else if ((get_val(R_AI_HM) >= (get_val(P_AO_HM) + get_val(P_HUM_SPO))) && (get_val(R_AI_TP_MAIN) > get_val(LOW_TEMP_ALARM_VALUE)))
             {
                 // 风门当前值小于DBO设定值
                 if (current_fan_value == get_val(P_HUM_DBO))
                 {
                     // 开启风门
                     control_damper(1, OFF, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值0 设定湿度+SPO 风门停止", "[damper_control_func]");
                 }
 
                 // 风门当前值小于DBO设定值
@@ -2565,18 +3065,21 @@ void damper_control_func()
                 {
                     // 开启风门
                     control_damper(1, ON, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值0 设定湿度+SPO 风门开", "[damper_control_func]");
                 }
 
                 if (current_fan_value > get_val(P_HUM_DBO))
                 {
                     // 关闭风门
-                    control_damper(2, ON, 1);
+                    control_damper(2, ON, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值0 设定湿度+SPO 风门关", "[damper_control_func]");
                 }
             }
             // 没有其他控制当前值等于设定值时，关闭风门
             else
             {
-                control_damper(2, ON, 1);
+                control_damper(2, ON, 0);
+                zlog_debug(g_zlog_zc, "%-40s风门设定值0 风门关", "[damper_control_func]");
             }
         }
         else
@@ -2587,6 +3090,7 @@ void damper_control_func()
             {
                 // 开启风门
                 control_damper(1, ON, 0);
+                zlog_debug(g_zlog_zc, "%-40s风门设定值>0 风门最小开度 风门开", "[damper_control_func]");
             }
             else
             {
@@ -2595,6 +3099,7 @@ void damper_control_func()
                 {
                     // 开启风门
                     control_damper(1, ON, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值>0 高温报警 风门开", "[damper_control_func]");
                 }
 
                 // 二氧化碳报警
@@ -2604,6 +3109,7 @@ void damper_control_func()
                     {
                         // 开启风门
                         control_damper(1, ON, 0);
+                        zlog_debug(g_zlog_zc, "%-40s风门设定值>0 二氧化碳报警 风门开", "[damper_control_func]");
                     }
                     else
                     {
@@ -2621,6 +3127,7 @@ void damper_control_func()
                     {
                         // 开启风门
                         control_damper(1, OFF, 0);
+                        zlog_debug(g_zlog_zc, "%-40s风门设定值>0 二氧化碳报警 风门停止", "[damper_control_func]");
                     }
                     else
                     {
@@ -2632,21 +3139,30 @@ void damper_control_func()
                             set_val(CARBON_DIOXIDE_INIT, 0);
                         }
                     }
+
+                    if (!get_uval(CARBON_DIOXIDE_STOP_TIME) && !get_uval(CARBON_DIOXIDE_OPERATING_TIME))
+                    {
+                        // 风门停止
+                        control_damper(1, OFF, 0);
+                        zlog_debug(g_zlog_zc, "%-40s风门设定值>0 二氧化碳报警 风门停止", "[damper_control_func]");
+                    }
                 }
 
                 // 触发高湿时，开始开风门。开到DBO位置。
-                else if (get_val(HIGH_HUMI_ALARM_STATUS) && (get_val(R_AI_TP_MAIN) >= get_val(LOW_TEMP_ALARM_VALUE)))
+                else if (get_val(HIGH_HUMI_ALARM_STATUS) && (get_val(R_AI_TP_MAIN) > get_val(LOW_TEMP_ALARM_VALUE)))
                 {
                     // 风门当前值小于DBO设定值
                     if (current_fan_value < get_val(P_HUM_DBO))
                     {
                         // 开启风门
                         control_damper(1, ON, 0);
+                        zlog_debug(g_zlog_zc, "%-40s风门设定值>0 高湿报警 风门开", "[damper_control_func]");
                     }
                     else
                     {
                         // 关闭风门
                         control_damper(1, OFF, 0);
+                        zlog_debug(g_zlog_zc, "%-40s风门设定值>0 高湿报警 风门停止", "[damper_control_func]");
                     }
                 }
 
@@ -2658,11 +3174,13 @@ void damper_control_func()
                     {
                         // 开启风门
                         control_damper(1, ON, 0);
+                        zlog_debug(g_zlog_zc, "%-40s风门设定值>0 设定湿度+SPO 风门开", "[damper_control_func]");
                     }
                     else
                     {
                         // 关闭风门
                         control_damper(1, OFF, 0);
+                        zlog_debug(g_zlog_zc, "%-40s风门设定值>0 设定湿度+SPO 风门停止", "[damper_control_func]");
                     }
                 }
 
@@ -2671,23 +3189,29 @@ void damper_control_func()
                 {
                     // 关风门
                     control_damper(2, ON, 1);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值>0 温度低关风门 风门关", "[damper_control_func]");
                 }
 
+                // PID控制风门
                 else if ((get_val(R_AI_TP_MAIN) >= (get_val(P_AO_TP_MAIN) - get_x10_val(P_TEMP_P) / 2)) && (get_val(R_AI_TP_MAIN) <= (get_val(P_AO_TP_MAIN) + get_x10_val(P_TEMP_P) / 2)))
                 {
+                    // 风门周期小于周期
                     if (get_time(PID_PERIOD_COUNT_MAIN_HEATER) < (get_uval(P_TEMP_TO)))
                     {
-                        if ((get_int(PID_ON_COUNT_DB_OPEN) > 0) && get_val(PID_AD_OPEN_STATUS))
+                        if ((get_int(PID_ON_COUNT_DB_OPEN) > 0) && get_val(PID_AD_OPEN_STATUS) && (get_val(R_AI_TP_MAIN) > get_val(P_AO_TP_MAIN)))
                         {
                             control_damper(1, ON, 0);
+                            zlog_debug(g_zlog_zc, "%-40s风门设定值>0 PID 风门开", "[damper_control_func]");
                         }
-                        else if ((get_int(PID_ON_COUNT_DB_CLOSE) > 0) && get_val(PID_AD_CLOSE_STATUS))
+                        else if ((get_int(PID_ON_COUNT_DB_CLOSE) > 0) && get_val(PID_AD_CLOSE_STATUS) && (get_val(R_AI_TP_MAIN) < get_val(P_AO_TP_MAIN)))
                         {
                             control_damper(2, ON, 1);
+                            zlog_debug(g_zlog_zc, "%-40s风门设定值>0 PID 风门关", "[damper_control_func]");
                         }
                         else
                         {
                             control_damper(1, OFF, 0);
+                            zlog_debug(g_zlog_zc, "%-40s风门设定值>0 PID 风门停止", "[damper_control_func]");
                         }
                     }
                 }
@@ -2697,12 +3221,19 @@ void damper_control_func()
                 {
                     // 开启风门
                     control_damper(1, ON, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值>0 温度高关风门 风门开", "[damper_control_func]");
                 }
 
                 // 没有其他控制当前值等于设定值时，关闭风门
                 else if (current_fan_value == setting_fan_value)
                 {
                     control_damper(2, OFF, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值>0 测量值==设定值 风门停止", "[damper_control_func]");
+                }
+                else
+                {
+                    control_damper(2, OFF, 0);
+                    zlog_debug(g_zlog_zc, "%-40s风门设定值>0 风门停止", "[damper_control_func]");
                 }
 
                 // 当设置值等于实际值关闭风门
@@ -2764,7 +3295,6 @@ void logic_process_temp_func()
     else if ((current_temp_value >= (setting_temp_value - setting_temp_pid_p_value)) && (current_temp_value <= (setting_temp_value + setting_temp_pid_p_value)))
     {
         zlog_debug(g_zlog_zc, "%-40s[(PV2<SP2-P/2)<=(PV2<=SP2+P/2)]PID范围", "[logic_process_temp_func]");
-
         pid_temp_init();
 
         if (get_val(PID_TEMP_MODE_STATUS) == OFF)
@@ -2907,7 +3437,7 @@ void logic_process_temp_func()
         else
         {
             // 主加热
-            if (get_time(PID_ON_COUNT_MAIN_HEATER) > 0)
+            if ((get_time(PID_ON_COUNT_MAIN_HEATER) > 0) && (current_temp_value < setting_temp_value))
             {
                 // 主加热-开启
                 control_main_heat(ON);
@@ -2918,7 +3448,7 @@ void logic_process_temp_func()
             }
 
             // 水冷
-            if (get_time(PID_ON_COUNT_COOL) > 0)
+            if ((get_time(PID_ON_COUNT_COOL) > 0) && (current_temp_value > setting_temp_value))
             {
                 // 水冷电磁阀
                 control_cool(ON);
@@ -2946,22 +3476,6 @@ void logic_process_temp_func()
         set_time(PID_PERIOD_COUNT_MAIN_HEATER, 0);
         set_val(PID_TEMP_MODE_STATUS, 0);
     }
-
-    if (current_temp_value < setting_temp_value)
-    {
-        zlog_debug(g_zlog_zc, "%-40s[get_val(R_AI_TP_MAIN)<get_val(P_AO_TP_MAIN)]关闭水冷", "[logic_process_temp_func]");
-
-        // 水冷关闭
-        control_cool(OFF);
-    }
-
-    if (current_temp_value > setting_temp_value)
-    {
-        zlog_debug(g_zlog_zc, "%-40s[get_val(R_AI_TP_MAIN)>get_val(P_AO_TP_MAIN)]关闭主加热", "[logic_process_temp_func]");
-
-        // 主加热-关闭
-        control_main_heat(OFF);
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -2987,8 +3501,8 @@ void logic_process_humi_func()
     short setting_temp_min_value = get_val(LOW_TEMP_ALARM_VALUE);
     // 获取PID的P值
 
-    // 当PV2>=AL2。时，
-    if ((current_temp_value >= setting_temp_min_value))
+    // 当PV2>AL2。时，
+    if ((current_temp_value > setting_temp_min_value))
     {
         // 当PV1<SP1-P/2,加湿电磁阀启动,同时输出加湿状态指示灯
         if (current_humi_value < (setting_humi_value - setting_humi_pid_p_value))
@@ -3005,7 +3519,6 @@ void logic_process_humi_func()
         else if ((current_humi_value >= (setting_humi_value - setting_humi_pid_p_value)) && (current_humi_value <= (setting_humi_value + setting_humi_pid_p_value)))
         {
             zlog_debug(g_zlog_zc, "%-40s[(PV1<SP1-P/2)<=(PV1<=SP1+P/2)]PID范围", "[logic_process_humi_func]");
-
             pid_humi_init();
 
             if (get_time(PID_PERIOD_COUNT_HUMI) == 0)
@@ -3017,7 +3530,7 @@ void logic_process_humi_func()
             }
             else
             {
-                if (get_time(PID_ON_COUNT_HUMI) > 0)
+                if ((get_time(PID_ON_COUNT_HUMI) > 0) && (current_humi_value < setting_humi_value))
                 {
                     // 加湿-开启
                     control_spray(ON);
@@ -4873,7 +5386,6 @@ void temp_update_para_data()
 
     if ((get_uval(P_RTEMP_ALO) == OFF))
     {
-
         // 设置回流模式1-高温报警值
         set_val(HIGH_TEMP_ALARM_VALUE_FOR_REFLUX_TEMP_1, get_val(P_RTEMP_AH));
         // 设置回流模式1-低温报警值
@@ -5041,6 +5553,7 @@ void timer_callback_func(int signo)
         // 孵蛋运行时间累加
         if (get_val(R_RUN_SECOND_STATUS))
         {
+
             set_time(R_RUN_SECOND_HIGH, get_time(R_RUN_SECOND_HIGH) + 1);
         }
 
@@ -5070,9 +5583,9 @@ void timer_callback_func(int signo)
         //----------------------------------------------------------------------------------------------------------
         // 测试控制时间处理模块
         //----------------------------------------------------------------------------------------------------------
-        if (get_uval(R_BTN_TIME) > 0)
+        if (get_uval(TEST_BTN_TIME) > 0)
         {
-            set_uval(R_BTN_TIME, get_uval(R_BTN_TIME) - 1);
+            set_uval(TEST_BTN_TIME, get_uval(TEST_BTN_TIME) - 1);
         }
 
         //----------------------------------------------------------------------------------------------------------
@@ -5083,6 +5596,8 @@ void timer_callback_func(int signo)
         {
             set_uval(CONTROL_DAMPER_OPEN, OFF);
             set_uval(R_AI_AD, get_uval(DAMPER_MAX_LEN));
+            set_val(TEST_DAMPER_OPEN_MODE, OFF);
+            set_val(R_BTN_DR_ON, OFF);
         }
         else
         {
@@ -5109,10 +5624,10 @@ void timer_callback_func(int signo)
                 if ((get_uval(AIR_DOOR_OPEN_RUNNING_TIME) == 0) && (get_uval(AIR_DOOR_OPEN_RUNNING_STATUS) == 1))
                 {
                     // 风门当前值小于最大值时
-                    if (get_uval(R_AI_AD) < get_uval(DAMPER_MAX_LEN))
+                    if ((get_val(R_AI_AD) < get_val(DAMPER_MAX_LEN)))
                     {
                         // 风门当前值加1
-                        set_uval(R_AI_AD, get_uval(R_AI_AD) + 1);
+                        set_uval(R_AI_AD, get_val(R_AI_AD) + 1);
 
                         // 设置风门开的状态为0时
                         set_uval(AIR_DOOR_OPEN_RUNNING_STATUS, 0);
@@ -5130,8 +5645,10 @@ void timer_callback_func(int signo)
         // 获取风门全关检测停止控制风门
         if (get_uval(DETECT_DAMPER_FULLY_CLOSE) > 0)
         {
-            set_uval(CONTROL_DAMPER_OPEN, OFF);
+            set_uval(CONTROL_DAMPER_CLOSE, OFF);
             set_uval(R_AI_AD, get_uval(DAMPER_MIN_LEN));
+            set_val(TEST_DAMPER_CLOSE_MODE, OFF);
+            set_val(R_BTN_DR_OFF, OFF);
         }
         else
         {
@@ -5157,10 +5674,10 @@ void timer_callback_func(int signo)
                 if ((get_uval(AIR_DOOR_CLOSING_RUNNING_TIME) == 0) && (get_uval(AIR_DOOR_CLOSING_RUNNING_STATUS) == 1))
                 {
                     // 当前值大于等于风门最小值时
-                    if (get_uval(R_AI_AD) >= get_uval(DAMPER_MIN_LEN))
+                    if ((get_val(R_AI_AD) > get_val(DAMPER_MIN_LEN)))
                     {
                         // 风门当前值减一
-                        set_uval(R_AI_AD, get_uval(R_AI_AD) - 1);
+                        set_val(R_AI_AD, get_val(R_AI_AD) - 1);
 
                         // 设置风门关的状态为0时
                         set_uval(AIR_DOOR_CLOSING_RUNNING_STATUS, 0);
@@ -5322,6 +5839,7 @@ void timer_callback_func(int signo)
         {
             set_time(PID_PERIOD_COUNT_MAIN_HEATER, get_time(PID_PERIOD_COUNT_MAIN_HEATER) - 1);
         }
+
         // 主加热时间
         if (get_time(PID_ON_COUNT_MAIN_HEATER) > 0)
         {
@@ -5516,6 +6034,7 @@ void *data_collection_pt100_func(void *pv)
                 {
                     run_ai_tp_sum += run_ai_tp_data[i][j];
                 }
+
                 if (i > 1)
                 {
                     index = R_AI_TP_MAIN + i + 2;
@@ -5526,20 +6045,24 @@ void *data_collection_pt100_func(void *pv)
                     index = R_AI_TP_MAIN + i;
                     shm_index = P_EDIT_TP_MAIN + i;
                 }
+
                 // 使用滑动窗口获取通道平均值
                 run_ai_tp_aver = run_ai_tp_sum / filter_len;
+
                 // 设置浮点精度
                 sprintf(d_tp_data, "%0.2f", run_ai_tp_aver);
 
                 // 校准模式标志位
                 float f_tp_data = atof(d_tp_data) + get_fval(shm_index);
+
                 // 将浮点数转为无符号整数数据
                 int run_ai_i_tp = f_tp_data * 100;
+
                 // 过滤异常数据
                 unsigned short run_ao_c_shm = ((run_ai_i_tp > 32767) || (run_ai_i_tp < -32767)) ? 0 : run_ai_i_tp;
                 // zlog_debug(g_zlog_zc,
                 //            "%-40s通道值 [%d] Val-Offset [%0.4f] Val-Divi [%0.4f] Val-slope [%u]  Ref-Std0 [%u] 当前通道值 [%u] 当前温度 [%0.4f] 当前差值[%d] 最终温度 [%0.4f] 最终温度 [%d]",
-                //            "[data_collection_pt100_func]",i + 1, run_ao_r_low, run_ao_r_high, run_ao_c_low,
+                //            "[data_collection_pt100_func]", i + 1, run_ao_r_low, run_ao_r_high, run_ao_c_low,
                 //            run_ao_c_high, run_ai_c_tp,
                 //            atof(d_tp_data), get_val(shm_index), f_tp_data, run_ao_c_shm);
 
@@ -5655,6 +6178,7 @@ void *data_collection_pt100_func(void *pv)
                         break;
                     }
                     }
+
                     // 传输实际值
                     set_uval(index, run_ao_c_shm);
                 }
@@ -5696,14 +6220,14 @@ void *data_collection_co2_func(void *pv)
 
     unsigned short i_recv_data = 0;
     char *c_seral_name = g_st_jincubator.serial_device;
-
+    zlog_info(g_zlog_zc, "%-40s正在打开串口!", "[data_collection_co2_func]");
     int i_serial_fd = SerialOpen(c_seral_name);
     if (i_serial_fd < 0)
     {
         zlog_error(g_zlog_zc, "%-40s串口打开失败", "[data_collection_co2_func]");
         pthread_exit(NULL);
     }
-    zlog_info(g_zlog_zc, "%-40s创建CO2串口线程成功!", "[data_collection_co2_func]");
+    zlog_info(g_zlog_zc, "%-40s串口打开成功!", "[data_collection_co2_func]");
     // 设置波特率
     SerialSetSpeed(i_serial_fd, i_bandrate);
 
@@ -5722,7 +6246,6 @@ void *data_collection_co2_func(void *pv)
         // 接收数据
         wait_ms(1000);
         i_recv_len = SerialRead(i_serial_fd, b_cmd_recvbuf, 1024, i_cmd_wait_time_out, i_cmd_read_time_out);
-
         if (i_recv_len > 0)
         {
             // zlog_debug(g_zlog_zc, "%-40s[%s] 接收读取数据[%d]:", "[data_collection_co2_func]", c_seral_name, i_recv_len);
@@ -5738,7 +6261,6 @@ void *data_collection_co2_func(void *pv)
                 if (get_val(CARBON_DIOXIDE_CALIBRATION_STATUS))
                 {
                     short co2_difference = i_data_value - 400;
-
                     set_val(P_EDIT_CO2_VALUE, co2_difference);
                     set_val(CARBON_DIOXIDE_CALIBRATION_STATUS, 0);
                 }
@@ -5758,7 +6280,6 @@ void *data_collection_co2_func(void *pv)
                 }
 
                 // printf("%d\n", (&shm_out[P_EDIT_CO]));
-
                 // zlog_debug(g_zlog_zc, "%-40s[%s] 接收到CO2 [%u]", "[data_collection_co2_func]", c_seral_name, i_data_value);
             }
             else
@@ -5842,6 +6363,7 @@ void *flip_egg_func(void *pv)
                 // 计算时间差
                 double elapsed_time = (end.tv_sec - start.tv_sec) +
                                       (end.tv_nsec - start.tv_nsec) / 1e9;
+
                 // 将浮点数转为整型，只获取秒数
                 int sys_sub_time = elapsed_time;
                 if ((sys_sub_time >= 0) && (sys_sub_time <= get_val(EGG_FLIPP_INGINTERVAL)))
@@ -5852,6 +6374,7 @@ void *flip_egg_func(void *pv)
                         set_uval(FILP_EGG_ON, ON);
                         set_uval(FILP_EGG_OFF, OFF);
                     }
+
                     // 翻蛋方向-右
                     else
                     {
@@ -5914,12 +6437,24 @@ void *thread_alarm_func(void *pv)
     zlog_debug(g_zlog_zc, "%-40s进入到报警线程", "[thread_alarm_func]");
     // 传感器突变总和
     unsigned short us_pt100_val = 0;
-    
+
     // 回流温度报警状态
     int ref_temp_mode_old = 0;
-    int di_fan_status = ON;
     int di_fan_mode = ON;
     int status_fan_mode = ON;
+
+    //----------------------------------------------------------------------------------------------------------
+    // 有翻蛋信号初始化
+    //----------------------------------------------------------------------------------------------------------
+    set_uval(EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
+    set_uval(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 回流温度报警设置初始化
+    //----------------------------------------------------------------------------------------------------------
+    set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, ON);
+    set_uval(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, ON);
+
     while (ON)
     {
         // 更新报警点数值
@@ -5965,7 +6500,6 @@ void *thread_alarm_func(void *pv)
         // 高湿 报警
         // 当PV1>=AH1+HYS,输出高湿警报指示灯。
         //----------------------------------------------------------------------------------------------------------
-
         if (get_val(R_AI_HM) >= (get_val(HIGH_HUMI_ALARM_VALUE) + get_val(P_HYS)))
         {
             // 开启高湿警报状态灯
@@ -6160,7 +6694,8 @@ void *thread_alarm_func(void *pv)
         //----------------------------------------------------------------------------------------------------------
         // 回流温度 报警灯
         //----------------------------------------------------------------------------------------------------------
-        int ref_temp_mode = get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) + // 回流温度1 高温报警
+        int ref_temp_mode = get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) +
+                            // 回流温度1 高温报警
                             (get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2)
                              << 1) + // 回流温度2 高温报警
                             (get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3)
@@ -6176,65 +6711,73 @@ void *thread_alarm_func(void *pv)
                             (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4)
                              << 7); // 回流温度4 低温报警
 
-        if (ref_temp_mode > 0)
+        // 优先处理高温报警
+        if ((
+                //----------------------------------------------------------------------------------------------------------
+                // 回流温度1 高温报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) +
+                //----------------------------------------------------------------------------------------------------------
+                // 回流温度2 高温报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2) +
+                //----------------------------------------------------------------------------------------------------------
+                // 回流温度3 高温报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3) +
+                //----------------------------------------------------------------------------------------------------------
+                // 回流温度4 高温报警
+                //----------------------------------------------------------------------------------------------------------
+                get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4)) > 0)
         {
             // 开启 回流温度 报警灯
             set_val(OUT_ST_REF_TEMP_ALARM, ON);
-            if (ref_temp_mode != ref_temp_mode_old)
+            set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, ON);
+            if (get_val(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS) == ON)
             {
-                if ((
-                        //----------------------------------------------------------------------------------------------------------
-                        // 回流温度1 低温报警
-                        //----------------------------------------------------------------------------------------------------------
-                        get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1) +
-                        //----------------------------------------------------------------------------------------------------------
-                        // 回流温度2 低温报警
-                        //----------------------------------------------------------------------------------------------------------
-                        get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2) +
-                        //----------------------------------------------------------------------------------------------------------
-                        // 回流温度3 低温报警
-                        //----------------------------------------------------------------------------------------------------------
-                        get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3) +
-                        //----------------------------------------------------------------------------------------------------------
-                        // 回流温度4 低温报警
-                        //----------------------------------------------------------------------------------------------------------
-                        get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4)) > 0)
-                {
-                    // 设置回流温度低温报警时间
-                    set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, get_val(P_HH0) * 60);
-                    // 设置回流温度高温报警时间
-                    set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, 0);
-                }
+                // 设置 回流温度 高温报警时间
+                set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, get_val(P_HH5) * 60);
+                // set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, 0);
+                set_val(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, 0);
+            }
+        }
+        else if ((
+                     //----------------------------------------------------------------------------------------------------------
+                     // 回流温度1 低温报警
+                     //----------------------------------------------------------------------------------------------------------
+                     get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1) +
+                     //----------------------------------------------------------------------------------------------------------
+                     // 回流温度2 低温报警
+                     //----------------------------------------------------------------------------------------------------------
+                     get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2) +
+                     //----------------------------------------------------------------------------------------------------------
+                     // 回流温度3 低温报警
+                     //----------------------------------------------------------------------------------------------------------
+                     get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3) +
+                     //----------------------------------------------------------------------------------------------------------
+                     // 回流温度4 低温报警
+                     //----------------------------------------------------------------------------------------------------------
+                     get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4)) > 0)
+        {
+            // 开启 回流温度 报警灯
+            set_val(OUT_ST_REF_TEMP_ALARM, ON);
+            set_val(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, ON);
+            if (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS) == ON)
+            {
+                // 设置回流温度低温报警时间
+                set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, get_val(P_HH0) * 60);
+                // 设置回流温度高温报警时间
+                // set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, 0);
 
-                if ((
-                        //----------------------------------------------------------------------------------------------------------
-                        // 回流温度1 高温报警
-                        //----------------------------------------------------------------------------------------------------------
-                        get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) +
-                        //----------------------------------------------------------------------------------------------------------
-                        // 回流温度2 高温报警
-                        //----------------------------------------------------------------------------------------------------------
-                        get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2) +
-                        //----------------------------------------------------------------------------------------------------------
-                        // 回流温度3 高温报警
-                        //----------------------------------------------------------------------------------------------------------
-                        get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3) +
-                        //----------------------------------------------------------------------------------------------------------
-                        // 回流温度4 高温报警
-                        //----------------------------------------------------------------------------------------------------------
-                        get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4)) > 0)
-                {
-                    //  zlog_debug(g_zlog_zc, "%-40s[报警线程] 回流温度高温报警!", "[thread_alarm_func]");
-                    // 设置 回流温度 高温报警时间
-                    set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, get_val(P_HH5) * 60);
-                    set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, 0);
-                }
-                ref_temp_mode_old = ref_temp_mode;
+                set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, 0);
             }
         }
         else
         {
+            // 关闭 回流温度 报警灯
             set_val(OUT_ST_REF_TEMP_ALARM, OFF);
+            set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, ON);
+            set_val(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, ON);
         }
 
         //----------------------------------------------------------------------------------------------------------
@@ -6250,28 +6793,27 @@ void *thread_alarm_func(void *pv)
                 set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(P_HH1) * 60);
 
                 // 设置没有翻蛋信号报警时间为0
-                set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
+                // set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
 
                 // 翻蛋响铃赋值状态为OFF
                 set_uval(EGG_FLIPPING_SIGNAL_RINGING_STATUS, OFF);
             }
-
-            // 当翻蛋赋值状态为OFF 翻蛋响铃时间为0
-            if (
-                // 翻蛋响铃 状态值 = OFF 时
-                (get_val(EGG_FLIPPING_SIGNAL_RINGING_STATUS) == OFF) &&
-                // 有翻蛋信号报警时间 <= 0 时
-                (get_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME) == OFF))
-            {
-                // 开启 翻蛋报警灯
-                set_uval(OUT_ST_EGG_ALARM, ON);
-            }
             else
             {
-                // 关闭 翻蛋报警
-                set_uval(OUT_ST_EGG_ALARM, OFF);
+                // 当翻蛋赋值状态为OFF 翻蛋响铃时间为0
+                if (
+                    // 有翻蛋信号报警时间 <= 0 时
+                    (get_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME) == OFF))
+                {
+                    // 开启 翻蛋报警灯
+                    set_uval(OUT_ST_EGG_ALARM, ON);
+                }
+                else
+                {
+                    // 关闭 翻蛋报警
+                    set_uval(OUT_ST_EGG_ALARM, OFF);
+                }
             }
-
             set_uval(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
         }
         else
@@ -6282,13 +6824,12 @@ void *thread_alarm_func(void *pv)
                 // 设置 没有 翻蛋报警信号的时间为  (HH8_VAL * 60)
                 set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(P_HH8) * 60);
                 // 设置 有翻蛋 报警信号的时间为0
-                set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
+                // set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
                 // 设置 没有使没有翻蛋信号报警灯 状态为OFF 防止重复 赋值
                 set_uval(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS, OFF);
             }
             // 开启 翻蛋报警灯
             set_uval(OUT_ST_EGG_ALARM, ON);
-
             set_uval(EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
         }
 
@@ -6330,7 +6871,7 @@ void *thread_alarm_func(void *pv)
         // 先判断是否接通电源
         if (get_val(DETECT_FAN))
         {
-            di_fan_status = ON;
+            status_fan_mode = ON;
             set_uval(FAN_ALARM_TIME, 0);
             di_fan_mode = 0;
             set_uval(OUT_ST_FAN_ALARM, OFF);
@@ -6347,14 +6888,7 @@ void *thread_alarm_func(void *pv)
             // 立即报警
             set_uval(OUT_ST_FAN_ALARM, ON);
             // 如果是停止模式则10分钟后报警
-            if ((get_val(R_START_RECV) == ON) || (get_val(R_PRE_RECV) == ON))
-            {
-                status_fan_mode = ON;
-                // 接收到风扇停止后
-                set_uval(FAN_ALARM_TIME, 0);
-                di_fan_mode = 1;
-            }
-            else
+            if ((get_val(R_STOP_RECV) == ON))
             {
                 if (status_fan_mode)
                 {
@@ -6363,6 +6897,14 @@ void *thread_alarm_func(void *pv)
                     di_fan_mode = 1;
                     status_fan_mode = OFF;
                 }
+            }
+            else
+            {
+                // 风机停止报警时间
+                status_fan_mode = ON;
+                // 接收到风扇停止后
+                set_uval(FAN_ALARM_TIME, 0);
+                di_fan_mode = 1;
             }
         }
 
@@ -6463,7 +7005,7 @@ void *thread_alarm_func(void *pv)
             //----------------------------------------------------------------------------------------------------------
             // 风扇 报警
             //----------------------------------------------------------------------------------------------------------
-            if ((get_val(FAN_ALARM_TIME) <= 0) && (di_fan_mode == 1))
+            if ((get_uval(FAN_ALARM_TIME) == 0) && (di_fan_mode == 1))
             {
                 g_us_temp_mode |= 0x02;
             }
@@ -6592,138 +7134,31 @@ void *thread_alarm_func(void *pv)
     return NULL;
 }
 
-int main(int argc, char *argv[])
+// // 主线程
+// void *thread_pid_func(void *pv)
+// {
+//     while (1)
+//     {
+//         // 温度PID
+//         if ((get_val(R_AI_TP_MAIN) >= (get_val(P_AO_TP_MAIN) - get_x10_val(P_TEMP_P) / 2)) && (get_val(R_AI_TP_MAIN) <= (get_val(P_AO_TP_MAIN) + get_x10_val(P_TEMP_P) / 2)))
+//         {
+//             pid_temp_init();
+//         }
+
+//         // 湿度PID
+//         if ((get_val(R_AI_HM) >= (get_val(P_AO_HM) - get_x10_val(P_HUM_P) / 2)) && (get_val(R_AI_HM) <= (get_val(P_AO_HM) + get_x10_val(P_HUM_P) / 2)))
+//         {
+//             pid_humi_init();
+//         }
+
+//         wait_ms(250);
+//     }
+// }
+
+// 主线程
+void *thread_main_func(void *pv)
 {
-    //----------------------------------------------------------------------------------------------------------
-    // 定义变量
-    //----------------------------------------------------------------------------------------------------------
-    // 定义返回值
-    int i_ret = 0;
-
-    // 定义申请共享内存字节数
-    unsigned short shm_addr_size = 0;
-
-    // 定义共享内存
-    jshmem_t shm_input_addr = {0};
-    jshmem_t shm_output_addr = {0};
-
-    // 定义程序名称
-    char *filename = NULL;
-
-    //----------------------------------------------------------------------------------------------------------
-    // 解析程序名称
-    //----------------------------------------------------------------------------------------------------------
-    char date_str[256];
-    print_current_time(date_str, sizeof(date_str));
-    parse_file_path(argv[0], &filename);
-    if (strlen(filename) > 256)
-    {
-        fprintf(stderr, "%s %-40s程序名称已超过256个字节\n", date_str, "[main]");
-        return -1;
-    }
-    char filenaem_ini[256] = {0};
-    print_current_time(date_str, sizeof(date_str));
-    if (filename == NULL)
-    {
-        fprintf(stderr, "%s %-40s程序名称为空\n", date_str, "[main]");
-        return -1;
-    }
-
-    sprintf(filenaem_ini, "%s.ini", filename);
-    print_current_time(date_str, sizeof(date_str));
-    fprintf(stdout, "%s %-40s程序名称:%s 程序配置:%s\n", date_str, "[main]", filename, filenaem_ini);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 读取INI配置
-    //----------------------------------------------------------------------------------------------------------
-    init_ini_file(filenaem_ini, &g_st_jincubator);
-
-    //----------------------------------------------------------------------------------------------------------
-    // ZLOG日志初始化
-    //----------------------------------------------------------------------------------------------------------
-    print_current_time(date_str, sizeof(date_str));
-    fprintf(stdout, "%s %-40sZLOG日志:%s\n", date_str, "[main]", g_st_jincubator.conf_zlog_file);
-    i_ret = init_zlog_file(&g_zlog_zc, g_st_jincubator.conf_zlog_file, filename);
-    if (i_ret != 0)
-    {
-        fprintf(stderr, "%-40sZLOG日志初始化失败!\n", "[main]");
-        return -1;
-    }
-
-    //----------------------------------------------------------------------------------------------------------
-    // 共享内存初始化
-    //----------------------------------------------------------------------------------------------------------
-    // 获取申请字节数
-    shm_addr_size = g_st_jincubator.shmem_record_len * g_st_jincubator.shmem_record_num;
-
-    // 共享内存输出
-    i_ret = j_shmem_init(&shm_output_addr, g_st_jincubator.shmem_output_key, shm_addr_size);
-    if (i_ret != 0)
-    {
-        zlog_error(g_zlog_zc, "%-40s申请共享内存输出地址失败!", "[main]");
-        return -1;
-    }
-
-    shm_out = shm_output_addr.uptr_shmem_addr;
-    zlog_info(g_zlog_zc, "%-40s申请共享内存输出地址成功, 内存地址：%p", "[main]", shm_out);
-
-    // 共享内存输入
-    i_ret = j_shmem_init(&shm_input_addr, g_st_jincubator.shmem_input_key, shm_addr_size);
-    if (i_ret != 0)
-    {
-        zlog_error(g_zlog_zc, "%-40s申请共享内存输入地址失败!", "[main]");
-        return -1;
-    }
-
-    shm_old = shm_input_addr.uptr_shmem_addr;
-    zlog_info(g_zlog_zc, "%-40s申请共享内存输入地址成功, 内存地址：%p", "[main]", shm_old);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 初始化参数
-    //----------------------------------------------------------------------------------------------------------
-    init_para();
-    zlog_info(g_zlog_zc, "%-40s参数初始化成功!", "[main]");
-
-    //----------------------------------------------------------------------------------------------------------
-    // 定时器
-    //----------------------------------------------------------------------------------------------------------
-    int timer_value = 1000; // 定时器的时间间隔为1秒
-    set_custom_timer_ms(timer_value, timer_callback_func);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 备份线程
-    //----------------------------------------------------------------------------------------------------------
-    pthread_t sync_client_thread;
-    pthread_create(&sync_client_thread, NULL, sysn_thread_func, NULL);
-    pthread_detach(sync_client_thread);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 数据采集线程-PT100
-    //----------------------------------------------------------------------------------------------------------
-    pthread_t data_collection_thread;
-    pthread_create(&data_collection_thread, NULL, data_collection_pt100_func, NULL);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 数据采集线程-CO2
-    //----------------------------------------------------------------------------------------------------------
-    pthread_t co2_collection_thread;
-    pthread_create(&co2_collection_thread, NULL, data_collection_co2_func, NULL);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 翻蛋线程
-    //----------------------------------------------------------------------------------------------------------
-    pthread_t flip_egg_thread;
-    pthread_create(&flip_egg_thread, NULL, flip_egg_func, NULL);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 报警线程
-    //----------------------------------------------------------------------------------------------------------
-    pthread_t alarm_thread;
-    pthread_create(&alarm_thread, NULL, thread_alarm_func, NULL);
-
-    wait_ms(100);
-
-    while (ON)
+    while (1)
     {
         //----------------------------------------------------------------------------------------------------------
         // 实时执行区域
@@ -6734,18 +7169,9 @@ int main(int argc, char *argv[])
         // 开启运行灯
         control_run_light(ON);
 
-        // 默认模式为停止模式
-        unsigned short run_mode_value = get_run_mode(0);
-        if (!run_mode_value)
-        {
-            // 进入停止模式
-            set_run_mode(STATUS_STOP_SENT);
-        }
-
         //----------------------------------------------------------------------------------------------------------
         // 启动模式-初始化
         //----------------------------------------------------------------------------------------------------------
-
         if (get_val(R_START_SEND) == ON)
         {
             zlog_info(g_zlog_zc, "%-40s初始化启动模式!", "[main]");
@@ -6853,6 +7279,8 @@ int main(int argc, char *argv[])
         if (get_val(R_STOP_SEND) == ON)
         {
             zlog_info(g_zlog_zc, "%-40s初始化停止模式!", "[main]");
+
+            set_val(R_RUN_SECOND_STATUS, ON);
 
             // 开启停止模式
             set_run_mode(STATUS_STOP_RECV);
@@ -7009,6 +7437,7 @@ int main(int argc, char *argv[])
                     pre_logic_process_retemp3_func();
                     pre_logic_process_retemp4_func();
                 }
+
                 // 系统时间大于预热停止模式，自动退出预热模式，进行入到启动模式
                 else if (sys_now_time > get_time(R_PRE_STOP_TIME_HIGH))
                 {
@@ -7047,6 +7476,7 @@ int main(int argc, char *argv[])
                     set_time(R_PRE_START_TIME_HIGH, 0);
                     set_time(R_PRE_STOP_TIME_HIGH, 0);
                 }
+
                 // 突然断开进入到停止模式
                 else
                 {
@@ -7061,6 +7491,7 @@ int main(int argc, char *argv[])
                     set_time(R_PRE_STOP_TIME_HIGH, 0);
                 }
             }
+
             // 当预热开启时间等于预热停止时间，则进入到停止模式
             else if (get_time(R_PRE_START_TIME_HIGH) == get_time(R_PRE_STOP_TIME_HIGH))
             {
@@ -7074,6 +7505,7 @@ int main(int argc, char *argv[])
                 set_time(R_PRE_START_TIME_HIGH, 0);
                 set_time(R_PRE_STOP_TIME_HIGH, 0);
             }
+
             // 其他条件也进入到停止模式
             else
             {
@@ -7129,6 +7561,9 @@ int main(int argc, char *argv[])
         //----------------------------------------------------------------------------------------------------------
         if (get_val(R_INIT_SEND) == ON)
         {
+            // 停止初始化
+            set_val(R_INIT_SEND, OFF);
+
             zlog_info(g_zlog_zc, "%-40s初始化模式!", "[main]");
 
             // 停止入孵时间计时
@@ -7174,6 +7609,9 @@ int main(int argc, char *argv[])
             // 备份预热结束时间
             set_time(BACKUP_PREHEATING_SHUTDOWN_TIME_HIGH, get_time(R_PRE_STOP_TIME_HIGH));
 
+            // 运行模式
+            set_run_mode(STATUS_CHECK_SEND | STATUS_CHECK_REVV);
+
             // 主加热-关闭
             control_main_heat(OFF);
 
@@ -7198,14 +7636,6 @@ int main(int argc, char *argv[])
             // 风门关闭
             control_damper(1, OFF, 0);
             control_damper(2, OFF, 0);
-
-            // 清空预热开始时间
-            set_time(R_PRE_START_TIME_HIGH, 0);
-            // 清空预热结束时间
-            set_time(R_PRE_STOP_TIME_HIGH, 0);
-
-            // 运行模式
-            set_run_mode(STATUS_CHECK_SEND | STATUS_CHECK_REVV);
 
             // 设置预热时间为0
             set_time(R_PRE_START_TIME_HIGH, 0);
@@ -7246,6 +7676,14 @@ int main(int argc, char *argv[])
             set_uval(CALIBRATION_RUN_TIME, 0);
         }
 
+        // 默认模式为停止模式
+        // unsigned short run_mode_value = get_run_mode(0);
+        // if (!run_mode_value)
+        // {
+        //     // 进入停止模式
+        //     set_run_mode(STATUS_STOP_SENT);
+        // }
+
         //----------------------------------------------------------------------------------------------------------
         // 测试控制模式
         //----------------------------------------------------------------------------------------------------------
@@ -7256,10 +7694,156 @@ int main(int argc, char *argv[])
         //----------------------------------------------------------------------------------------------------------
         direction_func();
 
-        // 主线程使用nanosleep延迟
-        delay_ms(250);
+        // 延迟为250毫秒
+        wait_ms(250);
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    //----------------------------------------------------------------------------------------------------------
+    // 定义变量
+    //----------------------------------------------------------------------------------------------------------
+    // 定义返回值
+    int i_ret = 0;
+
+    // 定义申请共享内存字节数
+    unsigned short shm_addr_size = 0;
+
+    // 定义共享内存
+    jshmem_t shm_input_addr = {0};
+    jshmem_t shm_output_addr = {0};
+
+    // 定义程序名称
+    char *filename = NULL;
+
+    //----------------------------------------------------------------------------------------------------------
+    // 解析程序名称
+    //----------------------------------------------------------------------------------------------------------
+    char date_str[256];
+    print_current_time(date_str, sizeof(date_str));
+    parse_file_path(argv[0], &filename);
+    if (strlen(filename) > 256)
+    {
+        fprintf(stderr, "%s %-40s程序名称已超过256个字节\n", date_str, "[main]");
+        return -1;
     }
 
+    char filenaem_ini[256] = {0};
+    print_current_time(date_str, sizeof(date_str));
+    if (filename == NULL)
+    {
+        fprintf(stderr, "%s %-40s程序名称为空\n", date_str, "[main]");
+        return -1;
+    }
+
+    sprintf(filenaem_ini, "%s.ini", filename);
+    print_current_time(date_str, sizeof(date_str));
+    fprintf(stdout, "%s %-40s程序名称:%s 程序配置:%s\n", date_str, "[main]", filename, filenaem_ini);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 读取INI配置
+    //----------------------------------------------------------------------------------------------------------
+    init_ini_file(filenaem_ini, &g_st_jincubator);
+
+    //----------------------------------------------------------------------------------------------------------
+    // ZLOG日志初始化
+    //----------------------------------------------------------------------------------------------------------
+    print_current_time(date_str, sizeof(date_str));
+    fprintf(stdout, "%s %-40sZLOG日志:%s\n", date_str, "[main]", g_st_jincubator.conf_zlog_file);
+    i_ret = init_zlog_file(g_st_jincubator.conf_zlog_file, filename);
+    if (i_ret != 0)
+    {
+        fprintf(stderr, "%-40sZLOG日志初始化失败!\n", "[main]");
+        return -1;
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 共享内存初始化
+    //----------------------------------------------------------------------------------------------------------
+    // 获取申请字节数
+    shm_addr_size = g_st_jincubator.shmem_record_len * g_st_jincubator.shmem_record_num;
+
+    // 共享内存输出
+    i_ret = j_shmem_init(&shm_output_addr, g_st_jincubator.shmem_output_key, shm_addr_size);
+    if (i_ret != 0)
+    {
+        zlog_error(g_zlog_zc, "%-40s申请共享内存输出地址失败!", "[main]");
+        return -1;
+    }
+
+    shm_out = shm_output_addr.uptr_shmem_addr;
+    zlog_info(g_zlog_zc, "%-40s申请共享内存输出地址成功, 内存地址：%p", "[main]", shm_out);
+
+    // 共享内存输入
+    i_ret = j_shmem_init(&shm_input_addr, g_st_jincubator.shmem_input_key, shm_addr_size);
+    if (i_ret != 0)
+    {
+        zlog_error(g_zlog_zc, "%-40s申请共享内存输入地址失败!", "[main]");
+        return -1;
+    }
+
+    shm_old = shm_input_addr.uptr_shmem_addr;
+    zlog_info(g_zlog_zc, "%-40s申请共享内存输入地址成功, 内存地址：%p", "[main]", shm_old);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 初始化参数
+    //----------------------------------------------------------------------------------------------------------
+    init_para();
+    zlog_info(g_zlog_zc, "%-40s参数初始化成功!", "[main]");
+
+    wait_ms(1000);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 定时器
+    //----------------------------------------------------------------------------------------------------------
+    int timer_value = 1000; // 定时器的时间间隔为1秒
+    set_custom_timer_ms(timer_value, timer_callback_func);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 备份线程
+    //----------------------------------------------------------------------------------------------------------
+    pthread_t sync_client_thread;
+    pthread_create(&sync_client_thread, NULL, sysn_thread_func, NULL);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 数据采集线程-PT100
+    //----------------------------------------------------------------------------------------------------------
+    pthread_t data_collection_thread;
+    pthread_create(&data_collection_thread, NULL, data_collection_pt100_func, NULL);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 数据采集线程-CO2
+    //----------------------------------------------------------------------------------------------------------
+    pthread_t co2_collection_thread;
+    pthread_create(&co2_collection_thread, NULL, data_collection_co2_func, NULL);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 翻蛋线程
+    //----------------------------------------------------------------------------------------------------------
+    pthread_t flip_egg_thread;
+    pthread_create(&flip_egg_thread, NULL, flip_egg_func, NULL);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 报警线程
+    //----------------------------------------------------------------------------------------------------------
+    pthread_t alarm_thread;
+    pthread_create(&alarm_thread, NULL, thread_alarm_func, NULL);
+
+    //----------------------------------------------------------------------------------------------------------
+    // PID线程
+    //----------------------------------------------------------------------------------------------------------
+    // pthread_t pid_thread;
+    // pthread_create(&pid_thread, NULL, thread_pid_func, NULL);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 主线程
+    //----------------------------------------------------------------------------------------------------------
+    pthread_t main_thread;
+    pthread_create(&main_thread, NULL, thread_main_func, NULL);
+
+    // 备份线程
+    pthread_join(sync_client_thread, NULL);
     // 数据采集线程
     pthread_join(data_collection_thread, NULL);
     // 二氧化碳采集线程
@@ -7268,6 +7852,10 @@ int main(int argc, char *argv[])
     pthread_join(flip_egg_thread, NULL);
     // 报警线程
     pthread_join(alarm_thread, NULL);
+    // PID线程
+    // pthread_join(pid_thread, NULL);
+    // 主线线程
+    pthread_join(main_thread, NULL);
     // 注销ZLOG
     zlog_fini();
     return 0;

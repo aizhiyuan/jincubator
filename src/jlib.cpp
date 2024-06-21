@@ -16,27 +16,6 @@ void wait_ms(long v_w_time)
   return;
 }
 
-void delay_ms(long v_ul_time)
-{
-  struct timespec req, rem;
-  req.tv_sec = v_ul_time / 1000;              // 毫秒转化为秒
-  req.tv_nsec = (v_ul_time % 1000) * 1000000; // 毫秒转化为纳秒
-
-  while (nanosleep(&req, &rem) == -1)
-  {
-    if (errno == EINTR)
-    {
-      // 如果被信号中断，继续剩余的时间
-      req = rem;
-    }
-    else
-    {
-      perror("nanosleep");
-      break;
-    }
-  }
-}
-
 //----------------------------------------------------------------------------------------------------------
 // 数据交换 BA
 //----------------------------------------------------------------------------------------------------------

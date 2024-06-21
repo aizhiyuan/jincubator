@@ -2,9 +2,9 @@
 cmake_minimum_required(VERSION 3.5)
 
 # 设置cpu类型
-set(TARGET_CPU "X86")
+# set(TARGET_CPU "X86")
 # set(TARGET_CPU "8100")
-# set(TARGET_CPU "jcore")
+set(TARGET_CPU "jcore")
 # set(TARGET_CPU "aarm64")
 
 #设置调试开关
@@ -17,7 +17,7 @@ endif()
 
 if(TARGET_CPU STREQUAL "X86") 
     set(CMAKE_CXX_FLAGS "${GNU_FLAGS} -fpermissive")
-    #set(CMAKE_C_FLAGS "${GNU_FLAGS}  ")
+    set(CMAKE_C_FLAGS "${GNU_FLAGS}  ")
 endif()
 
 #AARM64 交叉编译选项
@@ -58,7 +58,7 @@ endif()
 if(TARGET_CPU STREQUAL "jcore")
     set(CMAKE_SYSTEM_NAME Linux)
     set(CMAKE_SYSTEM_PROCESSOR arm)
-    set(TOOLCHAIN_DIR "/opt/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf")
+    set(TOOLCHAIN_DIR "/usr/local/arm-linux-gnueabihf")
     set(CMAKE_CXX_COMPILER ${TOOLCHAIN_DIR}/bin/arm-linux-gnueabihf-g++)
     set(CMAKE_C_COMPILER   ${TOOLCHAIN_DIR}/bin/arm-linux-gnueabihf-gcc)
 

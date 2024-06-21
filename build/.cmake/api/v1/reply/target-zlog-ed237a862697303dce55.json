@@ -33,6 +33,12 @@
 	"compileGroups" : 
 	[
 		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-O0 -g  "
+				}
+			],
 			"language" : "C",
 			"sourceIndexes" : 
 			[

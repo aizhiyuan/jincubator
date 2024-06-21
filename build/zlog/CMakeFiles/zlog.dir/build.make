@@ -73,295 +73,295 @@ zlog/CMakeFiles/zlog.dir/buf.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/buf.c.o: /home/zhiyuan/c/jincubator/zlog/buf.c
 zlog/CMakeFiles/zlog.dir/buf.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object zlog/CMakeFiles/zlog.dir/buf.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/buf.c.o -MF CMakeFiles/zlog.dir/buf.c.o.d -o CMakeFiles/zlog.dir/buf.c.o -c /home/zhiyuan/c/jincubator/zlog/buf.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/buf.c.o -MF CMakeFiles/zlog.dir/buf.c.o.d -o CMakeFiles/zlog.dir/buf.c.o -c /home/zhiyuan/c/jincubator/zlog/buf.c
 
 zlog/CMakeFiles/zlog.dir/buf.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/buf.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/buf.c > CMakeFiles/zlog.dir/buf.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/buf.c > CMakeFiles/zlog.dir/buf.c.i
 
 zlog/CMakeFiles/zlog.dir/buf.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/buf.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/buf.c -o CMakeFiles/zlog.dir/buf.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/buf.c -o CMakeFiles/zlog.dir/buf.c.s
 
 zlog/CMakeFiles/zlog.dir/category.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/category.c.o: /home/zhiyuan/c/jincubator/zlog/category.c
 zlog/CMakeFiles/zlog.dir/category.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object zlog/CMakeFiles/zlog.dir/category.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/category.c.o -MF CMakeFiles/zlog.dir/category.c.o.d -o CMakeFiles/zlog.dir/category.c.o -c /home/zhiyuan/c/jincubator/zlog/category.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/category.c.o -MF CMakeFiles/zlog.dir/category.c.o.d -o CMakeFiles/zlog.dir/category.c.o -c /home/zhiyuan/c/jincubator/zlog/category.c
 
 zlog/CMakeFiles/zlog.dir/category.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/category.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/category.c > CMakeFiles/zlog.dir/category.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/category.c > CMakeFiles/zlog.dir/category.c.i
 
 zlog/CMakeFiles/zlog.dir/category.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/category.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/category.c -o CMakeFiles/zlog.dir/category.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/category.c -o CMakeFiles/zlog.dir/category.c.s
 
 zlog/CMakeFiles/zlog.dir/category_table.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/category_table.c.o: /home/zhiyuan/c/jincubator/zlog/category_table.c
 zlog/CMakeFiles/zlog.dir/category_table.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object zlog/CMakeFiles/zlog.dir/category_table.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/category_table.c.o -MF CMakeFiles/zlog.dir/category_table.c.o.d -o CMakeFiles/zlog.dir/category_table.c.o -c /home/zhiyuan/c/jincubator/zlog/category_table.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/category_table.c.o -MF CMakeFiles/zlog.dir/category_table.c.o.d -o CMakeFiles/zlog.dir/category_table.c.o -c /home/zhiyuan/c/jincubator/zlog/category_table.c
 
 zlog/CMakeFiles/zlog.dir/category_table.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/category_table.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/category_table.c > CMakeFiles/zlog.dir/category_table.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/category_table.c > CMakeFiles/zlog.dir/category_table.c.i
 
 zlog/CMakeFiles/zlog.dir/category_table.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/category_table.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/category_table.c -o CMakeFiles/zlog.dir/category_table.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/category_table.c -o CMakeFiles/zlog.dir/category_table.c.s
 
 zlog/CMakeFiles/zlog.dir/conf.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/conf.c.o: /home/zhiyuan/c/jincubator/zlog/conf.c
 zlog/CMakeFiles/zlog.dir/conf.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object zlog/CMakeFiles/zlog.dir/conf.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/conf.c.o -MF CMakeFiles/zlog.dir/conf.c.o.d -o CMakeFiles/zlog.dir/conf.c.o -c /home/zhiyuan/c/jincubator/zlog/conf.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/conf.c.o -MF CMakeFiles/zlog.dir/conf.c.o.d -o CMakeFiles/zlog.dir/conf.c.o -c /home/zhiyuan/c/jincubator/zlog/conf.c
 
 zlog/CMakeFiles/zlog.dir/conf.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/conf.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/conf.c > CMakeFiles/zlog.dir/conf.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/conf.c > CMakeFiles/zlog.dir/conf.c.i
 
 zlog/CMakeFiles/zlog.dir/conf.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/conf.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/conf.c -o CMakeFiles/zlog.dir/conf.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/conf.c -o CMakeFiles/zlog.dir/conf.c.s
 
 zlog/CMakeFiles/zlog.dir/event.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/event.c.o: /home/zhiyuan/c/jincubator/zlog/event.c
 zlog/CMakeFiles/zlog.dir/event.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object zlog/CMakeFiles/zlog.dir/event.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/event.c.o -MF CMakeFiles/zlog.dir/event.c.o.d -o CMakeFiles/zlog.dir/event.c.o -c /home/zhiyuan/c/jincubator/zlog/event.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/event.c.o -MF CMakeFiles/zlog.dir/event.c.o.d -o CMakeFiles/zlog.dir/event.c.o -c /home/zhiyuan/c/jincubator/zlog/event.c
 
 zlog/CMakeFiles/zlog.dir/event.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/event.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/event.c > CMakeFiles/zlog.dir/event.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/event.c > CMakeFiles/zlog.dir/event.c.i
 
 zlog/CMakeFiles/zlog.dir/event.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/event.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/event.c -o CMakeFiles/zlog.dir/event.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/event.c -o CMakeFiles/zlog.dir/event.c.s
 
 zlog/CMakeFiles/zlog.dir/format.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/format.c.o: /home/zhiyuan/c/jincubator/zlog/format.c
 zlog/CMakeFiles/zlog.dir/format.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object zlog/CMakeFiles/zlog.dir/format.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/format.c.o -MF CMakeFiles/zlog.dir/format.c.o.d -o CMakeFiles/zlog.dir/format.c.o -c /home/zhiyuan/c/jincubator/zlog/format.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/format.c.o -MF CMakeFiles/zlog.dir/format.c.o.d -o CMakeFiles/zlog.dir/format.c.o -c /home/zhiyuan/c/jincubator/zlog/format.c
 
 zlog/CMakeFiles/zlog.dir/format.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/format.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/format.c > CMakeFiles/zlog.dir/format.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/format.c > CMakeFiles/zlog.dir/format.c.i
 
 zlog/CMakeFiles/zlog.dir/format.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/format.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/format.c -o CMakeFiles/zlog.dir/format.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/format.c -o CMakeFiles/zlog.dir/format.c.s
 
 zlog/CMakeFiles/zlog.dir/level.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/level.c.o: /home/zhiyuan/c/jincubator/zlog/level.c
 zlog/CMakeFiles/zlog.dir/level.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object zlog/CMakeFiles/zlog.dir/level.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/level.c.o -MF CMakeFiles/zlog.dir/level.c.o.d -o CMakeFiles/zlog.dir/level.c.o -c /home/zhiyuan/c/jincubator/zlog/level.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/level.c.o -MF CMakeFiles/zlog.dir/level.c.o.d -o CMakeFiles/zlog.dir/level.c.o -c /home/zhiyuan/c/jincubator/zlog/level.c
 
 zlog/CMakeFiles/zlog.dir/level.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/level.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/level.c > CMakeFiles/zlog.dir/level.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/level.c > CMakeFiles/zlog.dir/level.c.i
 
 zlog/CMakeFiles/zlog.dir/level.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/level.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/level.c -o CMakeFiles/zlog.dir/level.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/level.c -o CMakeFiles/zlog.dir/level.c.s
 
 zlog/CMakeFiles/zlog.dir/level_list.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/level_list.c.o: /home/zhiyuan/c/jincubator/zlog/level_list.c
 zlog/CMakeFiles/zlog.dir/level_list.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object zlog/CMakeFiles/zlog.dir/level_list.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/level_list.c.o -MF CMakeFiles/zlog.dir/level_list.c.o.d -o CMakeFiles/zlog.dir/level_list.c.o -c /home/zhiyuan/c/jincubator/zlog/level_list.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/level_list.c.o -MF CMakeFiles/zlog.dir/level_list.c.o.d -o CMakeFiles/zlog.dir/level_list.c.o -c /home/zhiyuan/c/jincubator/zlog/level_list.c
 
 zlog/CMakeFiles/zlog.dir/level_list.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/level_list.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/level_list.c > CMakeFiles/zlog.dir/level_list.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/level_list.c > CMakeFiles/zlog.dir/level_list.c.i
 
 zlog/CMakeFiles/zlog.dir/level_list.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/level_list.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/level_list.c -o CMakeFiles/zlog.dir/level_list.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/level_list.c -o CMakeFiles/zlog.dir/level_list.c.s
 
 zlog/CMakeFiles/zlog.dir/mdc.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/mdc.c.o: /home/zhiyuan/c/jincubator/zlog/mdc.c
 zlog/CMakeFiles/zlog.dir/mdc.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object zlog/CMakeFiles/zlog.dir/mdc.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/mdc.c.o -MF CMakeFiles/zlog.dir/mdc.c.o.d -o CMakeFiles/zlog.dir/mdc.c.o -c /home/zhiyuan/c/jincubator/zlog/mdc.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/mdc.c.o -MF CMakeFiles/zlog.dir/mdc.c.o.d -o CMakeFiles/zlog.dir/mdc.c.o -c /home/zhiyuan/c/jincubator/zlog/mdc.c
 
 zlog/CMakeFiles/zlog.dir/mdc.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/mdc.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/mdc.c > CMakeFiles/zlog.dir/mdc.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/mdc.c > CMakeFiles/zlog.dir/mdc.c.i
 
 zlog/CMakeFiles/zlog.dir/mdc.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/mdc.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/mdc.c -o CMakeFiles/zlog.dir/mdc.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/mdc.c -o CMakeFiles/zlog.dir/mdc.c.s
 
 zlog/CMakeFiles/zlog.dir/record.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/record.c.o: /home/zhiyuan/c/jincubator/zlog/record.c
 zlog/CMakeFiles/zlog.dir/record.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object zlog/CMakeFiles/zlog.dir/record.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/record.c.o -MF CMakeFiles/zlog.dir/record.c.o.d -o CMakeFiles/zlog.dir/record.c.o -c /home/zhiyuan/c/jincubator/zlog/record.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/record.c.o -MF CMakeFiles/zlog.dir/record.c.o.d -o CMakeFiles/zlog.dir/record.c.o -c /home/zhiyuan/c/jincubator/zlog/record.c
 
 zlog/CMakeFiles/zlog.dir/record.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/record.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/record.c > CMakeFiles/zlog.dir/record.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/record.c > CMakeFiles/zlog.dir/record.c.i
 
 zlog/CMakeFiles/zlog.dir/record.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/record.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/record.c -o CMakeFiles/zlog.dir/record.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/record.c -o CMakeFiles/zlog.dir/record.c.s
 
 zlog/CMakeFiles/zlog.dir/record_table.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/record_table.c.o: /home/zhiyuan/c/jincubator/zlog/record_table.c
 zlog/CMakeFiles/zlog.dir/record_table.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object zlog/CMakeFiles/zlog.dir/record_table.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/record_table.c.o -MF CMakeFiles/zlog.dir/record_table.c.o.d -o CMakeFiles/zlog.dir/record_table.c.o -c /home/zhiyuan/c/jincubator/zlog/record_table.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/record_table.c.o -MF CMakeFiles/zlog.dir/record_table.c.o.d -o CMakeFiles/zlog.dir/record_table.c.o -c /home/zhiyuan/c/jincubator/zlog/record_table.c
 
 zlog/CMakeFiles/zlog.dir/record_table.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/record_table.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/record_table.c > CMakeFiles/zlog.dir/record_table.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/record_table.c > CMakeFiles/zlog.dir/record_table.c.i
 
 zlog/CMakeFiles/zlog.dir/record_table.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/record_table.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/record_table.c -o CMakeFiles/zlog.dir/record_table.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/record_table.c -o CMakeFiles/zlog.dir/record_table.c.s
 
 zlog/CMakeFiles/zlog.dir/rotater.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/rotater.c.o: /home/zhiyuan/c/jincubator/zlog/rotater.c
 zlog/CMakeFiles/zlog.dir/rotater.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object zlog/CMakeFiles/zlog.dir/rotater.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/rotater.c.o -MF CMakeFiles/zlog.dir/rotater.c.o.d -o CMakeFiles/zlog.dir/rotater.c.o -c /home/zhiyuan/c/jincubator/zlog/rotater.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/rotater.c.o -MF CMakeFiles/zlog.dir/rotater.c.o.d -o CMakeFiles/zlog.dir/rotater.c.o -c /home/zhiyuan/c/jincubator/zlog/rotater.c
 
 zlog/CMakeFiles/zlog.dir/rotater.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/rotater.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/rotater.c > CMakeFiles/zlog.dir/rotater.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/rotater.c > CMakeFiles/zlog.dir/rotater.c.i
 
 zlog/CMakeFiles/zlog.dir/rotater.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/rotater.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/rotater.c -o CMakeFiles/zlog.dir/rotater.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/rotater.c -o CMakeFiles/zlog.dir/rotater.c.s
 
 zlog/CMakeFiles/zlog.dir/rule.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/rule.c.o: /home/zhiyuan/c/jincubator/zlog/rule.c
 zlog/CMakeFiles/zlog.dir/rule.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object zlog/CMakeFiles/zlog.dir/rule.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/rule.c.o -MF CMakeFiles/zlog.dir/rule.c.o.d -o CMakeFiles/zlog.dir/rule.c.o -c /home/zhiyuan/c/jincubator/zlog/rule.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/rule.c.o -MF CMakeFiles/zlog.dir/rule.c.o.d -o CMakeFiles/zlog.dir/rule.c.o -c /home/zhiyuan/c/jincubator/zlog/rule.c
 
 zlog/CMakeFiles/zlog.dir/rule.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/rule.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/rule.c > CMakeFiles/zlog.dir/rule.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/rule.c > CMakeFiles/zlog.dir/rule.c.i
 
 zlog/CMakeFiles/zlog.dir/rule.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/rule.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/rule.c -o CMakeFiles/zlog.dir/rule.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/rule.c -o CMakeFiles/zlog.dir/rule.c.s
 
 zlog/CMakeFiles/zlog.dir/spec.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/spec.c.o: /home/zhiyuan/c/jincubator/zlog/spec.c
 zlog/CMakeFiles/zlog.dir/spec.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object zlog/CMakeFiles/zlog.dir/spec.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/spec.c.o -MF CMakeFiles/zlog.dir/spec.c.o.d -o CMakeFiles/zlog.dir/spec.c.o -c /home/zhiyuan/c/jincubator/zlog/spec.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/spec.c.o -MF CMakeFiles/zlog.dir/spec.c.o.d -o CMakeFiles/zlog.dir/spec.c.o -c /home/zhiyuan/c/jincubator/zlog/spec.c
 
 zlog/CMakeFiles/zlog.dir/spec.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/spec.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/spec.c > CMakeFiles/zlog.dir/spec.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/spec.c > CMakeFiles/zlog.dir/spec.c.i
 
 zlog/CMakeFiles/zlog.dir/spec.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/spec.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/spec.c -o CMakeFiles/zlog.dir/spec.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/spec.c -o CMakeFiles/zlog.dir/spec.c.s
 
 zlog/CMakeFiles/zlog.dir/thread.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/thread.c.o: /home/zhiyuan/c/jincubator/zlog/thread.c
 zlog/CMakeFiles/zlog.dir/thread.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object zlog/CMakeFiles/zlog.dir/thread.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/thread.c.o -MF CMakeFiles/zlog.dir/thread.c.o.d -o CMakeFiles/zlog.dir/thread.c.o -c /home/zhiyuan/c/jincubator/zlog/thread.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/thread.c.o -MF CMakeFiles/zlog.dir/thread.c.o.d -o CMakeFiles/zlog.dir/thread.c.o -c /home/zhiyuan/c/jincubator/zlog/thread.c
 
 zlog/CMakeFiles/zlog.dir/thread.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/thread.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/thread.c > CMakeFiles/zlog.dir/thread.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/thread.c > CMakeFiles/zlog.dir/thread.c.i
 
 zlog/CMakeFiles/zlog.dir/thread.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/thread.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/thread.c -o CMakeFiles/zlog.dir/thread.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/thread.c -o CMakeFiles/zlog.dir/thread.c.s
 
 zlog/CMakeFiles/zlog.dir/zc_arraylist.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/zc_arraylist.c.o: /home/zhiyuan/c/jincubator/zlog/zc_arraylist.c
 zlog/CMakeFiles/zlog.dir/zc_arraylist.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object zlog/CMakeFiles/zlog.dir/zc_arraylist.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zc_arraylist.c.o -MF CMakeFiles/zlog.dir/zc_arraylist.c.o.d -o CMakeFiles/zlog.dir/zc_arraylist.c.o -c /home/zhiyuan/c/jincubator/zlog/zc_arraylist.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zc_arraylist.c.o -MF CMakeFiles/zlog.dir/zc_arraylist.c.o.d -o CMakeFiles/zlog.dir/zc_arraylist.c.o -c /home/zhiyuan/c/jincubator/zlog/zc_arraylist.c
 
 zlog/CMakeFiles/zlog.dir/zc_arraylist.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/zc_arraylist.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zc_arraylist.c > CMakeFiles/zlog.dir/zc_arraylist.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zc_arraylist.c > CMakeFiles/zlog.dir/zc_arraylist.c.i
 
 zlog/CMakeFiles/zlog.dir/zc_arraylist.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/zc_arraylist.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zc_arraylist.c -o CMakeFiles/zlog.dir/zc_arraylist.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zc_arraylist.c -o CMakeFiles/zlog.dir/zc_arraylist.c.s
 
 zlog/CMakeFiles/zlog.dir/zc_hashtable.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/zc_hashtable.c.o: /home/zhiyuan/c/jincubator/zlog/zc_hashtable.c
 zlog/CMakeFiles/zlog.dir/zc_hashtable.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object zlog/CMakeFiles/zlog.dir/zc_hashtable.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zc_hashtable.c.o -MF CMakeFiles/zlog.dir/zc_hashtable.c.o.d -o CMakeFiles/zlog.dir/zc_hashtable.c.o -c /home/zhiyuan/c/jincubator/zlog/zc_hashtable.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zc_hashtable.c.o -MF CMakeFiles/zlog.dir/zc_hashtable.c.o.d -o CMakeFiles/zlog.dir/zc_hashtable.c.o -c /home/zhiyuan/c/jincubator/zlog/zc_hashtable.c
 
 zlog/CMakeFiles/zlog.dir/zc_hashtable.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/zc_hashtable.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zc_hashtable.c > CMakeFiles/zlog.dir/zc_hashtable.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zc_hashtable.c > CMakeFiles/zlog.dir/zc_hashtable.c.i
 
 zlog/CMakeFiles/zlog.dir/zc_hashtable.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/zc_hashtable.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zc_hashtable.c -o CMakeFiles/zlog.dir/zc_hashtable.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zc_hashtable.c -o CMakeFiles/zlog.dir/zc_hashtable.c.s
 
 zlog/CMakeFiles/zlog.dir/zc_profile.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/zc_profile.c.o: /home/zhiyuan/c/jincubator/zlog/zc_profile.c
 zlog/CMakeFiles/zlog.dir/zc_profile.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object zlog/CMakeFiles/zlog.dir/zc_profile.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zc_profile.c.o -MF CMakeFiles/zlog.dir/zc_profile.c.o.d -o CMakeFiles/zlog.dir/zc_profile.c.o -c /home/zhiyuan/c/jincubator/zlog/zc_profile.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zc_profile.c.o -MF CMakeFiles/zlog.dir/zc_profile.c.o.d -o CMakeFiles/zlog.dir/zc_profile.c.o -c /home/zhiyuan/c/jincubator/zlog/zc_profile.c
 
 zlog/CMakeFiles/zlog.dir/zc_profile.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/zc_profile.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zc_profile.c > CMakeFiles/zlog.dir/zc_profile.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zc_profile.c > CMakeFiles/zlog.dir/zc_profile.c.i
 
 zlog/CMakeFiles/zlog.dir/zc_profile.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/zc_profile.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zc_profile.c -o CMakeFiles/zlog.dir/zc_profile.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zc_profile.c -o CMakeFiles/zlog.dir/zc_profile.c.s
 
 zlog/CMakeFiles/zlog.dir/zc_util.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/zc_util.c.o: /home/zhiyuan/c/jincubator/zlog/zc_util.c
 zlog/CMakeFiles/zlog.dir/zc_util.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object zlog/CMakeFiles/zlog.dir/zc_util.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zc_util.c.o -MF CMakeFiles/zlog.dir/zc_util.c.o.d -o CMakeFiles/zlog.dir/zc_util.c.o -c /home/zhiyuan/c/jincubator/zlog/zc_util.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zc_util.c.o -MF CMakeFiles/zlog.dir/zc_util.c.o.d -o CMakeFiles/zlog.dir/zc_util.c.o -c /home/zhiyuan/c/jincubator/zlog/zc_util.c
 
 zlog/CMakeFiles/zlog.dir/zc_util.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/zc_util.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zc_util.c > CMakeFiles/zlog.dir/zc_util.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zc_util.c > CMakeFiles/zlog.dir/zc_util.c.i
 
 zlog/CMakeFiles/zlog.dir/zc_util.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/zc_util.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zc_util.c -o CMakeFiles/zlog.dir/zc_util.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zc_util.c -o CMakeFiles/zlog.dir/zc_util.c.s
 
 zlog/CMakeFiles/zlog.dir/zlog-chk-conf.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/zlog-chk-conf.c.o: /home/zhiyuan/c/jincubator/zlog/zlog-chk-conf.c
 zlog/CMakeFiles/zlog.dir/zlog-chk-conf.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object zlog/CMakeFiles/zlog.dir/zlog-chk-conf.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zlog-chk-conf.c.o -MF CMakeFiles/zlog.dir/zlog-chk-conf.c.o.d -o CMakeFiles/zlog.dir/zlog-chk-conf.c.o -c /home/zhiyuan/c/jincubator/zlog/zlog-chk-conf.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zlog-chk-conf.c.o -MF CMakeFiles/zlog.dir/zlog-chk-conf.c.o.d -o CMakeFiles/zlog.dir/zlog-chk-conf.c.o -c /home/zhiyuan/c/jincubator/zlog/zlog-chk-conf.c
 
 zlog/CMakeFiles/zlog.dir/zlog-chk-conf.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/zlog-chk-conf.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zlog-chk-conf.c > CMakeFiles/zlog.dir/zlog-chk-conf.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zlog-chk-conf.c > CMakeFiles/zlog.dir/zlog-chk-conf.c.i
 
 zlog/CMakeFiles/zlog.dir/zlog-chk-conf.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/zlog-chk-conf.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zlog-chk-conf.c -o CMakeFiles/zlog.dir/zlog-chk-conf.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zlog-chk-conf.c -o CMakeFiles/zlog.dir/zlog-chk-conf.c.s
 
 zlog/CMakeFiles/zlog.dir/zlog.c.o: zlog/CMakeFiles/zlog.dir/flags.make
 zlog/CMakeFiles/zlog.dir/zlog.c.o: /home/zhiyuan/c/jincubator/zlog/zlog.c
 zlog/CMakeFiles/zlog.dir/zlog.c.o: zlog/CMakeFiles/zlog.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zhiyuan/c/jincubator/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object zlog/CMakeFiles/zlog.dir/zlog.c.o"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zlog.c.o -MF CMakeFiles/zlog.dir/zlog.c.o.d -o CMakeFiles/zlog.dir/zlog.c.o -c /home/zhiyuan/c/jincubator/zlog/zlog.c
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT zlog/CMakeFiles/zlog.dir/zlog.c.o -MF CMakeFiles/zlog.dir/zlog.c.o.d -o CMakeFiles/zlog.dir/zlog.c.o -c /home/zhiyuan/c/jincubator/zlog/zlog.c
 
 zlog/CMakeFiles/zlog.dir/zlog.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/zlog.dir/zlog.c.i"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zlog.c > CMakeFiles/zlog.dir/zlog.c.i
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/zhiyuan/c/jincubator/zlog/zlog.c > CMakeFiles/zlog.dir/zlog.c.i
 
 zlog/CMakeFiles/zlog.dir/zlog.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/zlog.dir/zlog.c.s"
-	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zlog.c -o CMakeFiles/zlog.dir/zlog.c.s
+	cd /home/zhiyuan/c/jincubator/build/zlog && /usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/zhiyuan/c/jincubator/zlog/zlog.c -o CMakeFiles/zlog.dir/zlog.c.s
 
 # Object files for target zlog
 zlog_OBJECTS = \

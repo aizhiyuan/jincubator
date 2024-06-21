@@ -206,6 +206,7 @@
 #define P_EGG_TIME 92       // 翻蛋时间
 #define P_FAN_TIME 93       // 翻蛋报警模式（1：正常，0：消警）
 #define P_EDIT_CO2_VALUE 94 // 二氧化碳修正值
+#define P_SAVE_VALUE 95     // 保存值
 // 参数区
 #define P_INIT 100
 #define P_AO_TP_MAIN 100 // 设定值-温度
@@ -225,16 +226,16 @@
 #define P_EDIT_TP_RF2 113  // 修正值-回流温度2
 #define P_EDIT_TP_RF3 114  // 修正值-回流温度3
 #define P_EDIT_TP_RF4 115  // 修正值-回流温度4
-#define P_RTEMP_AH 116     // 高温警报的设定
-#define P_RTEMP_AL 117     // 低温警报的设定
-#define P_RTEMP_ALO 118    // 低温警报的温度设定模式（0＝绝对温度、1＝相对温度）
-#define P_RTEMP_SPH 119    // 设定温度的上限值
-#define P_RTEMP_SPL 120    // 设定温度的下限值
-#define P_RTEMP_TO 121     // 输出周期
-#define P_RTEMP_P 122      // PID控制参数 比例带
-#define P_RTEMP_I 123      // PID控制参数 积分
-#define P_RTEMP_D 124      // PID控制参数 微分
 
+#define P_RTEMP_AH 116  // 高温警报的设定
+#define P_RTEMP_AL 117  // 低温警报的设定
+#define P_RTEMP_ALO 118 // 低温警报的温度设定模式（0＝绝对温度、1＝相对温度）
+#define P_RTEMP_SPH 119 // 设定温度的上限值
+#define P_RTEMP_SPL 120 // 设定温度的下限值
+#define P_RTEMP_TO 121  // 输出周期
+#define P_RTEMP_P 122   // PID控制参数 比例带
+#define P_RTEMP_I 123   // PID控制参数 积分
+#define P_RTEMP_D 124   // PID控制参数 微分
 #define P_RTEMP_OHI 125 // 最高输出值　（％）
 #define P_RTEMP_OLO 126 // 最低输出值　（％）
 #define P_RTEMP_OER 127 // 警报时的输出值 （％）
@@ -243,58 +244,61 @@
 #define P_RTEMP_ZQS 130 // 周期时间
 #define P_RTEMP_GZS 131 // 水冷2工作时间
 #define P_RTEMP_HYS 132 // 回流温度控制灵敏度
-#define P_TEMP_AH 133   // 高温警报的设定
-#define P_TEMP_AL 134   // 低温警报的设定
-#define P_TEMP_ALO 135  // 低温警报的温度设定模式（0＝绝对温度、1＝相对温度）
-#define P_TEMP_SPH 136  // 设定温度的上限值
-#define P_TEMP_SPL 137  // 设定温度的下限值
-#define P_TEMP_TO 138   // 输出周期
-#define P_TEMP_P 139    // PID控制参数 比例带
-#define P_TEMP_I 140    // PID控制参数 积分
-#define P_TEMP_D 141    // PID控制参数 微分
-#define P_TEMP_OHI 142  // 最高输出值　（％）
-#define P_TEMP_OLO 143  // 最低输出值　（％）
-#define P_TEMP_OER 144  // 警报时的输出值 （％）（传感器异常）
-#define P_HUM_AH 145    // 高湿警报的设定
-#define P_HUM_AL 146    // 低湿警报的设定
-#define P_HUM_ALO 147   // 低湿警报的温度设定模式（0＝绝对温度、1＝相对温度）
-#define P_HUM_SPH 148   // 设定湿度的上限值
-#define P_HUM_SPL 149   // 设定湿度的下限值
-#define P_HUM_TO 150    // 输出周期
-#define P_HUM_P 151     // PID控制参数 比例带
-#define P_HUM_I 152     // PID控制参数 积分
-#define P_HUM_D 153     // PID控制参数 微分
-#define P_HUM_OHI 154   // 最高输出值　（％）
-#define P_HUM_OLO 155   // 最低输出值　（％）
-#define P_HUM_OER 156   // 警报时的输出值 （％）
-#define P_HUM_SPR 157   // 强制中止加湿控制的温度点
-#define P_HUM_SPO 158   // 风门开设定值
-#define P_HUM_DBO 159   // 风门开度设定值
-#define P_HYS 160       // 输出警报的滞后温度
-#define P_AUH 161       // 辅助加热动作点（设定温度的相对值）
-#define P_OPE 162       // 风门驱动（开）动作点（PID输出的%设定）
-#define P_CLO 163       // 风门驱动（关）动作点（PID输出的%设定）
-#define P_COL 164       // 水冷动作点（PID输出的%设定）
-#define P_BLO 165       // 鼓风机动作点（PID输出的%设定）
-#define P_HHI 166       // 主加热控制 100％点（PID输出的%设定）
-#define P_HLO 167       // 主加热控制 0％点（PID输出的%设定）
-#define P_TAU 168       // 辅助加热管最低运转时间（秒）
-#define P_TOP 169       // 风门（开）最低运转时间（秒）
-#define P_TCL 170       // 风门（关）最低运转时间（秒）
-#define P_TCO 171       // 水冷最低运转时间（秒）
-#define P_TBL 172       // 鼓风机最低运转时间（秒）
-#define P_HH0 173       // 回流温度传感器忘挂
-#define P_HH1 174       // 翻蛋异常延时
-#define P_HH2 175       // 出雏器高温报警延时
-#define P_HH3 176       // 测试运转时间
-#define P_HH4 177       // 消毒时间
-#define P_HH5 178       // 回流温度控制检测时间
-#define P_HH6 179       // 干燥开关最长运行时间
-#define P_HH7 180       // 风扇停止警报时间长度
-#define P_HH8 181       // 翻蛋警报检测时间
-#define P_HH9 182       // 风门开10MM后 再启动的延时时间
-#define P_HH10 183      // 翻蛋时间
-#define P_HH11 184      // 高湿报警延时时间
+
+#define P_TEMP_AH 133  // 高温警报的设定
+#define P_TEMP_AL 134  // 低温警报的设定
+#define P_TEMP_ALO 135 // 低温警报的温度设定模式（0＝绝对温度、1＝相对温度）
+#define P_TEMP_SPH 136 // 设定温度的上限值
+#define P_TEMP_SPL 137 // 设定温度的下限值
+#define P_TEMP_TO 138  // 输出周期
+#define P_TEMP_P 139   // PID控制参数 比例带
+#define P_TEMP_I 140   // PID控制参数 积分
+#define P_TEMP_D 141   // PID控制参数 微分
+#define P_TEMP_OHI 142 // 最高输出值　（％）
+#define P_TEMP_OLO 143 // 最低输出值　（％）
+#define P_TEMP_OER 144 // 警报时的输出值 （％）（传感器异常）
+
+#define P_HUM_AH 145  // 高湿警报的设定
+#define P_HUM_AL 146  // 低湿警报的设定
+#define P_HUM_ALO 147 // 低湿警报的温度设定模式 （0＝绝对温度、1＝相对温度）
+#define P_HUM_SPH 148 // 设定湿度的上限值
+#define P_HUM_SPL 149 // 设定湿度的下限值
+#define P_HUM_TO 150  // 输出周期
+#define P_HUM_P 151   // PID控制参数 比例带
+#define P_HUM_I 152   // PID控制参数 积分
+#define P_HUM_D 153   // PID控制参数 微分
+#define P_HUM_OHI 154 // 最高输出值　（％）
+#define P_HUM_OLO 155 // 最低输出值　（％）
+#define P_HUM_OER 156 // 警报时的输出值 （％）
+#define P_HUM_SPR 157 // 强制中止加湿控制的温度点
+#define P_HUM_SPO 158 // 风门开设定值
+#define P_HUM_DBO 159 // 风门开度设定值
+
+#define P_HYS 160  // 输出警报的滞后温度
+#define P_AUH 161  // 辅助加热动作点 （设定温度的相对值）
+#define P_OPE 162  // 风门驱动（开）动作点 （PID输出的%设定）
+#define P_CLO 163  // 风门驱动（关）动作点 （PID输出的%设定）
+#define P_COL 164  // 水冷动作点 （PID输出的%设定）
+#define P_BLO 165  // 鼓风机动作点 （PID输出的%设定）
+#define P_HHI 166  // 主加热控制 100％点（PID输出的%设定）
+#define P_HLO 167  // 主加热控制 0％点（PID输出的%设定）
+#define P_TAU 168  // 辅助加热管最低运转时间（秒）
+#define P_TOP 169  // 风门（开）最低运转时间（秒）
+#define P_TCL 170  // 风门（关）最低运转时间（秒）
+#define P_TCO 171  // 水冷最低运转时间（秒）
+#define P_TBL 172  // 鼓风机最低运转时间（秒）
+#define P_HH0 173  // 回流温度传感器忘挂
+#define P_HH1 174  // 翻蛋异常延时
+#define P_HH2 175  // 出雏器高温报警延时
+#define P_HH3 176  // 测试运转时间
+#define P_HH4 177  // 消毒时间
+#define P_HH5 178  // 回流温度控制检测时间
+#define P_HH6 179  // 干燥开关最长运行时间
+#define P_HH7 180  // 风扇停止警报时间长度
+#define P_HH8 181  // 翻蛋警报检测时间
+#define P_HH9 182  // 校准时间
+#define P_HH10 183 // 翻蛋时间
+#define P_HH11 184 // 高湿报警延时时间
 
 #define P_CO2_HYS 185      // 二氧化碳灵敏度
 #define P_CO2_AH 186       // 二氧化碳控制风门设定值
@@ -310,12 +314,16 @@
 #define R_AI_CO 202      // CO2
 #define R_AI_AD 203      // 风门测量值
 #define R_AI_TP_RF_INIT 203
-#define R_AI_TP_RF1 204 // 回流温度测量值1
-#define R_AI_TP_RF2 205 // 回流温度测量值2
-#define R_AI_TP_RF3 206 // 回流温度测量值3
-#define R_AI_TP_RF4 207 // 回流温度测量值4
-#define R_AI_TP_EGG 208 // 翻蛋次数
-
+#define R_AI_TP_RF1 204                     // 回流温度测量值1
+#define R_AI_TP_RF2 205                     // 回流温度测量值2
+#define R_AI_TP_RF3 206                     // 回流温度测量值3
+#define R_AI_TP_RF4 207                     // 回流温度测量值4
+#define R_AI_TP_EGG 208                     // 翻蛋次数
+#define P_EGG_FLIPPING_TIME 209             // 翻蛋时间
+#define P_EGG_FLIPPING_DIRECTION 210        // 翻蛋方向 (1为左 0为右)
+#define P_EGG_FLIPPING_EXECUTION_STATUS 211 // 翻蛋执行状态
+#define EGG_FLIPPING_TRIGGER_STATUS 212     // 翻蛋触发状态
+#define EGG_FLIPPING_ACCUMULATION_STATE 213 // 翻蛋累加状态
 // 测试按钮
 #define R_BTN_TP_MAIN 220  // 主加热按钮
 #define R_BTN_TP_AUX 221   // 附加热按钮
@@ -402,22 +410,22 @@
 #define P_PT6_AO4 328 // 第二个通道值
 #define P_PT6_AO5 329 // 温度差值
 
-#define P_HH0_TIME 400             // HH0
-#define P_HH1_TIME 401             // HH1
-#define P_HH2_TIME 402             // HH2
-#define P_HH3_TIME 403             // HH3
-#define P_HH4_TIME 404             // HH4
-#define P_HH5_TIME 405             // HH5
-#define P_HH6_TIME 406             // HH6
-#define P_HH7_TIME 407             // HH7
-#define P_HH8_TIME 408             // HH8
-#define P_HH9_TIME 409             // HH9
-#define P_HH10_TIME 410            // HH10
-#define P_FAN_OPEN_TIME 411        // FAN_OPEN
-#define P_FAN_CLOSE_TIME 412       // FAN_CLOSE
-#define P_CLEAR_ALARM_TIME 413     // CLEAR_ALARM
-#define P_COLD_HOT_WATER_TIME 413  // COLD_HOT_WATER
-#define P_EGG_FLIPPING_TIME 414    // 翻蛋时间
+#define P_HH0_TIME 400            // HH0
+#define P_HH1_TIME 401            // HH1
+#define P_HH2_TIME 402            // HH2
+#define P_HH3_TIME 403            // HH3
+#define P_HH4_TIME 404            // HH4
+#define P_HH5_TIME 405            // HH5
+#define P_HH6_TIME 406            // HH6
+#define P_HH7_TIME 407            // HH7
+#define P_HH8_TIME 408            // HH8
+#define P_HH9_TIME 409            // HH9
+#define P_HH10_TIME 410           // HH10
+#define P_FAN_OPEN_TIME 411       // FAN_OPEN
+#define P_FAN_CLOSE_TIME 412      // FAN_CLOSE
+#define P_CLEAR_ALARM_TIME 413    // CLEAR_ALARM
+#define P_COLD_HOT_WATER_TIME 413 // COLD_HOT_WATER
+
 #define ALARM_SUPPRESSION_TIME 415 // 消警时间
 
 #define BACKUP_OPERATION_MODE 420                // 备份运行模式
@@ -446,12 +454,8 @@
 #define AIR_DOOR_OPEN_RUNNING_STATUS 462    // 风门开运行状态
 #define AIR_DOOR_CLOSING_RUNNING_STATUS 463 // 风门关运行状态
 
-#define P_EGG_FLIPPING_DIRECTION 500              // 翻蛋方向 (1为左 0为右)
-#define P_EGG_FLIPPING_EXECUTION_STATUS 501       // 翻蛋执行状态
-#define EGG_FLIPPING_TRIGGER_STATUS 502           // 翻蛋触发状态
-#define EGG_FLIPPING_ACCUMULATION_STATE 503       // 翻蛋累加状态
-#define THERE_IS_AN_EGG_FLIPPING_SIGNAL_ALARM 504 // 有翻蛋信号报警
-#define NO_EGG_FLIPPING_SIGNAL_ALARM 504          // 没有翻蛋信号报警
+#define THERE_IS_AN_EGG_FLIPPING_SIGNAL_ALARM 501 // 有翻蛋信号报警
+#define NO_EGG_FLIPPING_SIGNAL_ALARM 502          // 没有翻蛋信号报警
 
 #define SENSOR_1_ABNORMAL_ALARM 510 // 传感器1异常报警
 #define SENSOR_2_ABNORMAL_ALARM 511 // 传感器2异常报警
@@ -474,6 +478,7 @@
 #define TEST_COOL2_4_MODE 529      // 测试模式-辅助水冷4
 #define TEST_BLOWER_MODE 530       // 测试模式-鼓风机
 #define TEST_CONTROL_MODE 531      // 测试模式-状态
+#define TEST_BTN_TIME 532          // 测试模式时间
 
 #define REFLUX_TEMP_1_DELAY_TIME 540             // 回流温度1延迟时间
 #define REFLUX_TEMP_2_DELAY_TIME 541             // 回流温度2延迟时间
@@ -526,9 +531,11 @@
 #define RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4 592 // 回流温度高温报警值4
 #define RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4 593   // 回流温度低温报警值4
 
-#define RETURN_TEMP_HIGH_TEMP_ALARM_TIME 594 // 回流温度高温报警时间
-#define RETURN_TEMP_LOW_TEMP_ALARM_TIME 595  // 回流温度低温报警时间
-
+#define RETURN_TEMP_HIGH_TEMP_ALARM_TIME 594    // 回流温度高温报警时间
+#define RETURN_TEMP_LOW_TEMP_ALARM_TIME 595     // 回流温度低温报警时间
+#define RETURN_TEMP_HIGH_TEMP_ALARM_STATUS 596  // 回流温度高温设置状态
+#define RETURN_TEMP_LOW_TEMP_ALARM_STATUS 597   // 回流温度低温设置状态
+#define RETURN_TEMP_TOTAL_TEMP_ALARM_STATUS 598 // 回流温度总状态
 // 指示灯状态
 #define OUT_ST_FAN_STATUS 600      // 风扇
 #define OUT_ST_TP_MAIN_STATUS 601  // 主温度加热指示灯

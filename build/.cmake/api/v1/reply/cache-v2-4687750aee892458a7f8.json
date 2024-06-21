@@ -15,7 +15,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/addr2line"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-addr2line"
 		},
 		{
 			"name" : "CMAKE_AR",
@@ -31,7 +31,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/ar"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-ar"
 		},
 		{
 			"name" : "CMAKE_BUILD_TYPE",
@@ -155,11 +155,11 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "CXX compiler"
+					"value" : ""
 				}
 			],
-			"type" : "FILEPATH",
-			"value" : "/usr/bin/c++"
+			"type" : "UNINITIALIZED",
+			"value" : ""
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_AR",
@@ -175,7 +175,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gcc-ar-13"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc-ar"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_RANLIB",
@@ -191,7 +191,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gcc-ranlib-13"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc-ranlib"
 		},
 		{
 			"name" : "CMAKE_CXX_FLAGS",
@@ -283,11 +283,11 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : "C compiler"
+					"value" : ""
 				}
 			],
-			"type" : "FILEPATH",
-			"value" : "/usr/bin/cc"
+			"type" : "UNINITIALIZED",
+			"value" : ""
 		},
 		{
 			"name" : "CMAKE_C_COMPILER_AR",
@@ -303,7 +303,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gcc-ar-13"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc-ar"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER_RANLIB",
@@ -319,7 +319,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gcc-ranlib-13"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc-ranlib"
 		},
 		{
 			"name" : "CMAKE_C_FLAGS",
@@ -647,7 +647,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/ld"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-ld"
 		},
 		{
 			"name" : "CMAKE_MAKE_PROGRAM",
@@ -759,7 +759,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/nm"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-nm"
 		},
 		{
 			"name" : "CMAKE_NUMBER_OF_MAKEFILES",
@@ -787,7 +787,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/objcopy"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-objcopy"
 		},
 		{
 			"name" : "CMAKE_OBJDUMP",
@@ -803,7 +803,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/objdump"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-objdump"
 		},
 		{
 			"name" : "CMAKE_PLATFORM_INFO_INITIALIZED",
@@ -927,7 +927,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/ranlib"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-ranlib"
 		},
 		{
 			"name" : "CMAKE_READELF",
@@ -943,7 +943,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/readelf"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-readelf"
 		},
 		{
 			"name" : "CMAKE_ROOT",
@@ -1163,7 +1163,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/strip"
+			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-strip"
 		},
 		{
 			"name" : "CMAKE_TAPI",
