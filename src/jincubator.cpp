@@ -272,9 +272,16 @@ void control_electric_light(int status)
 void control_main_heat(int status)
 {
     // 测试模式优先
-    if (!get_val(TEST_MAIN_HEAT_MODE) && !get_val(SENSOR_1_ABNORMAL_ALARM))
+    if (!get_val(TEST_MAIN_HEAT_MODE))
     {
-        set_val(CONTROL_MAIN_HEAT, status);
+        if (!get_val(SENSOR_1_ABNORMAL_ALARM))
+        {
+            set_val(CONTROL_MAIN_HEAT, status);
+        }
+        else
+        {
+            set_val(CONTROL_MAIN_HEAT, OFF);
+        }
     }
 }
 
@@ -308,6 +315,10 @@ void control_cool2_1(int status)
         // 测试模式优先
         set_val(CONTROL_COOL2_1, status);
     }
+    else
+    {
+        set_val(CONTROL_COOL2_1, OFF);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -319,6 +330,10 @@ void control_cool2_2(int status)
     {
         // 测试模式优先
         set_val(CONTROL_COOL2_2, status);
+    }
+    else
+    {
+        set_val(CONTROL_COOL2_2, OFF);
     }
 }
 
@@ -332,6 +347,10 @@ void control_cool2_3(int status)
         // 测试模式优先
         set_val(CONTROL_COOL2_3, status);
     }
+    else
+    {
+        set_val(CONTROL_COOL2_3, OFF);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -343,6 +362,10 @@ void control_cool2_4(int status)
     {
         // 测试模式优先
         set_val(CONTROL_COOL2_4, status);
+    }
+    else
+    {
+        set_val(CONTROL_COOL2_4, OFF);
     }
 }
 
@@ -492,9 +515,16 @@ void control_cool(int status)
 void control_spray(int status)
 {
     // 测试模式优先
-    if (!get_val(TEST_SPRAY_MODE) && !get_val(SENSOR_2_ABNORMAL_ALARM))
+    if (!get_val(TEST_SPRAY_MODE))
     {
-        set_val(CONTROL_SPRAY, status);
+        if (!get_val(SENSOR_2_ABNORMAL_ALARM))
+        {
+            set_val(CONTROL_SPRAY, status);
+        }
+        else
+        {
+            set_val(CONTROL_SPRAY, OFF);
+        }
     }
 }
 
@@ -2869,6 +2899,14 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
+    // 入孵计时状态初始化
+    //----------------------------------------------------------------------------------------------------------
+    // 开启入孵计时
+    set_val(R_RUN_SECOND_STATUS, ON);
+    // 预热状态为1
+    set_uval(R_PRE_STATUS, 1);
+
+    //----------------------------------------------------------------------------------------------------------
     // 风门校准状态
     //----------------------------------------------------------------------------------------------------------
     set_uval(STATUS_DAMPER_CHECK, OFF);
@@ -2888,12 +2926,6 @@ void init_para()
     //----------------------------------------------------------------------------------------------------------
     set_uval(EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
     set_uval(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
-    
-    //----------------------------------------------------------------------------------------------------------
-    // 回流温度报警设置初始化
-    //----------------------------------------------------------------------------------------------------------
-    set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, ON);
-    set_uval(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, ON);
 
     //----------------------------------------------------------------------------------------------------------
     // 历史事件初始化
@@ -3178,7 +3210,6 @@ void update_set_para()
     // 当前的入孵天数和小数
     unsigned short now_para_time = get_uval(R_RUN_DAY);
 
-    // 初始化配置，当未获取到参数时，默认为0;
     // 温度设定值为0
     set_uval(P_AO_TP_MAIN, get_uval(P_SET_TP_MAIN_VAL));
     // 湿度设定值为0
@@ -3651,31 +3682,29 @@ void run_sys_time()
     unsigned int sys_new_time = time(NULL);
 
     // 预热模式不对入孵天数和日期进行计算
-    if (get_val(R_RUN_SECOND_STATUS))
+
+    // 获取运行秒数
+    unsigned int sys_second_time = get_time(R_RUN_SECOND_HIGH);
+
+    // 获取运行时间的天数和小数
+    struct Time sys_time = timer(sys_second_time);
+    unsigned short para_time = sys_time.days * 100 + sys_time.hours;
+
+    // 设置天数和小时
+    set_uval(R_RUN_DAY, para_time);
+
+    // 获取入孵时间
+    unsigned int init_new_time = sys_new_time - sys_second_time;
+    zlog_debug(g_zlog_zc, "%-40s更新入孵时间 [%u] 系统时间 [%u] 天数和小时 [%u] 运行秒数 [%u]", "[run_sys_time]", init_new_time, sys_new_time, para_time, sys_second_time);
+
+    // 设置入孵时间
+    set_time(R_INIT_TIME_HIGH, init_new_time);
+
+    // 时间差大于35天入孵时间更新到当前值
+    if (para_time >= get_val(R_RUN_MAX_DAY))
     {
-        // 获取运行秒数
-        unsigned int sys_second_time = get_time(R_RUN_SECOND_HIGH);
-
-        // 获取运行时间的天数和小数
-        struct Time sys_time = timer(sys_second_time);
-        unsigned short para_time = sys_time.days * 100 + sys_time.hours;
-
-        // 设置天数和小时
-        set_uval(R_RUN_DAY, para_time);
-
-        // 获取入孵时间
-        unsigned int init_new_time = sys_new_time - sys_second_time;
-        zlog_debug(g_zlog_zc, "%-40s更新入孵时间 [%u] 系统时间 [%u] 天数和小时 [%u] 运行秒数 [%u]", "[run_sys_time]", init_new_time, sys_new_time, para_time, sys_second_time);
-
-        // 设置入孵时间
-        set_time(R_INIT_TIME_HIGH, init_new_time);
-
-        // 时间差大于35天入孵时间更新到当前值
-        if (para_time >= get_val(R_RUN_MAX_DAY))
-        {
-            // 开启停止模式
-            set_run_mode(STATUS_STOP_SENT);
-        }
+        // 开启停止模式
+        set_run_mode(STATUS_STOP_SENT);
     }
 
     // 将系统时间输出到共享内存中
@@ -3844,6 +3873,14 @@ void test_control_mode()
                 set_val(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
+            else
+            {
+                set_test_mode(0);
+                set_val(CONTROL_MAIN_HEAT, OFF);
+                set_val(TEST_MAIN_HEAT_MODE, OFF);
+                set_uval(TEST_BTN_TIME, 0);
+                set_uval(TEST_CONTROL_MODE, 0);
+            }
             break;
         }
         case 0x02:
@@ -3858,22 +3895,44 @@ void test_control_mode()
         }
         case 0x04:
         {
-            // 开门按钮
-            set_val(TEST_DAMPER_OPEN_MODE, ON);
-            control_open_damper(ON);
-            zlog_debug(g_zlog_zc, "%-40s触发开启 开门按钮", "[test_control_mode]");
-            set_uval(TEST_CONTROL_MODE, status_test_control);
-            set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
+            if (get_val(DETECT_DAMPER_FULLY_OPEN) > 0)
+            {
+                // 开门按钮
+                set_val(TEST_DAMPER_OPEN_MODE, ON);
+                control_open_damper(ON);
+                zlog_debug(g_zlog_zc, "%-40s触发开启 开门按钮", "[test_control_mode]");
+                set_uval(TEST_CONTROL_MODE, status_test_control);
+                set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            else
+            {
+                set_test_mode(0);
+                control_open_damper(OFF);
+                set_val(TEST_DAMPER_OPEN_MODE, OFF);
+                set_uval(TEST_BTN_TIME, 0);
+                set_uval(TEST_CONTROL_MODE, 0);
+            }
             break;
         }
         case 0x08:
         {
-            // 关门按钮
-            set_val(TEST_DAMPER_CLOSE_MODE, ON);
-            control_close_damper(ON, 0);
-            zlog_debug(g_zlog_zc, "%-40s触发开启 关门按钮", "[test_control_mode]");
-            set_uval(TEST_CONTROL_MODE, status_test_control);
-            set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
+            if (get_val(DETECT_DAMPER_FULLY_CLOSE) > 0)
+            {
+                // 关门按钮
+                set_val(TEST_DAMPER_CLOSE_MODE, ON);
+                control_close_damper(ON, 0);
+                zlog_debug(g_zlog_zc, "%-40s触发开启 关门按钮", "[test_control_mode]");
+                set_uval(TEST_CONTROL_MODE, status_test_control);
+                set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            else
+            {
+                set_test_mode(0);
+                control_close_damper(OFF, 0);
+                set_val(TEST_DAMPER_CLOSE_MODE, OFF);
+                set_uval(TEST_BTN_TIME, 0);
+                set_uval(TEST_CONTROL_MODE, 0);
+            }
             break;
         }
         case 0x10:
@@ -3887,6 +3946,14 @@ void test_control_mode()
                 zlog_debug(g_zlog_zc, "%-40s触发开启 加湿按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            else
+            {
+                set_test_mode(0);
+                set_val(CONTROL_SPRAY, OFF);
+                set_val(TEST_SPRAY_MODE, OFF);
+                set_uval(TEST_BTN_TIME, 0);
+                set_uval(TEST_CONTROL_MODE, 0);
             }
             break;
         }
@@ -3946,6 +4013,14 @@ void test_control_mode()
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
+            else
+            {
+                set_test_mode(0);
+                control_cool2_1(OFF);
+                set_val(TEST_COOL2_1_MODE, OFF);
+                set_uval(TEST_BTN_TIME, 0);
+                set_uval(TEST_CONTROL_MODE, 0);
+            }
             break;
         }
         case 0x100:
@@ -3959,6 +4034,14 @@ void test_control_mode()
                 zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷2按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            else
+            {
+                set_test_mode(0);
+                control_cool2_2(OFF);
+                set_val(TEST_COOL2_2_MODE, OFF);
+                set_uval(TEST_BTN_TIME, 0);
+                set_uval(TEST_CONTROL_MODE, 0);
             }
             break;
         }
@@ -3974,6 +4057,14 @@ void test_control_mode()
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
+            else
+            {
+                set_test_mode(0);
+                control_cool2_3(OFF);
+                set_val(TEST_COOL2_3_MODE, OFF);
+                set_uval(TEST_BTN_TIME, 0);
+                set_uval(TEST_CONTROL_MODE, 0);
+            }
             break;
         }
         case 0x400:
@@ -3987,6 +4078,14 @@ void test_control_mode()
                 zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷4按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
+            }
+            else
+            {
+                set_test_mode(0);
+                control_cool2_4(OFF);
+                set_val(TEST_COOL2_4_MODE, OFF);
+                set_uval(TEST_BTN_TIME, 0);
+                set_uval(TEST_CONTROL_MODE, 0);
             }
             break;
         }
@@ -4322,12 +4421,16 @@ void test_control_mode()
         set_val(CONTROL_BLOWER, OFF);
         set_val(TEST_BLOWER_MODE, OFF);
 
+        // 清空测试
         set_test_mode(0);
+
+        // 清空
         set_val(TEST_CONTROL_MODE, OFF);
     }
     else if ((status_test_control == 0))
     {
         set_uval(TEST_BTN_TIME, 0);
+
         // 关闭主加热
         set_val(TEST_MAIN_HEAT_MODE, OFF);
 
@@ -7063,7 +7166,6 @@ void timer_callback_func(int signo)
         // 孵蛋运行时间累加
         if (get_val(R_RUN_SECOND_STATUS))
         {
-
             set_time(R_RUN_SECOND_HIGH, get_time(R_RUN_SECOND_HIGH) + 1);
         }
 
@@ -7834,13 +7936,13 @@ void *data_collection_pt100_func(void *pv)
                     {
                     case 0:
                     {
-                        // 设置报警变量为ON
+                        // 设置报警变量为OFF
                         set_uval(SENSOR_1_ABNORMAL_ALARM, OFF);
                         break;
                     }
                     case 1:
                     {
-                        // 设置报警变量为ON
+                        // 设置报警变量为OFF
                         set_uval(SENSOR_2_ABNORMAL_ALARM, OFF);
                         break;
                     }
@@ -7848,7 +7950,7 @@ void *data_collection_pt100_func(void *pv)
                     {
                         if (get_uval(REFLUX_TEMPERATURE) & 0x01)
                         {
-                            // 设置报警变量为ON
+                            // 设置报警变量为OFF
                             set_uval(SENSOR_3_ABNORMAL_ALARM, OFF);
                         }
                         break;
@@ -7857,7 +7959,7 @@ void *data_collection_pt100_func(void *pv)
                     {
                         if (get_uval(REFLUX_TEMPERATURE) & 0x02)
                         {
-                            // 设置报警变量为ON
+                            // 设置报警变量为OFF
                             set_uval(SENSOR_4_ABNORMAL_ALARM, OFF);
                         }
                         break;
@@ -7866,7 +7968,7 @@ void *data_collection_pt100_func(void *pv)
                     {
                         if (get_uval(REFLUX_TEMPERATURE) & 0x04)
                         {
-                            // 设置报警变量为ON
+                            // 设置报警变量为OFF
                             set_uval(SENSOR_5_ABNORMAL_ALARM, OFF);
                         }
                         break;
@@ -7875,7 +7977,7 @@ void *data_collection_pt100_func(void *pv)
                     {
                         if (get_uval(REFLUX_TEMPERATURE) & 0x08)
                         {
-                            // 设置报警变量为ON
+                            // 设置报警变量为OFF
                             set_uval(SENSOR_6_ABNORMAL_ALARM, OFF);
                         }
                         break;
@@ -8110,6 +8212,7 @@ void *flip_egg_func(void *pv)
                 // 翻蛋累加状态为ON
                 set_val(EGG_FLIPPING_ACCUMULATION_STATE, ON);
             }
+
             // 当翻蛋累加状态为ON 且 翻蛋信号为ON
             if ((get_val(EGG_FLIPPING_ACCUMULATION_STATE) == ON) && (get_val(DETECT_FLIP_EGG) == ON))
             {
@@ -8143,6 +8246,8 @@ void *thread_alarm_func(void *pv)
 
     // 回流温度报警状态
     int ref_temp_mode_old = 0;
+    int ref_temp_mode_high_old = 0;
+    int ref_temp_mode_low_old = 0;
     int di_fan_mode = ON;
     int status_fan_mode = ON;
 
@@ -8151,12 +8256,6 @@ void *thread_alarm_func(void *pv)
     //----------------------------------------------------------------------------------------------------------
     set_uval(EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
     set_uval(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
-
-    //----------------------------------------------------------------------------------------------------------
-    // 回流温度报警设置初始化
-    //----------------------------------------------------------------------------------------------------------
-    set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, ON);
-    set_uval(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, ON);
 
     while (ON)
     {
@@ -8242,7 +8341,7 @@ void *thread_alarm_func(void *pv)
         // 低湿报警
         // 当PV1 ≤ AL - HYS, 输出低湿警报指示灯
         //----------------------------------------------------------------------------------------------------------
-        if (get_val(R_AI_HM) < (get_val(LOW_HUMI_ALARM_VALUE) - get_val(P_HYS)))
+        if (get_val(R_AI_HM) <= (get_val(LOW_HUMI_ALARM_VALUE) - get_val(P_HYS)))
         {
             // 开启低湿警报状态灯
             set_val(OUT_ST_HM_LOW_ALARM, ON);
@@ -8418,90 +8517,68 @@ void *thread_alarm_func(void *pv)
         //----------------------------------------------------------------------------------------------------------
         // 回流温度 报警灯
         //----------------------------------------------------------------------------------------------------------
-        int ref_temp_mode = get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) +
-                            // 回流温度1 高温报警
-                            (get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2)
-                             << 1) + // 回流温度2 高温报警
-                            (get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3)
-                             << 2) + // 回流温度3 高温报警
-                            (get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4)
-                             << 3) + // 回流温度4 高温报警
-                            (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1)
-                             << 4) + // 回流温度1 低温报警
-                            (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2)
-                             << 5) + // 回流温度2 低温报警
-                            (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3)
-                             << 6) + // 回流温度3 低温报警
-                            (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4)
-                             << 7); // 回流温度4 低温报警
+        int ref_temp_mode_high = get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) +
+                                 // 回流温度1 高温报警
+                                 (get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2)
+                                  << 1) + // 回流温度2 高温报警
+                                 (get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3)
+                                  << 2) + // 回流温度3 高温报警
+                                 (get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4)
+                                  << 3); // 回流温度4 高温报警
 
-        // 优先处理高温报警
-        if ((
-                //----------------------------------------------------------------------------------------------------------
-                // 回流温度1 高温报警
-                //----------------------------------------------------------------------------------------------------------
-                get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) +
-                //----------------------------------------------------------------------------------------------------------
-                // 回流温度2 高温报警
-                //----------------------------------------------------------------------------------------------------------
-                get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2) +
-                //----------------------------------------------------------------------------------------------------------
-                // 回流温度3 高温报警
-                //----------------------------------------------------------------------------------------------------------
-                get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3) +
-                //----------------------------------------------------------------------------------------------------------
-                // 回流温度4 高温报警
-                //----------------------------------------------------------------------------------------------------------
-                get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4)) > 0)
+        int ref_temp_mode_low = (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1)
+                                 << 4) + // 回流温度1 低温报警
+                                (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2)
+                                 << 5) + // 回流温度2 低温报警
+                                (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3)
+                                 << 6) + // 回流温度3 低温报警
+                                (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4)
+                                 << 7); // 回流温度4 低温报警
+
+        int ref_temp_mode = ref_temp_mode_high + ref_temp_mode_low;
+        if (ref_temp_mode > 0)
         {
-            // 开启 回流温度 报警灯
-            set_val(OUT_ST_REF_TEMP_ALARM, ON);
-            set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, ON);
-            if (get_val(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS) == ON)
+            if (ref_temp_mode != ref_temp_mode_old)
             {
-                // 设置 回流温度 高温报警时间
-                set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, get_val(P_HH5) * 60);
-                // set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, 0);
-                set_val(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, 0);
+                if (ref_temp_mode_high != ref_temp_mode_high_old)
+                {
+                    // 设置 回流温度 高温报警时间
+                    set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, get_val(P_HH5) * 60);
+
+                    ref_temp_mode_high_old = ref_temp_mode_high;
+                }
+
+                if (ref_temp_mode_low != ref_temp_mode_low_old)
+                { // 设置回流温度低温报警时间
+                    set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, get_val(P_HH0) * 60);
+
+                    ref_temp_mode_low_old = ref_temp_mode_low;
+                }
+
+                ref_temp_mode_old = ref_temp_mode;
             }
-        }
-        else if ((
-                     //----------------------------------------------------------------------------------------------------------
-                     // 回流温度1 低温报警
-                     //----------------------------------------------------------------------------------------------------------
-                     get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1) +
-                     //----------------------------------------------------------------------------------------------------------
-                     // 回流温度2 低温报警
-                     //----------------------------------------------------------------------------------------------------------
-                     get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2) +
-                     //----------------------------------------------------------------------------------------------------------
-                     // 回流温度3 低温报警
-                     //----------------------------------------------------------------------------------------------------------
-                     get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3) +
-                     //----------------------------------------------------------------------------------------------------------
-                     // 回流温度4 低温报警
-                     //----------------------------------------------------------------------------------------------------------
-                     get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4)) > 0)
-        {
-            // 开启 回流温度 报警灯
-            set_val(OUT_ST_REF_TEMP_ALARM, ON);
-            set_val(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, ON);
-            if (get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS) == ON)
-            {
-                // 设置回流温度低温报警时间
-                set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, get_val(P_HH0) * 60);
-                // 设置回流温度高温报警时间
-                // set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, 0);
 
-                set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, 0);
+            // 处理回流温度高温报警
+            if ((ref_temp_mode_high) > 0)
+            {
+                // 开启 回流温度 报警灯
+                set_val(OUT_ST_REF_TEMP_ALARM, ON);
+            }
+
+            // 处理回流温度低温报警
+            if ((ref_temp_mode_low) > 0)
+            {
+                // 开启 回流温度 报警灯
+                set_val(OUT_ST_REF_TEMP_ALARM, ON);
             }
         }
         else
         {
             // 关闭 回流温度 报警灯
             set_val(OUT_ST_REF_TEMP_ALARM, OFF);
-            set_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, ON);
-            set_val(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, ON);
+            ref_temp_mode_old = 0;
+            ref_temp_mode_high_old = 0;
+            ref_temp_mode_low_old = 0;
         }
 
         //----------------------------------------------------------------------------------------------------------
@@ -8515,9 +8592,6 @@ void *thread_alarm_func(void *pv)
             {
                 // 设置有翻蛋信号报警时间为 HH1_VAL * 60
                 set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(P_HH1) * 60);
-
-                // 设置没有翻蛋信号报警时间为0
-                // set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
 
                 // 翻蛋响铃赋值状态为OFF
                 set_uval(EGG_FLIPPING_SIGNAL_RINGING_STATUS, OFF);
@@ -8547,44 +8621,51 @@ void *thread_alarm_func(void *pv)
             {
                 // 设置 没有 翻蛋报警信号的时间为  (HH8_VAL * 60)
                 set_uval(NO_EGG_FLIPPING_SIGNAL_ALARM_TIME, get_uval(P_HH8) * 60);
-                // 设置 有翻蛋 报警信号的时间为0
-                // set_uval(EGG_FLIPPING_SIGNAL_ALARM_TIME, 0);
+
                 // 设置 没有使没有翻蛋信号报警灯 状态为OFF 防止重复 赋值
                 set_uval(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS, OFF);
             }
             // 开启 翻蛋报警灯
             set_uval(OUT_ST_EGG_ALARM, ON);
+
+            // 翻蛋信号
             set_uval(EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
         }
 
         //----------------------------------------------------------------------------------------------------------
         // CO2报警
         //----------------------------------------------------------------------------------------------------------
-        if (get_val(P_CO2_STATUS))
+        if (get_uval(P_CO2_STATUS))
         {
-            if ((get_val(R_AI_CO) >= (
-                                         // 二氧化碳设定值
-                                         get_val(P_AO_CO) +
-                                         // 二氧化碳 最低报警值
-                                         get_val(P_CO2_AH) +
-                                         // 二氧化碳 报警差值
-                                         get_val(P_CO2_HYS))))
+            if ((get_uval(R_AI_CO) >= (
+                                          // 二氧化碳设定值
+                                          get_uval(P_AO_CO) +
+                                          // 二氧化碳 最低报警值
+                                          get_uval(P_CO2_AH) +
+                                          // 二氧化碳 报警差值
+                                          get_uval(P_CO2_HYS))))
             {
+                // 设置报警灯
                 set_uval(OUT_ST_CO2_ALARM, ON);
+
                 // 一直输出报警灯
                 set_uval(CARBON_DIOXIDE_WARNING_LIGHT, ON);
             }
 
-            if (get_val(R_AI_CO) < (get_val(P_AO_CO) + get_val(P_CO2_AH)))
+            if (get_uval(R_AI_CO) < (get_uval(P_AO_CO) + get_uval(P_CO2_AH)))
             {
+                // 清除报警灯
                 set_uval(OUT_ST_CO2_ALARM, OFF);
+
                 // 一直输出报警灯
                 set_uval(CARBON_DIOXIDE_WARNING_LIGHT, OFF);
             }
         }
         else
         {
+            // 清除报警灯
             set_uval(OUT_ST_CO2_ALARM, OFF);
+
             // 一直输出报警灯
             set_uval(CARBON_DIOXIDE_WARNING_LIGHT, OFF);
         }
@@ -8741,7 +8822,7 @@ void *thread_alarm_func(void *pv)
             //----------------------------------------------------------------------------------------------------------
             // 传感器异常 报警
             //----------------------------------------------------------------------------------------------------------
-            if (status_ref_temp_alarm > 0)
+            if (get_val(OUT_ST_SENSOR_ABNORMAL_ALARM) > 0)
             {
                 g_us_temp_mode |= 0x04;
             }
@@ -8753,11 +8834,7 @@ void *thread_alarm_func(void *pv)
             //----------------------------------------------------------------------------------------------------------
             // 回流温度 高温 报警
             //----------------------------------------------------------------------------------------------------------
-            if (((get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_1) +
-                  get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_2) +
-                  get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_3) +
-                  get_val(RETURN_TEMPE_HIGH_TEMP_ALARM_STATUS_4)) > 0) &&
-                (get_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME) == 0))
+            if ((ref_temp_mode_high > 0) && (get_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME) == 0))
             {
                 g_us_temp_mode |= 0x08;
             }
@@ -8769,11 +8846,7 @@ void *thread_alarm_func(void *pv)
             //----------------------------------------------------------------------------------------------------------
             // 回流温度 低温 报警
             //----------------------------------------------------------------------------------------------------------
-            if (((get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_1) +
-                  get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_2) +
-                  get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_3) +
-                  get_val(RETURN_TEMP_LOW_TEMP_ALARM_STATUS_4)) > 0) &&
-                (get_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME) == 0))
+            if ((ref_temp_mode_low > 0) && (get_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME) == 0))
             {
                 g_us_temp_mode |= 0x10;
             }
@@ -8813,7 +8886,7 @@ void *thread_alarm_func(void *pv)
         //----------------------------------------------------------------------------------------------------------
         // 报警灯 常亮 低温报警 高湿报警 低湿报警 翻蛋报警 风门报警
         //----------------------------------------------------------------------------------------------------------
-        int v_i_alarm_status = get_val(LOW_TEMP_ALARM_STATUS) + get_val(HIGH_HUMI_ALARM_STATUS) + get_val(LOW_HUMI_ALARM_STATUS) + get_val(OUT_ST_EGG_ALARM) + get_val(OUT_ST_FAN_ALARM);
+        int v_i_alarm_status = get_val(LOW_TEMP_ALARM_STATUS) + get_val(HIGH_HUMI_ALARM_STATUS) + get_val(LOW_HUMI_ALARM_STATUS) + get_val(OUT_ST_EGG_ALARM) + get_val(OUT_ST_FAN_ALARM) + get_val(OUT_ST_REF_TEMP_ALARM);
 
         //----------------------------------------------------------------------------------------------------------
         // 报警灯 闪烁 响铃
@@ -8846,7 +8919,7 @@ void *thread_alarm_func(void *pv)
         //----------------------------------------------------------------------------------------------------------
         // 报警灯 停止
         //----------------------------------------------------------------------------------------------------------
-        else if ((g_us_temp_mode == 0) && ((get_val(LOW_TEMP_ALARM_STATUS) + get_val(HIGH_HUMI_ALARM_STATUS) + get_val(LOW_HUMI_ALARM_STATUS) + get_val(OUT_ST_EGG_ALARM) + get_val(OUT_ST_FAN_ALARM)) == 0))
+        else if ((g_us_temp_mode == 0) && ((get_val(LOW_TEMP_ALARM_STATUS) + get_val(HIGH_HUMI_ALARM_STATUS) + get_val(LOW_HUMI_ALARM_STATUS) + get_val(OUT_ST_EGG_ALARM) + get_val(OUT_ST_FAN_ALARM) + get_val(OUT_ST_REF_TEMP_ALARM)) == 0))
         {
             control_warn_light(OFF);
             control_electric_light(OFF);
@@ -8900,14 +8973,8 @@ void *thread_main_func(void *pv)
         {
             zlog_info(g_zlog_zc, "%-40s初始化启动模式!", "[main]");
 
-            // 开启入孵计时
-            set_val(R_RUN_SECOND_STATUS, ON);
-
             // 开启启动模式
             set_run_mode(STATUS_START_RECV);
-
-            // 预热状态为1
-            set_uval(R_PRE_STATUS, 1);
 
             // 初始化PID参数
             set_time(PID_TEMP_SUM, 0);
@@ -8960,6 +9027,12 @@ void *thread_main_func(void *pv)
             control_damper(1, OFF, 0);
             control_damper(2, OFF, 0);
 
+            // 开启入孵计时
+            set_val(R_RUN_SECOND_STATUS, ON);
+
+            // 预热状态为1
+            set_uval(R_PRE_STATUS, 1);
+
             // 设置预热时间为0
             set_time(R_PRE_START_TIME_HIGH, 0);
             set_time(R_PRE_STOP_TIME_HIGH, 0);
@@ -8971,6 +9044,12 @@ void *thread_main_func(void *pv)
         if (get_val(R_START_RECV) == ON)
         {
             zlog_info(g_zlog_zc, "%-40s执行启动模式!", "[main]");
+
+            // 开启入孵计时
+            set_val(R_RUN_SECOND_STATUS, ON);
+
+            // 预热状态为1
+            set_uval(R_PRE_STATUS, 1);
 
             // 更新配置
             update_set_para();
@@ -9004,17 +9083,18 @@ void *thread_main_func(void *pv)
         {
             zlog_info(g_zlog_zc, "%-40s初始化停止模式!", "[main]");
 
-            set_val(R_RUN_SECOND_STATUS, ON);
-
             // 开启停止模式
             set_run_mode(STATUS_STOP_RECV);
+
+            // 开启入孵计时
+            set_val(R_RUN_SECOND_STATUS, ON);
+
+            // 预热状态为1
+            set_uval(R_PRE_STATUS, 1);
 
             // 设置预热时间为0
             set_time(R_PRE_START_TIME_HIGH, 0);
             set_time(R_PRE_STOP_TIME_HIGH, 0);
-
-            // 预热状态为1
-            set_uval(R_PRE_STATUS, 1);
         }
 
         //----------------------------------------------------------------------------------------------------------
@@ -9023,6 +9103,12 @@ void *thread_main_func(void *pv)
         if (get_val(R_STOP_RECV) == ON)
         {
             zlog_info(g_zlog_zc, "%-40s执行停止模式!", "[main]");
+
+            // 开启入孵计时
+            set_val(R_RUN_SECOND_STATUS, ON);
+
+            // 预热状态为1
+            set_uval(R_PRE_STATUS, 1);
 
             // 更新配置
             update_set_para();
@@ -9299,12 +9385,8 @@ void *thread_main_func(void *pv)
             // 获取运行秒数
             unsigned int sys_second_time = get_time(R_RUN_SECOND_HIGH);
 
-            // 获取运行时间的天数和小数
-            struct Time sys_time = timer(sys_second_time);
-            unsigned short para_time = sys_time.days * 100 + sys_time.hours;
-
             // 设置天数和小时
-            set_uval(R_RUN_DAY, para_time);
+            set_uval(R_RUN_DAY, 0);
 
             // 获取系统时间
             unsigned int sys_new_time = time(NULL);
@@ -9328,8 +9410,13 @@ void *thread_main_func(void *pv)
 
             // 备份运行模式
             set_uval(BACKUP_OPERATION_MODE, get_run_mode(1));
+
+            // 备份预热初始化
+            set_uval(BACKUP_PRE_STATUS, get_uval(R_PRE_STATUS));
+
             // 备份预热开始时间
             set_time(BACKUP_PREHEATING_START_TIME_HIGH, get_time(R_PRE_START_TIME_HIGH));
+
             // 备份预热结束时间
             set_time(BACKUP_PREHEATING_SHUTDOWN_TIME_HIGH, get_time(R_PRE_STOP_TIME_HIGH));
 
@@ -9378,8 +9465,13 @@ void *thread_main_func(void *pv)
             {
                 // 恢复运行模式
                 set_run_mode(get_uval(BACKUP_OPERATION_MODE));
+
+                // 恢复预热初始化
+                set_uval(R_PRE_STATUS, get_uval(BACKUP_PRE_STATUS));
+
                 // 恢复预热开始时间
                 set_time(R_PRE_START_TIME_HIGH, get_time(BACKUP_PREHEATING_START_TIME_HIGH));
+
                 // 恢复预热结束时间
                 set_time(R_PRE_STOP_TIME_HIGH, get_time(BACKUP_PREHEATING_SHUTDOWN_TIME_HIGH));
             }
@@ -9392,21 +9484,27 @@ void *thread_main_func(void *pv)
         {
             // 恢复运行模式
             set_run_mode(get_uval(BACKUP_OPERATION_MODE));
+
+            // 恢复预热初始化
+            set_uval(R_PRE_STATUS, get_uval(BACKUP_PRE_STATUS));
+
             // 恢复预热开始时间
             set_time(R_PRE_START_TIME_HIGH, get_time(BACKUP_PREHEATING_START_TIME_HIGH));
+
             // 恢复预热结束时间
             set_time(R_PRE_STOP_TIME_HIGH, get_time(BACKUP_PREHEATING_SHUTDOWN_TIME_HIGH));
+
             // 清空校准时间为0
             set_uval(CALIBRATION_RUN_TIME, 0);
         }
 
         // 默认模式为停止模式
-        // unsigned short run_mode_value = get_run_mode(0);
-        // if (!run_mode_value)
-        // {
-        //     // 进入停止模式
-        //     set_run_mode(STATUS_STOP_SENT);
-        // }
+        unsigned short run_mode_value = get_run_mode(0);
+        if (!run_mode_value)
+        {
+            // 进入停止模式
+            set_run_mode(STATUS_STOP_SENT);
+        }
 
         //----------------------------------------------------------------------------------------------------------
         // 测试控制模式

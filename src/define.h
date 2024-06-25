@@ -436,6 +436,7 @@
 #define BACKUP_PREHEATING_START_TIME_LOW 423     // 备份预热开启时间-低位
 #define BACKUP_PREHEATING_SHUTDOWN_TIME_HIGH 424 // 备份预热关闭时间-高位
 #define BACKUP_PREHEATING_SHUTDOWN_TIME_LOW 425  // 备份预热关闭时间-低位
+#define BACKUP_PRE_STATUS 426                    // 备份预热初始化
 
 #define EGG_FLIPPING_SIGNAL_RINGING_STATUS 430    // 翻蛋信号响铃状态
 #define NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS 431 // 没有翻蛋信号响铃状态
