@@ -7,6 +7,9 @@
 const int TWO_DAY_SECONDS = (60 * 60 * 24 * 2);
 short g_us_pid_temp_arr[15] = {0}; // PID容器
 unsigned short g_sync_data[65535];
+char *g_filename = NULL;
+char g_filenaem_ini[256] = {0};
+
 // int pid_temp_sum_en = 0;           // 温度PID积分项
 // int pid_humi_sum_en = 0;           // 湿度PID积分项
 
@@ -535,6 +538,1269 @@ void control_egg()
 }
 
 //----------------------------------------------------------------------------------------------------------
+// 预设参数初始化
+//----------------------------------------------------------------------------------------------------------
+void preset_para_init(int mode)
+{
+    // 预设值-温度
+    if (S_PRE_TP_MAIN == mode)
+    {
+        // 预热值
+        set_val(P_PRE_TP_MAIN, 2500);
+
+        // 30天天数-1
+        // 30天数值-1
+        set_val(P_SET_TP_MAIN_DAY, 0);
+        set_val(P_SET_TP_MAIN_VAL, 3810);
+
+        // 30天天数-2
+        // 30天数值-2
+        set_val(P_SET_TP_MAIN_DAY + 2 * 1, 100);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 1, 3800);
+
+        // 30天天数-3
+        // 30天数值-3
+        set_val(P_SET_TP_MAIN_DAY + 2 * 2, 200);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 2, 3790);
+
+        // 30天天数-4
+        // 30天数值-4
+        set_val(P_SET_TP_MAIN_DAY + 2 * 3, 300);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 3, 3790);
+
+        // 30天天数-5
+        // 30天数值-5
+        set_val(P_SET_TP_MAIN_DAY + 2 * 4, 400);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 4, 3790);
+
+        // 30天天数-6
+        // 30天数值-6
+        set_val(P_SET_TP_MAIN_DAY + 2 * 5, 500);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 5, 3790);
+
+        // 30天天数-7
+        // 30天数值-7
+        set_val(P_SET_TP_MAIN_DAY + 2 * 6, 600);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 6, 3790);
+
+        // 30天天数-8
+        // 30天数值-8
+        set_val(P_SET_TP_MAIN_DAY + 2 * 7, 700);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 7, 3780);
+
+        // 30天天数-9
+        // 30天数值-9
+        set_val(P_SET_TP_MAIN_DAY + 2 * 8, 800);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 8, 3780);
+
+        // 30天天数-10
+        // 30天数值-10
+        set_val(P_SET_TP_MAIN_DAY + 2 * 9, 900);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 9, 3780);
+
+        // 30天天数-11
+        // 30天数值-11
+        set_val(P_SET_TP_MAIN_DAY + 2 * 10, 1000);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 10, 3770);
+
+        // 30天天数-12
+        // 30天数值-12
+        set_val(P_SET_TP_MAIN_DAY + 2 * 11, 1100);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 11, 3770);
+
+        // 30天天数-13
+        // 30天数值-13
+        set_val(P_SET_TP_MAIN_DAY + 2 * 12, 1200);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 12, 3770);
+
+        // 30天天数-14
+        // 30天数值-14
+        set_val(P_SET_TP_MAIN_DAY + 2 * 13, 1300);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 13, 3770);
+
+        // 30天天数-15
+        // 30天数值-15
+        set_val(P_SET_TP_MAIN_DAY + 2 * 14, 1400);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 14, 3760);
+
+        // 30天天数-16
+        // 30天数值-16
+        set_val(P_SET_TP_MAIN_DAY + 2 * 15, 1500);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 15, 3760);
+
+        // 30天天数-17
+        // 30天数值-17
+        set_val(P_SET_TP_MAIN_DAY + 2 * 16, 1600);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 16, 3760);
+
+        // 30天天数-18
+        // 30天数值-18
+        set_val(P_SET_TP_MAIN_DAY + 2 * 17, 1700);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 17, 3760);
+
+        // 30天天数-19
+        // 30天数值-19
+        set_val(P_SET_TP_MAIN_DAY + 2 * 18, 1800);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 18, 3750);
+
+        // 30天天数-20
+        // 30天数值-20
+        set_val(P_SET_TP_MAIN_DAY + 2 * 19, 1900);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 19, 3750);
+
+        // 30天天数-21
+        // 30天数值-21
+        set_val(P_SET_TP_MAIN_DAY + 2 * 20, 2000);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 20, 3720);
+
+        // 30天天数-22
+        // 30天数值-22
+        set_val(P_SET_TP_MAIN_DAY + 2 * 21, 2100);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 21, 3720);
+
+        // 30天天数-23
+        // 30天数值-23
+        set_val(P_SET_TP_MAIN_DAY + 2 * 22, 2200);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 22, 3710);
+
+        // 30天天数-24
+        // 30天数值-24
+        set_val(P_SET_TP_MAIN_DAY + 2 * 23, 2300);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 23, 3710);
+
+        // 30天天数-25
+        // 30天数值-25
+        set_val(P_SET_TP_MAIN_DAY + 2 * 24, 2400);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 24, 3700);
+
+        // 30天天数-26
+        // 30天数值-26
+        set_val(P_SET_TP_MAIN_DAY + 2 * 25, 2500);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 25, 3700);
+
+        // 30天天数-27
+        // 30天数值-27
+        set_val(P_SET_TP_MAIN_DAY + 2 * 26, 2600);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 26, 3650);
+
+        // 30天天数-28
+        // 30天数值-28
+        set_val(P_SET_TP_MAIN_DAY + 2 * 27, 2700);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 27, 3650);
+
+        // 30天天数-29
+        // 30天数值-29
+        set_val(P_SET_TP_MAIN_DAY + 2 * 28, 2800);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 28, 3600);
+
+        // 30天天数-30
+        // 30天数值-30
+        set_val(P_SET_TP_MAIN_DAY + 2 * 29, 2900);
+        set_val(P_SET_TP_MAIN_VAL + 2 * 29, 3600);
+    }
+    // 预设值-湿度
+    else if (S_PRE_HM == mode)
+    {
+        // 预热值
+        set_val(P_PRE_HM, 3150);
+
+        // 30天天数-1
+        // 30天数值-1
+        set_val(P_SET_HM_DAY, 0);
+        set_val(P_SET_HM_VAL, 3150);
+
+        // 30天天数-2
+        // 30天数值-2
+        set_val(P_SET_HM_DAY + 2 * 1, 100);
+        set_val(P_SET_HM_VAL + 2 * 1, 3150);
+
+        // 30天天数-3
+        // 30天数值-3
+        set_val(P_SET_HM_DAY + 2 * 2, 200);
+        set_val(P_SET_HM_VAL + 2 * 2, 3150);
+
+        // 30天天数-4
+        // 30天数值-4
+        set_val(P_SET_HM_DAY + 2 * 3, 300);
+        set_val(P_SET_HM_VAL + 2 * 3, 3150);
+
+        // 30天天数-5
+        // 30天数值-5
+        set_val(P_SET_HM_DAY + 2 * 4, 400);
+        set_val(P_SET_HM_VAL + 2 * 4, 3000);
+
+        // 30天天数-6
+        // 30天数值-6
+        set_val(P_SET_HM_DAY + 2 * 5, 500);
+        set_val(P_SET_HM_VAL + 2 * 5, 3000);
+
+        // 30天天数-7
+        // 30天数值-7
+        set_val(P_SET_HM_DAY + 2 * 6, 600);
+        set_val(P_SET_HM_VAL + 2 * 6, 3000);
+
+        // 30天天数-8
+        // 30天数值-8
+        set_val(P_SET_HM_DAY + 2 * 7, 700);
+        set_val(P_SET_HM_VAL + 2 * 7, 3000);
+
+        // 30天天数-9
+        // 30天数值-9
+        set_val(P_SET_HM_DAY + 2 * 8, 800);
+        set_val(P_SET_HM_VAL + 2 * 8, 3000);
+
+        // 30天天数-10
+        // 30天数值-10
+        set_val(P_SET_HM_DAY + 2 * 9, 900);
+        set_val(P_SET_HM_VAL + 2 * 9, 3000);
+
+        // 30天天数-11
+        // 30天数值-11
+        set_val(P_SET_HM_DAY + 2 * 10, 1000);
+        set_val(P_SET_HM_VAL + 2 * 10, 2950);
+
+        // 30天天数-12
+        // 30天数值-12
+        set_val(P_SET_HM_DAY + 2 * 11, 1100);
+        set_val(P_SET_HM_VAL + 2 * 11, 2950);
+
+        // 30天天数-13
+        // 30天数值-13
+        set_val(P_SET_HM_DAY + 2 * 12, 1200);
+        set_val(P_SET_HM_VAL + 2 * 12, 2950);
+
+        // 30天天数-14
+        // 30天数值-14
+        set_val(P_SET_HM_DAY + 2 * 13, 1300);
+        set_val(P_SET_HM_VAL + 2 * 13, 2950);
+
+        // 30天天数-15
+        // 30天数值-15
+        set_val(P_SET_HM_DAY + 2 * 14, 1400);
+        set_val(P_SET_HM_VAL + 2 * 14, 2950);
+
+        // 30天天数-16
+        // 30天数值-16
+        set_val(P_SET_HM_DAY + 2 * 15, 1500);
+        set_val(P_SET_HM_VAL + 2 * 15, 2900);
+
+        // 30天天数-17
+        // 30天数值-17
+        set_val(P_SET_HM_DAY + 2 * 16, 1600);
+        set_val(P_SET_HM_VAL + 2 * 16, 2900);
+
+        // 30天天数-18
+        // 30天数值-18
+        set_val(P_SET_HM_DAY + 2 * 17, 1700);
+        set_val(P_SET_HM_VAL + 2 * 17, 2900);
+
+        // 30天天数-19
+        // 30天数值-19
+        set_val(P_SET_HM_DAY + 2 * 18, 1800);
+        set_val(P_SET_HM_VAL + 2 * 18, 2900);
+
+        // 30天天数-20
+        // 30天数值-20
+        set_val(P_SET_HM_DAY + 2 * 19, 1900);
+        set_val(P_SET_HM_VAL + 2 * 19, 2900);
+
+        // 30天天数-21
+        // 30天数值-21
+        set_val(P_SET_HM_DAY + 2 * 20, 2000);
+        set_val(P_SET_HM_VAL + 2 * 20, 2850);
+
+        // 30天天数-22
+        // 30天数值-22
+        set_val(P_SET_HM_DAY + 2 * 21, 2100);
+        set_val(P_SET_HM_VAL + 2 * 21, 2850);
+
+        // 30天天数-23
+        // 30天数值-23
+        set_val(P_SET_HM_DAY + 2 * 22, 2200);
+        set_val(P_SET_HM_VAL + 2 * 22, 2850);
+
+        // 30天天数-24
+        // 30天数值-24
+        set_val(P_SET_HM_DAY + 2 * 23, 2300);
+        set_val(P_SET_HM_VAL + 2 * 23, 2850);
+
+        // 30天天数-25
+        // 30天数值-25
+        set_val(P_SET_HM_DAY + 2 * 24, 2400);
+        set_val(P_SET_HM_VAL + 2 * 24, 2850);
+
+        // 30天天数-26
+        // 30天数值-26
+        set_val(P_SET_HM_DAY + 2 * 25, 2500);
+        set_val(P_SET_HM_VAL + 2 * 25, 2800);
+
+        // 30天天数-27
+        // 30天数值-27
+        set_val(P_SET_HM_DAY + 2 * 26, 2600);
+        set_val(P_SET_HM_VAL + 2 * 26, 2800);
+
+        // 30天天数-28
+        // 30天数值-28
+        set_val(P_SET_HM_DAY + 2 * 27, 2700);
+        set_val(P_SET_HM_VAL + 2 * 27, 2800);
+
+        // 30天天数-29
+        // 30天数值-29
+        set_val(P_SET_HM_DAY + 2 * 28, 2800);
+        set_val(P_SET_HM_VAL + 2 * 28, 2800);
+
+        // 30天天数-30
+        // 30天数值-30
+        set_val(P_SET_HM_DAY + 2 * 29, 2900);
+        set_val(P_SET_HM_VAL + 2 * 29, 2800);
+    }
+    // 预设值-CO2
+    else if (S_PRE_CO == mode)
+    {
+        // 预热值
+        set_val(P_PRE_CO, 5000);
+
+        // 30天天数-1
+        // 30天数值-1
+        set_val(P_SET_CO_DAY, 0);
+        set_val(P_SET_CO_VAL, 10000);
+
+        // 30天天数-2
+        // 30天数值-2
+        set_val(P_SET_CO_DAY + 2 * 1, 100);
+        set_val(P_SET_CO_VAL + 2 * 1, 10000);
+
+        // 30天天数-3
+        // 30天数值-3
+        set_val(P_SET_CO_DAY + 2 * 2, 200);
+        set_val(P_SET_CO_VAL + 2 * 2, 10000);
+
+        // 30天天数-4
+        // 30天数值-4
+        set_val(P_SET_CO_DAY + 2 * 3, 300);
+        set_val(P_SET_CO_VAL + 2 * 3, 10000);
+
+        // 30天天数-5
+        // 30天数值-5
+        set_val(P_SET_CO_DAY + 2 * 4, 400);
+        set_val(P_SET_CO_VAL + 2 * 4, 10000);
+
+        // 30天天数-6
+        // 30天数值-6
+        set_val(P_SET_CO_DAY + 2 * 5, 500);
+        set_val(P_SET_CO_VAL + 2 * 5, 10000);
+
+        // 30天天数-7
+        // 30天数值-7
+        set_val(P_SET_CO_DAY + 2 * 6, 600);
+        set_val(P_SET_CO_VAL + 2 * 6, 10000);
+
+        // 30天天数-8
+        // 30天数值-8
+        set_val(P_SET_CO_DAY + 2 * 7, 700);
+        set_val(P_SET_CO_VAL + 2 * 7, 10000);
+
+        // 30天天数-9
+        // 30天数值-9
+        set_val(P_SET_CO_DAY + 2 * 8, 800);
+        set_val(P_SET_CO_VAL + 2 * 8, 10000);
+
+        // 30天天数-10
+        // 30天数值-10
+        set_val(P_SET_CO_DAY + 2 * 9, 900);
+        set_val(P_SET_CO_VAL + 2 * 9, 10000);
+
+        // 30天天数-11
+        // 30天数值-11
+        set_val(P_SET_CO_DAY + 2 * 10, 1000);
+        set_val(P_SET_CO_VAL + 2 * 10, 9000);
+
+        // 30天天数-12
+        // 30天数值-12
+        set_val(P_SET_CO_DAY + 2 * 11, 1100);
+        set_val(P_SET_CO_VAL + 2 * 11, 9000);
+
+        // 30天天数-13
+        // 30天数值-13
+        set_val(P_SET_CO_DAY + 2 * 12, 1200);
+        set_val(P_SET_CO_VAL + 2 * 12, 9000);
+
+        // 30天天数-14
+        // 30天数值-14
+        set_val(P_SET_CO_DAY + 2 * 13, 1300);
+        set_val(P_SET_CO_VAL + 2 * 13, 9000);
+
+        // 30天天数-15
+        // 30天数值-15
+        set_val(P_SET_CO_DAY + 2 * 14, 1400);
+        set_val(P_SET_CO_VAL + 2 * 14, 9000);
+
+        // 30天天数-16
+        // 30天数值-16
+        set_val(P_SET_CO_DAY + 2 * 15, 1500);
+        set_val(P_SET_CO_VAL + 2 * 15, 8000);
+
+        // 30天天数-17
+        // 30天数值-17
+        set_val(P_SET_CO_DAY + 2 * 16, 1600);
+        set_val(P_SET_CO_VAL + 2 * 16, 8000);
+
+        // 30天天数-18
+        // 30天数值-18
+        set_val(P_SET_CO_DAY + 2 * 17, 1700);
+        set_val(P_SET_CO_VAL + 2 * 17, 8000);
+
+        // 30天天数-19
+        // 30天数值-19
+        set_val(P_SET_CO_DAY + 2 * 18, 1800);
+        set_val(P_SET_CO_VAL + 2 * 18, 8000);
+
+        // 30天天数-20
+        // 30天数值-20
+        set_val(P_SET_CO_DAY + 2 * 19, 1900);
+        set_val(P_SET_CO_VAL + 2 * 19, 8000);
+
+        // 30天天数-21
+        // 30天数值-21
+        set_val(P_SET_CO_DAY + 2 * 20, 2000);
+        set_val(P_SET_CO_VAL + 2 * 20, 7000);
+
+        // 30天天数-22
+        // 30天数值-22
+        set_val(P_SET_CO_DAY + 2 * 21, 2100);
+        set_val(P_SET_CO_VAL + 2 * 21, 7000);
+
+        // 30天天数-23
+        // 30天数值-23
+        set_val(P_SET_CO_DAY + 2 * 22, 2200);
+        set_val(P_SET_CO_VAL + 2 * 22, 7000);
+
+        // 30天天数-24
+        // 30天数值-24
+        set_val(P_SET_CO_DAY + 2 * 23, 2300);
+        set_val(P_SET_CO_VAL + 2 * 23, 7000);
+
+        // 30天天数-25
+        // 30天数值-25
+        set_val(P_SET_CO_DAY + 2 * 24, 2400);
+        set_val(P_SET_CO_VAL + 2 * 24, 7000);
+
+        // 30天天数-26
+        // 30天数值-26
+        set_val(P_SET_CO_DAY + 2 * 25, 2500);
+        set_val(P_SET_CO_VAL + 2 * 25, 6000);
+
+        // 30天天数-27
+        // 30天数值-27
+        set_val(P_SET_CO_DAY + 2 * 26, 2600);
+        set_val(P_SET_CO_VAL + 2 * 26, 6000);
+
+        // 30天天数-28
+        // 30天数值-28
+        set_val(P_SET_CO_DAY + 2 * 27, 2700);
+        set_val(P_SET_CO_VAL + 2 * 27, 6000);
+
+        // 30天天数-29
+        // 30天数值-29
+        set_val(P_SET_CO_DAY + 2 * 28, 2800);
+        set_val(P_SET_CO_VAL + 2 * 28, 6000);
+
+        // 30天天数-30
+        // 30天数值-30
+        set_val(P_SET_CO_DAY + 2 * 29, 2900);
+        set_val(P_SET_CO_VAL + 2 * 29, 6000);
+    }
+    // 预设值-风门
+    else if (S_PRE_AD == mode)
+    {
+        // 预热值
+        set_val(P_PRE_AD, 30);
+
+        // 30天天数-1
+        // 30天数值-1
+        set_val(P_SET_AD_DAY, 0);
+        set_val(P_SET_AD_VAL, 0);
+
+        // 30天天数-2
+        // 30天数值-2
+        set_val(P_SET_AD_DAY + 2 * 1, 100);
+        set_val(P_SET_AD_VAL + 2 * 1, 0);
+
+        // 30天天数-3
+        // 30天数值-3
+        set_val(P_SET_AD_DAY + 2 * 2, 200);
+        set_val(P_SET_AD_VAL + 2 * 2, 0);
+
+        // 30天天数-4
+        // 30天数值-4
+        set_val(P_SET_AD_DAY + 2 * 3, 300);
+        set_val(P_SET_AD_VAL + 2 * 3, 0);
+
+        // 30天天数-5
+        // 30天数值-5
+        set_val(P_SET_AD_DAY + 2 * 4, 400);
+        set_val(P_SET_AD_VAL + 2 * 4, 0);
+
+        // 30天天数-6
+        // 30天数值-6
+        set_val(P_SET_AD_DAY + 2 * 5, 500);
+        set_val(P_SET_AD_VAL + 2 * 5, 0);
+
+        // 30天天数-7
+        // 30天数值-7
+        set_val(P_SET_AD_DAY + 2 * 6, 600);
+        set_val(P_SET_AD_VAL + 2 * 6, 0);
+
+        // 30天天数-8
+        // 30天数值-8
+        set_val(P_SET_AD_DAY + 2 * 7, 700);
+        set_val(P_SET_AD_VAL + 2 * 7, 0);
+
+        // 30天天数-9
+        // 30天数值-9
+        set_val(P_SET_AD_DAY + 2 * 8, 800);
+        set_val(P_SET_AD_VAL + 2 * 8, 0);
+
+        // 30天天数-10
+        // 30天数值-10
+        set_val(P_SET_AD_DAY + 2 * 9, 900);
+        set_val(P_SET_AD_VAL + 2 * 9, 0);
+
+        // 30天天数-11
+        // 30天数值-11
+        set_val(P_SET_AD_DAY + 2 * 10, 1000);
+        set_val(P_SET_AD_VAL + 2 * 10, 10);
+
+        // 30天天数-12
+        // 30天数值-12
+        set_val(P_SET_AD_DAY + 2 * 11, 1100);
+        set_val(P_SET_AD_VAL + 2 * 11, 10);
+
+        // 30天天数-13
+        // 30天数值-13
+        set_val(P_SET_AD_DAY + 2 * 12, 1200);
+        set_val(P_SET_AD_VAL + 2 * 12, 10);
+
+        // 30天天数-14
+        // 30天数值-14
+        set_val(P_SET_AD_DAY + 2 * 13, 1300);
+        set_val(P_SET_AD_VAL + 2 * 13, 10);
+
+        // 30天天数-15
+        // 30天数值-15
+        set_val(P_SET_AD_DAY + 2 * 14, 1400);
+        set_val(P_SET_AD_VAL + 2 * 14, 15);
+
+        // 30天天数-16
+        // 30天数值-16
+        set_val(P_SET_AD_DAY + 2 * 15, 1500);
+        set_val(P_SET_AD_VAL + 2 * 15, 15);
+
+        // 30天天数-17
+        // 30天数值-17
+        set_val(P_SET_AD_DAY + 2 * 16, 1600);
+        set_val(P_SET_AD_VAL + 2 * 16, 15);
+
+        // 30天天数-18
+        // 30天数值-18
+        set_val(P_SET_AD_DAY + 2 * 17, 1700);
+        set_val(P_SET_AD_VAL + 2 * 17, 15);
+
+        // 30天天数-19
+        // 30天数值-19
+        set_val(P_SET_AD_DAY + 2 * 18, 1800);
+        set_val(P_SET_AD_VAL + 2 * 18, 15);
+
+        // 30天天数-20
+        // 30天数值-20
+        set_val(P_SET_AD_DAY + 2 * 19, 1900);
+        set_val(P_SET_AD_VAL + 2 * 19, 20);
+
+        // 30天天数-21
+        // 30天数值-21
+        set_val(P_SET_AD_DAY + 2 * 20, 2000);
+        set_val(P_SET_AD_VAL + 2 * 20, 20);
+
+        // 30天天数-22
+        // 30天数值-22
+        set_val(P_SET_AD_DAY + 2 * 21, 2100);
+        set_val(P_SET_AD_VAL + 2 * 21, 20);
+
+        // 30天天数-23
+        // 30天数值-23
+        set_val(P_SET_AD_DAY + 2 * 22, 2200);
+        set_val(P_SET_AD_VAL + 2 * 22, 20);
+
+        // 30天天数-24
+        // 30天数值-24
+        set_val(P_SET_AD_DAY + 2 * 23, 2300);
+        set_val(P_SET_AD_VAL + 2 * 23, 20);
+
+        // 30天天数-25
+        // 30天数值-25
+        set_val(P_SET_AD_DAY + 2 * 24, 2400);
+        set_val(P_SET_AD_VAL + 2 * 24, 25);
+
+        // 30天天数-26
+        // 30天数值-26
+        set_val(P_SET_AD_DAY + 2 * 25, 2500);
+        set_val(P_SET_AD_VAL + 2 * 25, 25);
+
+        // 30天天数-27
+        // 30天数值-27
+        set_val(P_SET_AD_DAY + 2 * 26, 2600);
+        set_val(P_SET_AD_VAL + 2 * 26, 25);
+
+        // 30天天数-28
+        // 30天数值-28
+        set_val(P_SET_AD_DAY + 2 * 27, 2700);
+        set_val(P_SET_AD_VAL + 2 * 27, 25);
+
+        // 30天天数-29
+        // 30天数值-29
+        set_val(P_SET_AD_DAY + 2 * 28, 2800);
+        set_val(P_SET_AD_VAL + 2 * 28, 25);
+
+        // 30天天数-30
+        // 30天数值-30
+        set_val(P_SET_AD_DAY + 2 * 29, 2900);
+        set_val(P_SET_AD_VAL + 2 * 29, 25);
+    }
+    // 预设值-回流温度1
+    else if (S_PRE_TP_RF1 == mode)
+    {
+        // 冷水天数
+        // 预热值
+        set_val(P_PRE_TP_RF1_DAY, 900);
+        set_val(P_PRE_TP_RF1, -10);
+
+        // 30天天数-1
+        // 30天数值-1
+        set_val(P_SET_TP_RF1_DAY, 0);
+        set_val(P_SET_TP_RF1_VAL, -10);
+
+        // 30天天数-2
+        // 30天数值-2
+        set_val(P_SET_TP_RF1_DAY + 2 * 1, 100);
+        set_val(P_SET_TP_RF1_VAL + 2 * 1, -10);
+
+        // 30天天数-3
+        // 30天数值-3
+        set_val(P_SET_TP_RF1_DAY + 2 * 2, 200);
+        set_val(P_SET_TP_RF1_VAL + 2 * 2, -10);
+
+        // 30天天数-4
+        // 30天数值-4
+        set_val(P_SET_TP_RF1_DAY + 2 * 3, 300);
+        set_val(P_SET_TP_RF1_VAL + 2 * 3, -10);
+
+        // 30天天数-5
+        // 30天数值-5
+        set_val(P_SET_TP_RF1_DAY + 2 * 4, 400);
+        set_val(P_SET_TP_RF1_VAL + 2 * 4, -10);
+
+        // 30天天数-6
+        // 30天数值-6
+        set_val(P_SET_TP_RF1_DAY + 2 * 5, 500);
+        set_val(P_SET_TP_RF1_VAL + 2 * 5, -10);
+
+        // 30天天数-7
+        // 30天数值-7
+        set_val(P_SET_TP_RF1_DAY + 2 * 6, 600);
+        set_val(P_SET_TP_RF1_VAL + 2 * 6, -10);
+
+        // 30天天数-8
+        // 30天数值-8
+        set_val(P_SET_TP_RF1_DAY + 2 * 7, 700);
+        set_val(P_SET_TP_RF1_VAL + 2 * 7, -10);
+
+        // 30天天数-9
+        // 30天数值-9
+        set_val(P_SET_TP_RF1_DAY + 2 * 8, 800);
+        set_val(P_SET_TP_RF1_VAL + 2 * 8, -10);
+
+        // 30天天数-10
+        // 30天数值-10
+        set_val(P_SET_TP_RF1_DAY + 2 * 9, 900);
+        set_val(P_SET_TP_RF1_VAL + 2 * 9, 20);
+
+        // 30天天数-11
+        // 30天数值-11
+        set_val(P_SET_TP_RF1_DAY + 2 * 10, 1000);
+        set_val(P_SET_TP_RF1_VAL + 2 * 10, 20);
+
+        // 30天天数-12
+        // 30天数值-12
+        set_val(P_SET_TP_RF1_DAY + 2 * 11, 1100);
+        set_val(P_SET_TP_RF1_VAL + 2 * 11, 20);
+
+        // 30天天数-13
+        // 30天数值-13
+        set_val(P_SET_TP_RF1_DAY + 2 * 12, 1200);
+        set_val(P_SET_TP_RF1_VAL + 2 * 12, 20);
+
+        // 30天天数-14
+        // 30天数值-14
+        set_val(P_SET_TP_RF1_DAY + 2 * 13, 1300);
+        set_val(P_SET_TP_RF1_VAL + 2 * 13, 20);
+
+        // 30天天数-15
+        // 30天数值-15
+        set_val(P_SET_TP_RF1_DAY + 2 * 14, 1400);
+        set_val(P_SET_TP_RF1_VAL + 2 * 14, 20);
+
+        // 30天天数-16
+        // 30天数值-16
+        set_val(P_SET_TP_RF1_DAY + 2 * 15, 1500);
+        set_val(P_SET_TP_RF1_VAL + 2 * 15, 15);
+
+        // 30天天数-17
+        // 30天数值-17
+        set_val(P_SET_TP_RF1_DAY + 2 * 16, 1600);
+        set_val(P_SET_TP_RF1_VAL + 2 * 16, 15);
+
+        // 30天天数-18
+        // 30天数值-18
+        set_val(P_SET_TP_RF1_DAY + 2 * 17, 1700);
+        set_val(P_SET_TP_RF1_VAL + 2 * 17, 15);
+
+        // 30天天数-19
+        // 30天数值-19
+        set_val(P_SET_TP_RF1_DAY + 2 * 18, 1800);
+        set_val(P_SET_TP_RF1_VAL + 2 * 18, 15);
+
+        // 30天天数-20
+        // 30天数值-20
+        set_val(P_SET_TP_RF1_DAY + 2 * 19, 1900);
+        set_val(P_SET_TP_RF1_VAL + 2 * 19, 15);
+
+        // 30天天数-21
+        // 30天数值-21
+        set_val(P_SET_TP_RF1_DAY + 2 * 20, 2000);
+        set_val(P_SET_TP_RF1_VAL + 2 * 20, 20);
+
+        // 30天天数-22
+        // 30天数值-22
+        set_val(P_SET_TP_RF1_DAY + 2 * 21, 2100);
+        set_val(P_SET_TP_RF1_VAL + 2 * 21, 20);
+
+        // 30天天数-23
+        // 30天数值-23
+        set_val(P_SET_TP_RF1_DAY + 2 * 22, 2200);
+        set_val(P_SET_TP_RF1_VAL + 2 * 22, 20);
+
+        // 30天天数-24
+        // 30天数值-24
+        set_val(P_SET_TP_RF1_DAY + 2 * 23, 2300);
+        set_val(P_SET_TP_RF1_VAL + 2 * 23, 20);
+
+        // 30天天数-25
+        // 30天数值-25
+        set_val(P_SET_TP_RF1_DAY + 2 * 24, 2400);
+        set_val(P_SET_TP_RF1_VAL + 2 * 24, 20);
+
+        // 30天天数-26
+        // 30天数值-26
+        set_val(P_SET_TP_RF1_DAY + 2 * 25, 2500);
+        set_val(P_SET_TP_RF1_VAL + 2 * 25, 30);
+
+        // 30天天数-27
+        // 30天数值-27
+        set_val(P_SET_TP_RF1_DAY + 2 * 26, 2600);
+        set_val(P_SET_TP_RF1_VAL + 2 * 26, 30);
+
+        // 30天天数-28
+        // 30天数值-28
+        set_val(P_SET_TP_RF1_DAY + 2 * 27, 2700);
+        set_val(P_SET_TP_RF1_VAL + 2 * 27, 30);
+
+        // 30天天数-29
+        // 30天数值-29
+        set_val(P_SET_TP_RF1_DAY + 2 * 28, 2800);
+        set_val(P_SET_TP_RF1_VAL + 2 * 28, 30);
+
+        // 30天天数-30
+        // 30天数值-30
+        set_val(P_SET_TP_RF1_DAY + 2 * 29, 2900);
+        set_val(P_SET_TP_RF1_VAL + 2 * 29, 30);
+    }
+    // 预设值-回流温度2
+    else if (S_PRE_TP_RF2 == mode)
+    {
+        // 冷水天数
+        // 预热值
+        set_val(P_PRE_TP_RF2_DAY, 900);
+        set_val(P_PRE_TP_RF2, -10);
+
+        // 30天天数-1
+        // 30天数值-1
+        set_val(P_SET_TP_RF2_DAY, 0);
+        set_val(P_SET_TP_RF2_VAL, -10);
+
+        // 30天天数-2
+        // 30天数值-2
+        set_val(P_SET_TP_RF2_DAY + 2 * 1, 100);
+        set_val(P_SET_TP_RF2_VAL + 2 * 1, -10);
+
+        // 30天天数-3
+        // 30天数值-3
+        set_val(P_SET_TP_RF2_DAY + 2 * 2, 200);
+        set_val(P_SET_TP_RF2_VAL + 2 * 2, -10);
+
+        // 30天天数-4
+        // 30天数值-4
+        set_val(P_SET_TP_RF2_DAY + 2 * 3, 300);
+        set_val(P_SET_TP_RF2_VAL + 2 * 3, -10);
+
+        // 30天天数-5
+        // 30天数值-5
+        set_val(P_SET_TP_RF2_DAY + 2 * 4, 400);
+        set_val(P_SET_TP_RF2_VAL + 2 * 4, -10);
+
+        // 30天天数-6
+        // 30天数值-6
+        set_val(P_SET_TP_RF2_DAY + 2 * 5, 500);
+        set_val(P_SET_TP_RF2_VAL + 2 * 5, -10);
+
+        // 30天天数-7
+        // 30天数值-7
+        set_val(P_SET_TP_RF2_DAY + 2 * 6, 600);
+        set_val(P_SET_TP_RF2_VAL + 2 * 6, -10);
+
+        // 30天天数-8
+        // 30天数值-8
+        set_val(P_SET_TP_RF2_DAY + 2 * 7, 700);
+        set_val(P_SET_TP_RF2_VAL + 2 * 7, -10);
+
+        // 30天天数-9
+        // 30天数值-9
+        set_val(P_SET_TP_RF2_DAY + 2 * 8, 800);
+        set_val(P_SET_TP_RF2_VAL + 2 * 8, -10);
+
+        // 30天天数-10
+        // 30天数值-10
+        set_val(P_SET_TP_RF2_DAY + 2 * 9, 900);
+        set_val(P_SET_TP_RF2_VAL + 2 * 9, 20);
+
+        // 30天天数-11
+        // 30天数值-11
+        set_val(P_SET_TP_RF2_DAY + 2 * 10, 1000);
+        set_val(P_SET_TP_RF2_VAL + 2 * 10, 20);
+
+        // 30天天数-12
+        // 30天数值-12
+        set_val(P_SET_TP_RF2_DAY + 2 * 11, 1100);
+        set_val(P_SET_TP_RF2_VAL + 2 * 11, 20);
+
+        // 30天天数-13
+        // 30天数值-13
+        set_val(P_SET_TP_RF2_DAY + 2 * 12, 1200);
+        set_val(P_SET_TP_RF2_VAL + 2 * 12, 20);
+
+        // 30天天数-14
+        // 30天数值-14
+        set_val(P_SET_TP_RF2_DAY + 2 * 13, 1300);
+        set_val(P_SET_TP_RF2_VAL + 2 * 13, 20);
+
+        // 30天天数-15
+        // 30天数值-15
+        set_val(P_SET_TP_RF2_DAY + 2 * 14, 1400);
+        set_val(P_SET_TP_RF2_VAL + 2 * 14, 20);
+
+        // 30天天数-16
+        // 30天数值-16
+        set_val(P_SET_TP_RF2_DAY + 2 * 15, 1500);
+        set_val(P_SET_TP_RF2_VAL + 2 * 15, 15);
+
+        // 30天天数-17
+        // 30天数值-17
+        set_val(P_SET_TP_RF2_DAY + 2 * 16, 1600);
+        set_val(P_SET_TP_RF2_VAL + 2 * 16, 15);
+
+        // 30天天数-18
+        // 30天数值-18
+        set_val(P_SET_TP_RF2_DAY + 2 * 17, 1700);
+        set_val(P_SET_TP_RF2_VAL + 2 * 17, 15);
+
+        // 30天天数-19
+        // 30天数值-19
+        set_val(P_SET_TP_RF2_DAY + 2 * 18, 1800);
+        set_val(P_SET_TP_RF2_VAL + 2 * 18, 15);
+
+        // 30天天数-20
+        // 30天数值-20
+        set_val(P_SET_TP_RF2_DAY + 2 * 19, 1900);
+        set_val(P_SET_TP_RF2_VAL + 2 * 19, 15);
+
+        // 30天天数-21
+        // 30天数值-21
+        set_val(P_SET_TP_RF2_DAY + 2 * 20, 2000);
+        set_val(P_SET_TP_RF2_VAL + 2 * 20, 20);
+
+        // 30天天数-22
+        // 30天数值-22
+        set_val(P_SET_TP_RF2_DAY + 2 * 21, 2100);
+        set_val(P_SET_TP_RF2_VAL + 2 * 21, 20);
+
+        // 30天天数-23
+        // 30天数值-23
+        set_val(P_SET_TP_RF2_DAY + 2 * 22, 2200);
+        set_val(P_SET_TP_RF2_VAL + 2 * 22, 20);
+
+        // 30天天数-24
+        // 30天数值-24
+        set_val(P_SET_TP_RF2_DAY + 2 * 23, 2300);
+        set_val(P_SET_TP_RF2_VAL + 2 * 23, 20);
+
+        // 30天天数-25
+        // 30天数值-25
+        set_val(P_SET_TP_RF2_DAY + 2 * 24, 2400);
+        set_val(P_SET_TP_RF2_VAL + 2 * 24, 20);
+
+        // 30天天数-26
+        // 30天数值-26
+        set_val(P_SET_TP_RF2_DAY + 2 * 25, 2500);
+        set_val(P_SET_TP_RF2_VAL + 2 * 25, 30);
+
+        // 30天天数-27
+        // 30天数值-27
+        set_val(P_SET_TP_RF2_DAY + 2 * 26, 2600);
+        set_val(P_SET_TP_RF2_VAL + 2 * 26, 30);
+
+        // 30天天数-28
+        // 30天数值-28
+        set_val(P_SET_TP_RF2_DAY + 2 * 27, 2700);
+        set_val(P_SET_TP_RF2_VAL + 2 * 27, 30);
+
+        // 30天天数-29
+        // 30天数值-29
+        set_val(P_SET_TP_RF2_DAY + 2 * 28, 2800);
+        set_val(P_SET_TP_RF2_VAL + 2 * 28, 30);
+
+        // 30天天数-30
+        // 30天数值-30
+        set_val(P_SET_TP_RF2_DAY + 2 * 29, 2900);
+        set_val(P_SET_TP_RF2_VAL + 2 * 29, 30);
+    }
+    // 预设值-回流温度3
+    else if (S_PRE_TP_RF3 == mode)
+    {
+        // 冷水天数
+        // 预热值
+        set_val(P_PRE_TP_RF3_DAY, 900);
+        set_val(P_PRE_TP_RF3, -10);
+
+        // 30天天数-1
+        // 30天数值-1
+        set_val(P_SET_TP_RF3_DAY, 0);
+        set_val(P_SET_TP_RF3_VAL, -10);
+
+        // 30天天数-2
+        // 30天数值-2
+        set_val(P_SET_TP_RF3_DAY + 2 * 1, 100);
+        set_val(P_SET_TP_RF3_VAL + 2 * 1, -10);
+
+        // 30天天数-3
+        // 30天数值-3
+        set_val(P_SET_TP_RF3_DAY + 2 * 2, 200);
+        set_val(P_SET_TP_RF3_VAL + 2 * 2, -10);
+
+        // 30天天数-4
+        // 30天数值-4
+        set_val(P_SET_TP_RF3_DAY + 2 * 3, 300);
+        set_val(P_SET_TP_RF3_VAL + 2 * 3, -10);
+
+        // 30天天数-5
+        // 30天数值-5
+        set_val(P_SET_TP_RF3_DAY + 2 * 4, 400);
+        set_val(P_SET_TP_RF3_VAL + 2 * 4, -10);
+
+        // 30天天数-6
+        // 30天数值-6
+        set_val(P_SET_TP_RF3_DAY + 2 * 5, 500);
+        set_val(P_SET_TP_RF3_VAL + 2 * 5, -10);
+
+        // 30天天数-7
+        // 30天数值-7
+        set_val(P_SET_TP_RF3_DAY + 2 * 6, 600);
+        set_val(P_SET_TP_RF3_VAL + 2 * 6, -10);
+
+        // 30天天数-8
+        // 30天数值-8
+        set_val(P_SET_TP_RF3_DAY + 2 * 7, 700);
+        set_val(P_SET_TP_RF3_VAL + 2 * 7, -10);
+
+        // 30天天数-9
+        // 30天数值-9
+        set_val(P_SET_TP_RF3_DAY + 2 * 8, 800);
+        set_val(P_SET_TP_RF3_VAL + 2 * 8, -10);
+
+        // 30天天数-10
+        // 30天数值-10
+        set_val(P_SET_TP_RF3_DAY + 2 * 9, 900);
+        set_val(P_SET_TP_RF3_VAL + 2 * 9, 20);
+
+        // 30天天数-11
+        // 30天数值-11
+        set_val(P_SET_TP_RF3_DAY + 2 * 10, 1000);
+        set_val(P_SET_TP_RF3_VAL + 2 * 10, 20);
+
+        // 30天天数-12
+        // 30天数值-12
+        set_val(P_SET_TP_RF3_DAY + 2 * 11, 1100);
+        set_val(P_SET_TP_RF3_VAL + 2 * 11, 20);
+
+        // 30天天数-13
+        // 30天数值-13
+        set_val(P_SET_TP_RF3_DAY + 2 * 12, 1200);
+        set_val(P_SET_TP_RF3_VAL + 2 * 12, 20);
+
+        // 30天天数-14
+        // 30天数值-14
+        set_val(P_SET_TP_RF3_DAY + 2 * 13, 1300);
+        set_val(P_SET_TP_RF3_VAL + 2 * 13, 20);
+
+        // 30天天数-15
+        // 30天数值-15
+        set_val(P_SET_TP_RF3_DAY + 2 * 14, 1400);
+        set_val(P_SET_TP_RF3_VAL + 2 * 14, 20);
+
+        // 30天天数-16
+        // 30天数值-16
+        set_val(P_SET_TP_RF3_DAY + 2 * 15, 1500);
+        set_val(P_SET_TP_RF3_VAL + 2 * 15, 15);
+
+        // 30天天数-17
+        // 30天数值-17
+        set_val(P_SET_TP_RF3_DAY + 2 * 16, 1600);
+        set_val(P_SET_TP_RF3_VAL + 2 * 16, 15);
+
+        // 30天天数-18
+        // 30天数值-18
+        set_val(P_SET_TP_RF3_DAY + 2 * 17, 1700);
+        set_val(P_SET_TP_RF3_VAL + 2 * 17, 15);
+
+        // 30天天数-19
+        // 30天数值-19
+        set_val(P_SET_TP_RF3_DAY + 2 * 18, 1800);
+        set_val(P_SET_TP_RF3_VAL + 2 * 18, 15);
+
+        // 30天天数-20
+        // 30天数值-20
+        set_val(P_SET_TP_RF3_DAY + 2 * 19, 1900);
+        set_val(P_SET_TP_RF3_VAL + 2 * 19, 15);
+
+        // 30天天数-21
+        // 30天数值-21
+        set_val(P_SET_TP_RF3_DAY + 2 * 20, 2000);
+        set_val(P_SET_TP_RF3_VAL + 2 * 20, 20);
+
+        // 30天天数-22
+        // 30天数值-22
+        set_val(P_SET_TP_RF3_DAY + 2 * 21, 2100);
+        set_val(P_SET_TP_RF3_VAL + 2 * 21, 20);
+
+        // 30天天数-23
+        // 30天数值-23
+        set_val(P_SET_TP_RF3_DAY + 2 * 22, 2200);
+        set_val(P_SET_TP_RF3_VAL + 2 * 22, 20);
+
+        // 30天天数-24
+        // 30天数值-24
+        set_val(P_SET_TP_RF3_DAY + 2 * 23, 2300);
+        set_val(P_SET_TP_RF3_VAL + 2 * 23, 20);
+
+        // 30天天数-25
+        // 30天数值-25
+        set_val(P_SET_TP_RF3_DAY + 2 * 24, 2400);
+        set_val(P_SET_TP_RF3_VAL + 2 * 24, 20);
+
+        // 30天天数-26
+        // 30天数值-26
+        set_val(P_SET_TP_RF3_DAY + 2 * 25, 2500);
+        set_val(P_SET_TP_RF3_VAL + 2 * 25, 30);
+
+        // 30天天数-27
+        // 30天数值-27
+        set_val(P_SET_TP_RF3_DAY + 2 * 26, 2600);
+        set_val(P_SET_TP_RF3_VAL + 2 * 26, 30);
+
+        // 30天天数-28
+        // 30天数值-28
+        set_val(P_SET_TP_RF3_DAY + 2 * 27, 2700);
+        set_val(P_SET_TP_RF3_VAL + 2 * 27, 30);
+
+        // 30天天数-29
+        // 30天数值-29
+        set_val(P_SET_TP_RF3_DAY + 2 * 28, 2800);
+        set_val(P_SET_TP_RF3_VAL + 2 * 28, 30);
+
+        // 30天天数-30
+        // 30天数值-30
+        set_val(P_SET_TP_RF3_DAY + 2 * 29, 2900);
+        set_val(P_SET_TP_RF3_VAL + 2 * 29, 30);
+    }
+    // 预设值-回流温度4
+    else if (S_PRE_TP_RF4 == mode)
+    {
+        // 冷水天数
+        // 预热值
+        set_val(P_PRE_TP_RF4_DAY, 900);
+        set_val(P_PRE_TP_RF4, -10);
+
+        // 30天天数-1
+        // 30天数值-1
+        set_val(P_SET_TP_RF4_DAY, 0);
+        set_val(P_SET_TP_RF4_VAL, -10);
+
+        // 30天天数-2
+        // 30天数值-2
+        set_val(P_SET_TP_RF4_DAY + 2 * 1, 100);
+        set_val(P_SET_TP_RF4_VAL + 2 * 1, -10);
+
+        // 30天天数-3
+        // 30天数值-3
+        set_val(P_SET_TP_RF4_DAY + 2 * 2, 200);
+        set_val(P_SET_TP_RF4_VAL + 2 * 2, -10);
+
+        // 30天天数-4
+        // 30天数值-4
+        set_val(P_SET_TP_RF4_DAY + 2 * 3, 300);
+        set_val(P_SET_TP_RF4_VAL + 2 * 3, -10);
+
+        // 30天天数-5
+        // 30天数值-5
+        set_val(P_SET_TP_RF4_DAY + 2 * 4, 400);
+        set_val(P_SET_TP_RF4_VAL + 2 * 4, -10);
+
+        // 30天天数-6
+        // 30天数值-6
+        set_val(P_SET_TP_RF4_DAY + 2 * 5, 500);
+        set_val(P_SET_TP_RF4_VAL + 2 * 5, -10);
+
+        // 30天天数-7
+        // 30天数值-7
+        set_val(P_SET_TP_RF4_DAY + 2 * 6, 600);
+        set_val(P_SET_TP_RF4_VAL + 2 * 6, -10);
+
+        // 30天天数-8
+        // 30天数值-8
+        set_val(P_SET_TP_RF4_DAY + 2 * 7, 700);
+        set_val(P_SET_TP_RF4_VAL + 2 * 7, -10);
+
+        // 30天天数-9
+        // 30天数值-9
+        set_val(P_SET_TP_RF4_DAY + 2 * 8, 800);
+        set_val(P_SET_TP_RF4_VAL + 2 * 8, -10);
+
+        // 30天天数-10
+        // 30天数值-10
+        set_val(P_SET_TP_RF4_DAY + 2 * 9, 900);
+        set_val(P_SET_TP_RF4_VAL + 2 * 9, 20);
+
+        // 30天天数-11
+        // 30天数值-11
+        set_val(P_SET_TP_RF4_DAY + 2 * 10, 1000);
+        set_val(P_SET_TP_RF4_VAL + 2 * 10, 20);
+
+        // 30天天数-12
+        // 30天数值-12
+        set_val(P_SET_TP_RF4_DAY + 2 * 11, 1100);
+        set_val(P_SET_TP_RF4_VAL + 2 * 11, 20);
+
+        // 30天天数-13
+        // 30天数值-13
+        set_val(P_SET_TP_RF4_DAY + 2 * 12, 1200);
+        set_val(P_SET_TP_RF4_VAL + 2 * 12, 20);
+
+        // 30天天数-14
+        // 30天数值-14
+        set_val(P_SET_TP_RF4_DAY + 2 * 13, 1300);
+        set_val(P_SET_TP_RF4_VAL + 2 * 13, 20);
+
+        // 30天天数-15
+        // 30天数值-15
+        set_val(P_SET_TP_RF4_DAY + 2 * 14, 1400);
+        set_val(P_SET_TP_RF4_VAL + 2 * 14, 20);
+
+        // 30天天数-16
+        // 30天数值-16
+        set_val(P_SET_TP_RF4_DAY + 2 * 15, 1500);
+        set_val(P_SET_TP_RF4_VAL + 2 * 15, 15);
+
+        // 30天天数-17
+        // 30天数值-17
+        set_val(P_SET_TP_RF4_DAY + 2 * 16, 1600);
+        set_val(P_SET_TP_RF4_VAL + 2 * 16, 15);
+
+        // 30天天数-18
+        // 30天数值-18
+        set_val(P_SET_TP_RF4_DAY + 2 * 17, 1700);
+        set_val(P_SET_TP_RF4_VAL + 2 * 17, 15);
+
+        // 30天天数-19
+        // 30天数值-19
+        set_val(P_SET_TP_RF4_DAY + 2 * 18, 1800);
+        set_val(P_SET_TP_RF4_VAL + 2 * 18, 15);
+
+        // 30天天数-20
+        // 30天数值-20
+        set_val(P_SET_TP_RF4_DAY + 2 * 19, 1900);
+        set_val(P_SET_TP_RF4_VAL + 2 * 19, 15);
+
+        // 30天天数-21
+        // 30天数值-21
+        set_val(P_SET_TP_RF4_DAY + 2 * 20, 2000);
+        set_val(P_SET_TP_RF4_VAL + 2 * 20, 20);
+
+        // 30天天数-22
+        // 30天数值-22
+        set_val(P_SET_TP_RF4_DAY + 2 * 21, 2100);
+        set_val(P_SET_TP_RF4_VAL + 2 * 21, 20);
+
+        // 30天天数-23
+        // 30天数值-23
+        set_val(P_SET_TP_RF4_DAY + 2 * 22, 2200);
+        set_val(P_SET_TP_RF4_VAL + 2 * 22, 20);
+
+        // 30天天数-24
+        // 30天数值-24
+        set_val(P_SET_TP_RF4_DAY + 2 * 23, 2300);
+        set_val(P_SET_TP_RF4_VAL + 2 * 23, 20);
+
+        // 30天天数-25
+        // 30天数值-25
+        set_val(P_SET_TP_RF4_DAY + 2 * 24, 2400);
+        set_val(P_SET_TP_RF4_VAL + 2 * 24, 20);
+
+        // 30天天数-26
+        // 30天数值-26
+        set_val(P_SET_TP_RF4_DAY + 2 * 25, 2500);
+        set_val(P_SET_TP_RF4_VAL + 2 * 25, 30);
+
+        // 30天天数-27
+        // 30天数值-27
+        set_val(P_SET_TP_RF4_DAY + 2 * 26, 2600);
+        set_val(P_SET_TP_RF4_VAL + 2 * 26, 30);
+
+        // 30天天数-28
+        // 30天数值-28
+        set_val(P_SET_TP_RF4_DAY + 2 * 27, 2700);
+        set_val(P_SET_TP_RF4_VAL + 2 * 27, 30);
+
+        // 30天天数-29
+        // 30天数值-29
+        set_val(P_SET_TP_RF4_DAY + 2 * 28, 2800);
+        set_val(P_SET_TP_RF4_VAL + 2 * 28, 30);
+
+        // 30天天数-30
+        // 30天数值-30
+        set_val(P_SET_TP_RF4_DAY + 2 * 29, 2900);
+        set_val(P_SET_TP_RF4_VAL + 2 * 29, 30);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
 // 初始化参数
 //----------------------------------------------------------------------------------------------------------
 void init_para()
@@ -826,15 +2092,103 @@ void init_para()
         }
     }
 
-    if(sync_file_index>10)
+    if (sync_file_index > 10)
     {
-         snprintf(sync_file_name, 512, "%s_%d", g_st_jincubator.conf_sysc_file, sync_file_index);
+        snprintf(sync_file_name, 512, "%s_%d", g_st_jincubator.conf_sysc_file, sync_file_index);
         v_i_rc = syn_ini_to_shm(sync_file_name, 0, 5000);
         if (v_i_rc != 0)
         {
             ++sync_file_index;
             zlog_error(g_zlog_zc, "%-40s备份文件:%s 恢复失败!", "[init_para]", sync_file_name);
         }
+    }
+
+    unsigned short para_tmp[100] = {0};
+    memset(para_tmp, 0, sizeof(unsigned short) * 100);
+
+    // 初始化-温度
+    if (memcmp(para_tmp, &shm_out[P_PRE_TP_MAIN_DAY], sizeof(unsigned short) * 100) == 0)
+    {
+        preset_para_init(S_PRE_TP_MAIN);
+    }
+
+    // 初始化-湿度
+    if (memcmp(para_tmp, &shm_out[P_PRE_HM_DAY], sizeof(unsigned short) * 100) == 0)
+    {
+        preset_para_init(S_PRE_HM);
+    }
+
+    // 初始化-二氧化碳
+    if (memcmp(para_tmp, &shm_out[P_PRE_CO_DAY], sizeof(unsigned short) * 100) == 0)
+    {
+        preset_para_init(S_PRE_CO);
+    }
+
+    // 初始化-风门
+    if (memcmp(para_tmp, &shm_out[P_PRE_AD_DAY], sizeof(unsigned short) * 100) == 0)
+    {
+        preset_para_init(S_PRE_AD);
+    }
+
+    // 初始化-回流温度1
+    if (memcmp(para_tmp, &shm_out[P_PRE_TP_RF1_DAY], sizeof(unsigned short) * 100) == 0)
+    {
+        preset_para_init(S_PRE_TP_RF1);
+    }
+
+    // 初始化-回流温度2
+    if (memcmp(para_tmp, &shm_out[P_PRE_TP_RF2_DAY], sizeof(unsigned short) * 100) == 0)
+    {
+        preset_para_init(S_PRE_TP_RF2);
+    }
+
+    // 初始化-回流温度3
+    if (memcmp(para_tmp, &shm_out[P_PRE_TP_RF3_DAY], sizeof(unsigned short) * 100) == 0)
+    {
+        preset_para_init(S_PRE_TP_RF3);
+    }
+
+    // 初始化-回流温度4
+    if (memcmp(para_tmp, &shm_out[P_PRE_TP_RF4_DAY], sizeof(unsigned short) * 100) == 0)
+    {
+        preset_para_init(S_PRE_TP_RF4);
+    }
+
+    // 温度0
+    if (get_uval(P_PT1_AO1) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT1_AO1:%u", "[init_para]", g_st_jincubator.pt1.pt_0_temp);
+        set_uval(P_PT1_AO1, g_st_jincubator.pt1.pt_0_temp);
+    }
+
+    if (get_uval(P_PT2_AO1) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT2_AO1:%u", "[init_para]", g_st_jincubator.pt2.pt_0_temp);
+        set_uval(P_PT2_AO1, g_st_jincubator.pt2.pt_0_temp);
+    }
+
+    if (get_uval(P_PT3_AO1) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT3_AO1:%u", "[init_para]", g_st_jincubator.pt3.pt_0_temp);
+        set_uval(P_PT3_AO1, g_st_jincubator.pt3.pt_0_temp);
+    }
+
+    if (get_uval(P_PT4_AO1) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT4_AO1:%u", "[init_para]", g_st_jincubator.pt4.pt_0_temp);
+        set_uval(P_PT4_AO1, g_st_jincubator.pt4.pt_0_temp);
+    }
+
+    if (get_uval(P_PT5_AO1) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT5_AO1:%u", "[init_para]", g_st_jincubator.pt5.pt_0_temp);
+        set_uval(P_PT5_AO1, g_st_jincubator.pt5.pt_0_temp);
+    }
+
+    if (get_uval(P_PT6_AO1) == 0)
+    {
+        zlog_info(g_zlog_zc, "%-40sP_PT6_AO2:%u", "[init_para]", g_st_jincubator.pt6.pt_0_temp);
+        set_uval(P_PT6_AO1, g_st_jincubator.pt6.pt_0_temp);
     }
 
     // 温度40
@@ -949,7 +2303,7 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
-    // 高温警报的设定
+    // 回流温度 高温警报的设定
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_RTEMP_AH) == 0)
     {
@@ -957,7 +2311,7 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
-    // 低温警报的设定
+    // 回流温度 低温警报的设定
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_RTEMP_AL) == 0)
     {
@@ -965,7 +2319,7 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
-    // 低温警报的温度设定模式
+    // 回流温度 低温警报的温度设定模式
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_RTEMP_ALO) == 0)
     {
@@ -973,15 +2327,7 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
-    // 低温警报的温度设定模式
-    //----------------------------------------------------------------------------------------------------------
-    if (get_uval(P_RTEMP_ALO) == 0)
-    {
-        set_uval(P_RTEMP_ALO, 1);
-    }
-
-    //----------------------------------------------------------------------------------------------------------
-    // 水冷2周期次数
+    // 回流温度 水冷2周期次数
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_RTEMP_ZQC) == 0)
     {
@@ -989,7 +2335,7 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
-    // 周期时间
+    // 回流温度 周期时间
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_RTEMP_ZQS) == 0)
     {
@@ -997,7 +2343,7 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
-    // 水冷2工作时间
+    // 回流温度 水冷2工作时间
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_RTEMP_GZS) == 0)
     {
@@ -1005,11 +2351,107 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
-    // 回流温度控制灵敏度
+    // 回流温度 回流温度控制灵敏度
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_RTEMP_HYS) == 0)
     {
-        set_uval(P_RTEMP_HYS, 3);
+        set_uval(P_RTEMP_HYS, 1);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 辅助加热动作点
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_AUH) == 0)
+    {
+        set_uval(P_AUH, 40);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 风门驱动（开）动作点
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_OPE) == 0)
+    {
+        set_uval(P_OPE, 35);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 风门驱动（关）动作点
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_CLO) == 0)
+    {
+        set_uval(P_CLO, 65);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 水冷动作点
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_COL) == 0)
+    {
+        set_uval(P_COL, 40);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 鼓风机动作点
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_BLO) == 0)
+    {
+        set_uval(P_BLO, 35);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 主加热控制 100％点
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HHI) == 0)
+    {
+        set_uval(P_HHI, 80);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 主加热控制 0％点
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HLO) == 0)
+    {
+        set_uval(P_HLO, 55);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 辅助加热管最低运转时间（秒）
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TAU) == 0)
+    {
+        set_uval(P_TAU, 1);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 风门（开）最低运转时间（秒）
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TOP) == 0)
+    {
+        set_uval(P_TOP, 1);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 风门（关）最低运转时间（秒）
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TCL) == 0)
+    {
+        set_uval(P_TCL, 1);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 水冷最低运转时间（秒）
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TCO) == 0)
+    {
+        set_uval(P_TCO, 1);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 鼓风机最低运转时间（秒）
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TBL) == 0)
+    {
+        set_uval(P_TBL, 1);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1045,11 +2487,19 @@ void init_para()
     }
 
     //----------------------------------------------------------------------------------------------------------
-    // PID控制参数 比例带
+    // 输出周期
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TEMP_TO) == 0)
+    {
+        set_uval(P_TEMP_TO, 60);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // PID控制参数 输出周期
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_TEMP_P) == 0)
     {
-        set_uval(P_TEMP_P, 60);
+        set_uval(P_TEMP_P, 6);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1057,7 +2507,7 @@ void init_para()
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_TEMP_I) == 0)
     {
-        set_uval(P_TEMP_I, 999);
+        set_uval(P_TEMP_I, 9990);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1065,7 +2515,15 @@ void init_para()
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_TEMP_D) == 0)
     {
-        set_uval(P_TEMP_D, 10);
+        set_uval(P_TEMP_D, 100);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 最高输出
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_TEMP_OHI) == 0)
+    {
+        set_uval(P_TEMP_OHI, 100);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1092,6 +2550,45 @@ void init_para()
         set_uval(P_HUM_ALO, 1);
     }
 
+    // 湿度PID 输出周期
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_TO) == 0)
+    {
+        set_uval(P_HUM_TO, 60);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 湿度PID P
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_P) == 0)
+    {
+        set_uval(P_HUM_P, 10);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 湿度PID I
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_I) == 0)
+    {
+        set_uval(P_HUM_I, 9990);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 湿度PID D
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_D) == 0)
+    {
+        set_uval(P_HUM_D, 300);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 湿度PID 最高输出
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HUM_OHI) == 0)
+    {
+        set_uval(P_HUM_OHI, 60);
+    }
+
     //----------------------------------------------------------------------------------------------------------
     // 强制中止加湿控制的温度点
     //----------------------------------------------------------------------------------------------------------
@@ -1105,7 +2602,7 @@ void init_para()
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_HUM_SPO) == 0)
     {
-        set_uval(P_HUM_SPO, 80);
+        set_uval(P_HUM_SPO, 150);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1186,6 +2683,14 @@ void init_para()
     if (get_uval(P_HH10) == 0)
     {
         set_uval(P_HH10, 60);
+    }
+
+    //----------------------------------------------------------------------------------------------------------
+    // 高湿报警延时时间
+    //----------------------------------------------------------------------------------------------------------
+    if (get_uval(P_HH11) == 0)
+    {
+        set_uval(P_HH11, 3);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1347,18 +2852,20 @@ void init_para()
     memset(&shm_out[PID_TEMP_MODE_STATUS], 0, sizeof(short) * 100);
 
     // 重置运行时间
-    // 获取当前入孵日期
-    unsigned int current_incubation_date = get_time(R_INIT_TIME_HIGH);
+    // 获取当前入孵秒数
+    unsigned int current_incubation_date = get_time(R_RUN_SECOND_HIGH);
     // 获取当前系统日期
     unsigned int current_system_date = time(NULL);
-    // 获取入孵秒数
-    unsigned int current_running_seconds = current_system_date - current_incubation_date;
+    // 获取之前的系统日期
+    unsigned int previous_system_date = get_time(R_SYSTEM_TIME_HIGH);
+    // 获取关机时间
+    unsigned int current_shutdown_time = (current_system_date - previous_system_date) + current_incubation_date;
     // 40天秒数
     unsigned int current_40_days_and_seconds = 60 * 60 * 24 * 40;
 
-    if (current_running_seconds < current_40_days_and_seconds)
+    if (current_shutdown_time < current_40_days_and_seconds)
     {
-        set_time(R_RUN_SECOND_HIGH, current_running_seconds);
+        set_time(R_RUN_SECOND_HIGH, current_shutdown_time);
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -1381,6 +2888,7 @@ void init_para()
     //----------------------------------------------------------------------------------------------------------
     set_uval(EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
     set_uval(NO_EGG_FLIPPING_SIGNAL_RINGING_STATUS, ON);
+    
     //----------------------------------------------------------------------------------------------------------
     // 回流温度报警设置初始化
     //----------------------------------------------------------------------------------------------------------
@@ -2299,6 +3807,7 @@ void run_sys_time()
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_HH10) != get_uold(P_HH10))
     {
+        set_val(P_EGG_FLIPPING_TIME, get_val(P_HH10) * 60);
         set_uold(P_HH10, get_uval(P_HH10));
     }
 
@@ -2307,6 +3816,7 @@ void run_sys_time()
     //----------------------------------------------------------------------------------------------------------
     if (get_uval(P_HH11) != get_uold(P_HH11))
     {
+        set_uval(HIGH_HUMIDITY_ALARM_DELAY_TIME, get_uval(P_HH11) * 60);
         set_uold(P_HH11, get_uval(P_HH11));
     }
 }
@@ -3195,6 +4705,13 @@ void damper_control_func()
                 // PID控制风门
                 else if ((get_val(R_AI_TP_MAIN) >= (get_val(P_AO_TP_MAIN) - get_x10_val(P_TEMP_P) / 2)) && (get_val(R_AI_TP_MAIN) <= (get_val(P_AO_TP_MAIN) + get_x10_val(P_TEMP_P) / 2)))
                 {
+                    if (get_val(PID_TEMP_MODE_STATUS) == OFF)
+                    {
+                        set_val(PID_AD_VALUE, get_val(R_AI_AD));
+
+                        set_val(PID_TEMP_MODE_STATUS, ON);
+                    }
+
                     // 风门周期小于周期
                     if (get_time(PID_PERIOD_COUNT_MAIN_HEATER) < (get_uval(P_TEMP_TO)))
                     {
@@ -3296,13 +4813,6 @@ void logic_process_temp_func()
     {
         zlog_debug(g_zlog_zc, "%-40s[(PV2<SP2-P/2)<=(PV2<=SP2+P/2)]PID范围", "[logic_process_temp_func]");
         pid_temp_init();
-
-        if (get_val(PID_TEMP_MODE_STATUS) == OFF)
-        {
-            set_val(PID_AD_VALUE, get_val(R_AI_AD));
-
-            set_val(PID_TEMP_MODE_STATUS, ON);
-        }
 
         // 风门开
         short difference_in_damper_open_setting = get_val(R_AI_TP_MAIN) - get_val(P_AO_TP_MAIN);
@@ -5753,6 +7263,15 @@ void timer_callback_func(int signo)
         }
 
         //----------------------------------------------------------------------------------------------------------
+        // 湿度报警模块
+        //----------------------------------------------------------------------------------------------------------
+        // 高湿报警延迟
+        if (get_uval(HIGH_HUMIDITY_ALARM_DELAY_TIME) > 0)
+        {
+            set_uval(HIGH_HUMIDITY_ALARM_DELAY_TIME, get_uval(HIGH_HUMIDITY_ALARM_DELAY_TIME) - 1);
+        }
+
+        //----------------------------------------------------------------------------------------------------------
         // 回流温度时间处理模块
         //----------------------------------------------------------------------------------------------------------
         // 回流温度1
@@ -5908,8 +7427,10 @@ void timer_callback_func(int signo)
 //----------------------------------------------------------------------------------------------------------
 void *sysn_thread_func(void *pv)
 {
-    zlog_debug(g_zlog_zc, "%-40s进入同步线程!", "[sysn_thread_func]");
 
+    zlog_debug(g_zlog_zc, "%-40s进入同步线程!", "[sysn_thread_func]");
+    // 旧PT100参数
+    unsigned short old_pt100_para[100] = {0};
     // 当前备份文件
     char sync_backup_file[512] = "";
     // 当前备份文件序号
@@ -5919,8 +7440,190 @@ void *sysn_thread_func(void *pv)
     // 备份数据长度
     int sync_data_len = 5000;
 
+    // 赋值给旧PT100参数
+    memcpy(old_pt100_para, &shm_out[P_PT1_AO1], sizeof(short) * 30);
+
     while (1)
     {
+        if (memcmp(old_pt100_para, &shm_out[P_PT1_AO1], sizeof(short) * 30) != 0)
+        {
+            // INI配置文件
+            xini_file_t st_filenaem_ini(g_filenaem_ini);
+
+            //----------------------------------------------------------------------------------------------------------
+            // PT100 检测参数
+            //----------------------------------------------------------------------------------------------------------
+            // PT100-1 第一个温度
+            if (get_uval(P_PT1_AO1) != g_st_jincubator.pt1.pt_0_temp)
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT1_0_TEMP"] = get_uval(P_PT1_AO1);
+                g_st_jincubator.pt1.pt_0_temp = get_uval(P_PT1_AO1);
+            }
+
+            // PT100-1 第二个温度
+            if ((get_uval(P_PT1_AO2) != 0) && (get_uval(P_PT1_AO2) != g_st_jincubator.pt1.pt_40_temp))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT1_40_TEMP"] = get_uval(P_PT1_AO2);
+                g_st_jincubator.pt1.pt_40_temp = get_uval(P_PT1_AO2);
+            }
+
+            // PT100-1 第一个通道值
+            if ((get_uval(P_PT1_AO3) != 0) && (get_uval(P_PT1_AO3) != g_st_jincubator.pt1.pt_0_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT1_0_CHANNEL"] = get_uval(P_PT1_AO3);
+                g_st_jincubator.pt1.pt_0_channel = get_uval(P_PT1_AO3);
+            }
+
+            // PT100-1 第二个通道值
+            if ((get_uval(P_PT1_AO4) != 0) && (get_uval(P_PT1_AO4) != g_st_jincubator.pt1.pt_40_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT1_40_CHANNEL"] = get_uval(P_PT1_AO4);
+                g_st_jincubator.pt1.pt_40_channel = get_uval(P_PT1_AO4);
+            }
+
+            // PT100-2 第一个温度
+            if (get_uval(P_PT2_AO1) != g_st_jincubator.pt2.pt_0_temp)
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT2_0_TEMP"] = get_uval(P_PT2_AO1);
+                g_st_jincubator.pt2.pt_0_temp = get_uval(P_PT2_AO1);
+            }
+
+            // PT100-2 第二个温度
+            if ((get_uval(P_PT2_AO2) != 0) && (get_uval(P_PT2_AO2) != g_st_jincubator.pt2.pt_40_temp))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT2_40_TEMP"] = get_uval(P_PT2_AO2);
+                g_st_jincubator.pt2.pt_40_temp = get_uval(P_PT2_AO2);
+            }
+
+            // PT100-2 第一个通道值
+            if ((get_uval(P_PT2_AO3) != 0) && (get_uval(P_PT2_AO3) != g_st_jincubator.pt2.pt_0_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT2_0_CHANNEL"] = get_uval(P_PT2_AO3);
+                g_st_jincubator.pt2.pt_0_channel = get_uval(P_PT2_AO3);
+            }
+
+            // PT100-2 第二个通道值
+            if ((get_uval(P_PT2_AO4) != 0) && (get_uval(P_PT2_AO4) != g_st_jincubator.pt2.pt_40_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT2_40_CHANNEL"] = get_uval(P_PT2_AO4);
+                g_st_jincubator.pt2.pt_40_channel = get_uval(P_PT2_AO4);
+            }
+
+            // PT100-3 第一个温度
+            if (get_uval(P_PT3_AO1) != g_st_jincubator.pt3.pt_0_temp)
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT3_0_TEMP"] = get_uval(P_PT3_AO1);
+                g_st_jincubator.pt3.pt_0_temp = get_uval(P_PT3_AO1);
+            }
+
+            // PT100-3 第二个温度
+            if ((get_uval(P_PT3_AO2) != 0) && (get_uval(P_PT3_AO2) != g_st_jincubator.pt3.pt_40_temp))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT3_40_TEMP"] = get_uval(P_PT3_AO2);
+                g_st_jincubator.pt3.pt_40_temp = get_uval(P_PT3_AO2);
+            }
+
+            // PT100-3 第一个通道值
+            if ((get_uval(P_PT3_AO3) != 0) && (get_uval(P_PT3_AO3) != g_st_jincubator.pt3.pt_0_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT3_0_CHANNEL"] = get_uval(P_PT3_AO3);
+                g_st_jincubator.pt3.pt_0_channel = get_uval(P_PT3_AO3);
+            }
+
+            // PT100-3 第二个通道值
+            if ((get_uval(P_PT3_AO4) != 0) && (get_uval(P_PT3_AO4) != g_st_jincubator.pt3.pt_40_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT3_40_CHANNEL"] = get_uval(P_PT3_AO4);
+                g_st_jincubator.pt3.pt_40_channel = get_uval(P_PT3_AO4);
+            }
+
+            // PT100-4 第一个温度
+            if (get_uval(P_PT4_AO1) != g_st_jincubator.pt4.pt_0_temp)
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT4_0_TEMP"] = get_uval(P_PT4_AO1);
+                g_st_jincubator.pt4.pt_0_temp = get_uval(P_PT4_AO1);
+            }
+
+            // PT100-4 第二个温度
+            if ((get_uval(P_PT4_AO2) != 0) && (get_uval(P_PT4_AO2) != g_st_jincubator.pt4.pt_40_temp))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT4_40_TEMP"] = get_uval(P_PT4_AO2);
+                g_st_jincubator.pt4.pt_40_temp = get_uval(P_PT4_AO2);
+            }
+
+            // PT100-4 第一个通道值
+            if ((get_uval(P_PT4_AO3) != 0) && (get_uval(P_PT4_AO3) != g_st_jincubator.pt4.pt_0_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT4_0_CHANNEL"] = get_uval(P_PT4_AO3);
+                g_st_jincubator.pt4.pt_0_channel = get_uval(P_PT4_AO3);
+            }
+
+            // PT100-4 第二个通道值
+            if ((get_uval(P_PT4_AO4) != 0) && (get_uval(P_PT4_AO4) != g_st_jincubator.pt4.pt_40_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT4_40_CHANNEL"] = get_uval(P_PT4_AO4);
+                g_st_jincubator.pt4.pt_40_channel = get_uval(P_PT4_AO4);
+            }
+
+            // PT100-5 第一个温度
+            if (get_uval(P_PT5_AO1) != g_st_jincubator.pt5.pt_0_temp)
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT5_0_TEMP"] = get_uval(P_PT5_AO1);
+                g_st_jincubator.pt5.pt_0_temp = get_uval(P_PT5_AO1);
+            }
+
+            // PT100-5 第二个温度
+            if ((get_uval(P_PT5_AO2) != 0) && (get_uval(P_PT5_AO2) != g_st_jincubator.pt5.pt_40_temp))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT5_40_TEMP"] = get_uval(P_PT5_AO2);
+                g_st_jincubator.pt5.pt_40_temp = get_uval(P_PT5_AO2);
+            }
+
+            // PT100-5 第一个通道值
+            if ((get_uval(P_PT5_AO3) != 0) && (get_uval(P_PT5_AO3) != g_st_jincubator.pt5.pt_0_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT5_0_CHANNEL"] = get_uval(P_PT5_AO3);
+                g_st_jincubator.pt5.pt_0_channel = get_uval(P_PT5_AO3);
+            }
+
+            // PT100-5 第二个通道值
+            if ((get_uval(P_PT5_AO4) != 0) && (get_uval(P_PT5_AO4) != g_st_jincubator.pt5.pt_40_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT5_40_CHANNEL"] = get_uval(P_PT5_AO4);
+                g_st_jincubator.pt5.pt_40_channel = get_uval(P_PT5_AO4);
+            }
+
+            // PT100-6 第一个温度
+            if (get_uval(P_PT6_AO1) != g_st_jincubator.pt6.pt_0_temp)
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT6_0_TEMP"] = get_uval(P_PT6_AO1);
+                g_st_jincubator.pt6.pt_0_temp = get_uval(P_PT6_AO1);
+            }
+
+            // PT100-6 第二个温度
+            if ((get_uval(P_PT6_AO2) != 0) && (get_uval(P_PT6_AO2) != g_st_jincubator.pt6.pt_40_temp))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT6_40_TEMP"] = get_uval(P_PT6_AO2);
+                g_st_jincubator.pt6.pt_40_temp = get_uval(P_PT6_AO2);
+            }
+
+            // PT100-6 第一个通道值
+            if ((get_uval(P_PT6_AO3) != 0) && (get_uval(P_PT6_AO3) != g_st_jincubator.pt6.pt_0_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT6_0_CHANNEL"] = get_uval(P_PT6_AO3);
+                g_st_jincubator.pt6.pt_0_channel = get_uval(P_PT6_AO3);
+            }
+
+            // PT100-6 第二个通道值
+            if ((get_uval(P_PT6_AO4) != 0) && (get_uval(P_PT6_AO4) != g_st_jincubator.pt6.pt_40_channel))
+            {
+                st_filenaem_ini["GENERAL SETTING"]["PT6_40_CHANNEL"] = get_uval(P_PT6_AO4);
+                g_st_jincubator.pt6.pt_40_channel = get_uval(P_PT6_AO4);
+            }
+
+            memcpy(old_pt100_para, &shm_out[P_PT1_AO1], sizeof(short) * 30);
+        }
+
         // 当前备份文件序号 大于 10 重新赋值
         if (sync_backup_index > 10)
         {
@@ -6502,13 +8205,34 @@ void *thread_alarm_func(void *pv)
         //----------------------------------------------------------------------------------------------------------
         if (get_val(R_AI_HM) >= (get_val(HIGH_HUMI_ALARM_VALUE) + get_val(P_HYS)))
         {
-            // 开启高湿警报状态灯
-            set_val(OUT_ST_HM_HIGH_ALARM, ON);
-            set_val(HIGH_HUMI_ALARM_STATUS, ON);
+            if (get_val(HIGH_HUMIDITY_ALARM_DELAY_STATUS) == 0)
+            {
+                // 设置时间
+                set_val(HIGH_HUMIDITY_ALARM_DELAY_TIME, get_val(P_HH11) * 60);
+                set_val(HIGH_HUMIDITY_ALARM_DELAY_STATUS, ON);
+            }
+            else
+            {
+                if (get_val(HIGH_HUMIDITY_ALARM_DELAY_TIME) == 0)
+                {
+                    // 开启高湿警报状态灯
+                    set_val(OUT_ST_HM_HIGH_ALARM, ON);
+                    set_val(HIGH_HUMI_ALARM_STATUS, ON);
+                }
+                else
+                {
+                    // 关闭启高湿警报状态灯
+                    set_val(OUT_ST_HM_HIGH_ALARM, OFF);
+                    set_val(HIGH_HUMI_ALARM_STATUS, OFF);
+                }
+            }
         }
 
         if ((get_val(R_AI_HM) < get_val(HIGH_HUMI_ALARM_VALUE)))
         {
+            // 清除高湿报警状态
+            set_val(HIGH_HUMIDITY_ALARM_DELAY_STATUS, OFF);
+
             // 关闭高湿警报状态灯
             set_val(OUT_ST_HM_HIGH_ALARM, OFF);
             set_val(HIGH_HUMI_ALARM_STATUS, OFF);
@@ -7714,44 +9438,40 @@ int main(int argc, char *argv[])
     jshmem_t shm_input_addr = {0};
     jshmem_t shm_output_addr = {0};
 
-    // 定义程序名称
-    char *filename = NULL;
-
     //----------------------------------------------------------------------------------------------------------
     // 解析程序名称
     //----------------------------------------------------------------------------------------------------------
     char date_str[256];
     print_current_time(date_str, sizeof(date_str));
-    parse_file_path(argv[0], &filename);
-    if (strlen(filename) > 256)
+    parse_file_path(argv[0], &g_filename);
+    if (strlen(g_filename) > 256)
     {
         fprintf(stderr, "%s %-40s程序名称已超过256个字节\n", date_str, "[main]");
         return -1;
     }
 
-    char filenaem_ini[256] = {0};
     print_current_time(date_str, sizeof(date_str));
-    if (filename == NULL)
+    if (g_filename == NULL)
     {
         fprintf(stderr, "%s %-40s程序名称为空\n", date_str, "[main]");
         return -1;
     }
 
-    sprintf(filenaem_ini, "%s.ini", filename);
+    sprintf(g_filenaem_ini, "%s.ini", g_filename);
     print_current_time(date_str, sizeof(date_str));
-    fprintf(stdout, "%s %-40s程序名称:%s 程序配置:%s\n", date_str, "[main]", filename, filenaem_ini);
+    fprintf(stdout, "%s %-40s程序名称:%s 程序配置:%s\n", date_str, "[main]", g_filename, g_filenaem_ini);
 
     //----------------------------------------------------------------------------------------------------------
     // 读取INI配置
     //----------------------------------------------------------------------------------------------------------
-    init_ini_file(filenaem_ini, &g_st_jincubator);
+    init_ini_file(g_filenaem_ini, &g_st_jincubator);
 
     //----------------------------------------------------------------------------------------------------------
     // ZLOG日志初始化
     //----------------------------------------------------------------------------------------------------------
     print_current_time(date_str, sizeof(date_str));
     fprintf(stdout, "%s %-40sZLOG日志:%s\n", date_str, "[main]", g_st_jincubator.conf_zlog_file);
-    i_ret = init_zlog_file(g_st_jincubator.conf_zlog_file, filename);
+    i_ret = init_zlog_file(g_st_jincubator.conf_zlog_file, g_filename);
     if (i_ret != 0)
     {
         fprintf(stderr, "%-40sZLOG日志初始化失败!\n", "[main]");
@@ -7792,44 +9512,44 @@ int main(int argc, char *argv[])
     init_para();
     zlog_info(g_zlog_zc, "%-40s参数初始化成功!", "[main]");
 
-    wait_ms(1000);
-
+    wait_ms(200);
     //----------------------------------------------------------------------------------------------------------
     // 定时器
     //----------------------------------------------------------------------------------------------------------
     int timer_value = 1000; // 定时器的时间间隔为1秒
     set_custom_timer_ms(timer_value, timer_callback_func);
+    wait_ms(200);
 
     //----------------------------------------------------------------------------------------------------------
     // 备份线程
     //----------------------------------------------------------------------------------------------------------
     pthread_t sync_client_thread;
     pthread_create(&sync_client_thread, NULL, sysn_thread_func, NULL);
-
+    wait_ms(200);
     //----------------------------------------------------------------------------------------------------------
     // 数据采集线程-PT100
     //----------------------------------------------------------------------------------------------------------
     pthread_t data_collection_thread;
     pthread_create(&data_collection_thread, NULL, data_collection_pt100_func, NULL);
-
+    wait_ms(200);
     //----------------------------------------------------------------------------------------------------------
     // 数据采集线程-CO2
     //----------------------------------------------------------------------------------------------------------
     pthread_t co2_collection_thread;
     pthread_create(&co2_collection_thread, NULL, data_collection_co2_func, NULL);
-
+    wait_ms(200);
     //----------------------------------------------------------------------------------------------------------
     // 翻蛋线程
     //----------------------------------------------------------------------------------------------------------
     pthread_t flip_egg_thread;
     pthread_create(&flip_egg_thread, NULL, flip_egg_func, NULL);
-
+    wait_ms(200);
     //----------------------------------------------------------------------------------------------------------
     // 报警线程
     //----------------------------------------------------------------------------------------------------------
     pthread_t alarm_thread;
     pthread_create(&alarm_thread, NULL, thread_alarm_func, NULL);
-
+    wait_ms(200);
     //----------------------------------------------------------------------------------------------------------
     // PID线程
     //----------------------------------------------------------------------------------------------------------
@@ -7841,6 +9561,7 @@ int main(int argc, char *argv[])
     //----------------------------------------------------------------------------------------------------------
     pthread_t main_thread;
     pthread_create(&main_thread, NULL, thread_main_func, NULL);
+    wait_ms(1000);
 
     // 备份线程
     pthread_join(sync_client_thread, NULL);

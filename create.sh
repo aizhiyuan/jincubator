@@ -25,7 +25,7 @@ if [[ $1 == "build" ]]; then
     cp ../src/jincubator.ini ../
     # ssh root@120.48.86.153 -p 10137  "pkill -f ./jincubator"
     scp -P 10137 ./src/jincubator root@120.48.86.153:/root/work/io
-    # scp ./jincubator root@10.64.53.52:/root/work/io
+    # scp ./src/jincubator root@100.77.130.24:/root/work/io
 fi
 
 if [[ $1 == "cp" ]]; then

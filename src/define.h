@@ -426,7 +426,9 @@
 #define P_CLEAR_ALARM_TIME 413    // CLEAR_ALARM
 #define P_COLD_HOT_WATER_TIME 413 // COLD_HOT_WATER
 
-#define ALARM_SUPPRESSION_TIME 415 // 消警时间
+#define ALARM_SUPPRESSION_TIME 415           // 消警时间
+#define HIGH_HUMIDITY_ALARM_DELAY_STATUS 416 // 高湿报警延迟状态
+#define HIGH_HUMIDITY_ALARM_DELAY_TIME 417   // 高湿报警延迟时间
 
 #define BACKUP_OPERATION_MODE 420                // 备份运行模式
 #define CALIBRATION_RUN_TIME 421                 // 校准运行时间
@@ -603,6 +605,16 @@
 #define CONTROL_DB_CLOSE_TO_OPEN_TIME_STATUS 947 // 风门从关到开的时间状态
 #define CONTROL_DB_OPEN_TO_CLOSE_TIME_STATUS 948 // 风门从开到关的时间状态
 
+// 设定参数初始化
+#define S_PRE_TP_MAIN 1 // 预热值-温度
+#define S_PRE_HM 2      // 预热值-湿度
+#define S_PRE_CO 3      // 预热值-CO2
+#define S_PRE_AD 4      // 预热值-风门
+#define S_PRE_TP_RF1 5  // 预热值-回流温度1
+#define S_PRE_TP_RF2 6  // 预热值-回流温度2
+#define S_PRE_TP_RF3 7  // 预热值-回流温度3
+#define S_PRE_TP_RF4 8  // 预热值-回流温度4
+
 // 预热参数
 #define P_PRE_TP_MAIN 1001 // 预热值-温度
 #define P_PRE_HM 1101      // 预热值-湿度
@@ -614,10 +626,14 @@
 #define P_PRE_TP_RF4 1701  // 预热值-回流温度4
 
 // 回流温度 热水天数
-#define P_PRE_TP_RF1_DAY 1400 // 热水天数-回流温度1
-#define P_PRE_TP_RF2_DAY 1500 // 热水天数-回流温度2
-#define P_PRE_TP_RF3_DAY 1600 // 热水天数-回流温度3
-#define P_PRE_TP_RF4_DAY 1700 // 热水天数-回流温度4
+#define P_PRE_TP_MAIN_DAY 1000 // 预热天数-温度
+#define P_PRE_HM_DAY 1100      // 预热天数-湿度
+#define P_PRE_CO_DAY 1200      // 预热天数-CO2
+#define P_PRE_AD_DAY 1300      // 预热天数-风门
+#define P_PRE_TP_RF1_DAY 1400  // 热水天数-回流温度1
+#define P_PRE_TP_RF2_DAY 1500  // 热水天数-回流温度2
+#define P_PRE_TP_RF3_DAY 1600  // 热水天数-回流温度3
+#define P_PRE_TP_RF4_DAY 1700  // 热水天数-回流温度4
 
 // 预设值天数，默认为30天
 #define P_SET_DAY 30 // 预设值天数，默认为30天
