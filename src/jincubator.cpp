@@ -278,10 +278,6 @@ void control_main_heat(int status)
         {
             set_val(CONTROL_MAIN_HEAT, status);
         }
-        else
-        {
-            set_val(CONTROL_MAIN_HEAT, OFF);
-        }
     }
 }
 
@@ -315,10 +311,6 @@ void control_cool2_1(int status)
         // 测试模式优先
         set_val(CONTROL_COOL2_1, status);
     }
-    else
-    {
-        set_val(CONTROL_COOL2_1, OFF);
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -330,10 +322,6 @@ void control_cool2_2(int status)
     {
         // 测试模式优先
         set_val(CONTROL_COOL2_2, status);
-    }
-    else
-    {
-        set_val(CONTROL_COOL2_2, OFF);
     }
 }
 
@@ -347,10 +335,6 @@ void control_cool2_3(int status)
         // 测试模式优先
         set_val(CONTROL_COOL2_3, status);
     }
-    else
-    {
-        set_val(CONTROL_COOL2_3, OFF);
-    }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -362,10 +346,6 @@ void control_cool2_4(int status)
     {
         // 测试模式优先
         set_val(CONTROL_COOL2_4, status);
-    }
-    else
-    {
-        set_val(CONTROL_COOL2_4, OFF);
     }
 }
 
@@ -520,10 +500,6 @@ void control_spray(int status)
         if (!get_val(SENSOR_2_ABNORMAL_ALARM))
         {
             set_val(CONTROL_SPRAY, status);
-        }
-        else
-        {
-            set_val(CONTROL_SPRAY, OFF);
         }
     }
 }
@@ -3873,14 +3849,6 @@ void test_control_mode()
                 set_val(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
-            else
-            {
-                set_test_mode(0);
-                set_val(CONTROL_MAIN_HEAT, OFF);
-                set_val(TEST_MAIN_HEAT_MODE, OFF);
-                set_uval(TEST_BTN_TIME, 0);
-                set_uval(TEST_CONTROL_MODE, 0);
-            }
             break;
         }
         case 0x02:
@@ -3904,14 +3872,6 @@ void test_control_mode()
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
-            else
-            {
-                set_test_mode(0);
-                control_open_damper(OFF);
-                set_val(TEST_DAMPER_OPEN_MODE, OFF);
-                set_uval(TEST_BTN_TIME, 0);
-                set_uval(TEST_CONTROL_MODE, 0);
-            }
             break;
         }
         case 0x08:
@@ -3924,14 +3884,6 @@ void test_control_mode()
                 zlog_debug(g_zlog_zc, "%-40s触发开启 关门按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
-            }
-            else
-            {
-                set_test_mode(0);
-                control_close_damper(OFF, 0);
-                set_val(TEST_DAMPER_CLOSE_MODE, OFF);
-                set_uval(TEST_BTN_TIME, 0);
-                set_uval(TEST_CONTROL_MODE, 0);
             }
             break;
         }
@@ -3946,14 +3898,6 @@ void test_control_mode()
                 zlog_debug(g_zlog_zc, "%-40s触发开启 加湿按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
-            }
-            else
-            {
-                set_test_mode(0);
-                set_val(CONTROL_SPRAY, OFF);
-                set_val(TEST_SPRAY_MODE, OFF);
-                set_uval(TEST_BTN_TIME, 0);
-                set_uval(TEST_CONTROL_MODE, 0);
             }
             break;
         }
@@ -4013,14 +3957,6 @@ void test_control_mode()
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
-            else
-            {
-                set_test_mode(0);
-                control_cool2_1(OFF);
-                set_val(TEST_COOL2_1_MODE, OFF);
-                set_uval(TEST_BTN_TIME, 0);
-                set_uval(TEST_CONTROL_MODE, 0);
-            }
             break;
         }
         case 0x100:
@@ -4034,14 +3970,6 @@ void test_control_mode()
                 zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷2按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
-            }
-            else
-            {
-                set_test_mode(0);
-                control_cool2_2(OFF);
-                set_val(TEST_COOL2_2_MODE, OFF);
-                set_uval(TEST_BTN_TIME, 0);
-                set_uval(TEST_CONTROL_MODE, 0);
             }
             break;
         }
@@ -4057,14 +3985,6 @@ void test_control_mode()
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
             }
-            else
-            {
-                set_test_mode(0);
-                control_cool2_3(OFF);
-                set_val(TEST_COOL2_3_MODE, OFF);
-                set_uval(TEST_BTN_TIME, 0);
-                set_uval(TEST_CONTROL_MODE, 0);
-            }
             break;
         }
         case 0x400:
@@ -4078,14 +3998,6 @@ void test_control_mode()
                 zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷4按钮", "[test_control_mode]");
                 set_uval(TEST_CONTROL_MODE, status_test_control);
                 set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
-            }
-            else
-            {
-                set_test_mode(0);
-                control_cool2_4(OFF);
-                set_val(TEST_COOL2_4_MODE, OFF);
-                set_uval(TEST_BTN_TIME, 0);
-                set_uval(TEST_CONTROL_MODE, 0);
             }
             break;
         }
@@ -5120,7 +5032,7 @@ void logic_process_humi_func()
         // 当PV1<SP1-P/2,加湿电磁阀启动,同时输出加湿状态指示灯
         if (current_humi_value < (setting_humi_value - setting_humi_pid_p_value))
         {
-            zlog_debug(g_zlog_zc, "%-40s[PV1<(SP1-P/2)]开启加湿电磁阀", "[logic_process_humi_func]");
+            zlog_debug(g_zlog_zc, "%-40s[%d<(%d-%d)]开启加湿电磁阀", "[logic_process_humi_func]", current_humi_value, setting_humi_value, setting_humi_pid_p_value);
             // 开启加湿电磁阀
             control_spray(ON);
             // pid_humi_sum_en = 0;
@@ -7880,12 +7792,21 @@ void *data_collection_pt100_func(void *pv)
                     {
                         // 设置报警变量为ON
                         set_uval(SENSOR_1_ABNORMAL_ALARM, ON);
+
+                        set_val(CONTROL_MAIN_HEAT, OFF);
+                        set_val(TEST_MAIN_HEAT_MODE, OFF);
+                        set_val(R_BTN_TP_MAIN, OFF);
+
                         break;
                     }
                     case 1:
                     {
                         // 设置报警变量为ON
                         set_uval(SENSOR_2_ABNORMAL_ALARM, ON);
+
+                        set_val(R_BTN_HM, OFF);
+                        set_val(CONTROL_SPRAY, OFF);
+                        set_val(TEST_SPRAY_MODE, OFF);
                         break;
                     }
                     case 2:
@@ -7894,6 +7815,10 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为ON
                             set_uval(SENSOR_3_ABNORMAL_ALARM, ON);
+
+                            set_val(R_BTN_WC_RF1, OFF);
+                            set_val(CONTROL_COOL2_1, OFF);
+                            set_val(TEST_COOL2_1_MODE, OFF);
                         }
                         break;
                     }
@@ -7903,6 +7828,10 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为ON
                             set_uval(SENSOR_4_ABNORMAL_ALARM, ON);
+
+                            set_val(R_BTN_WC_RF2, OFF);
+                            set_val(CONTROL_COOL2_2, OFF);
+                            set_val(TEST_COOL2_2_MODE, OFF);
                         }
                         break;
                     }
@@ -7912,6 +7841,10 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为ON
                             set_uval(SENSOR_5_ABNORMAL_ALARM, ON);
+
+                            set_val(R_BTN_WC_RF3, OFF);
+                            set_val(CONTROL_COOL2_3, OFF);
+                            set_val(TEST_COOL2_3_MODE, OFF);
                         }
                         break;
                     }
@@ -7921,6 +7854,10 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为ON
                             set_uval(SENSOR_6_ABNORMAL_ALARM, ON);
+
+                            set_val(R_BTN_WC_RF4, OFF);
+                            set_val(CONTROL_COOL2_4, OFF);
+                            set_val(TEST_COOL2_4_MODE, OFF);
                         }
                         break;
                     }
