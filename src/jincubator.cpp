@@ -7829,7 +7829,7 @@ void *data_collection_pt100_func(void *pv)
                     {
                         // 设置报警变量为ON
                         set_uval(SENSOR_1_ABNORMAL_ALARM, ON);
-
+                        set_val(P_EDIT_TP_MAIN,0);
                         set_val(CONTROL_MAIN_HEAT, OFF);
                         set_val(TEST_MAIN_HEAT_MODE, OFF);
                         set_val(R_BTN_TP_MAIN, OFF);
@@ -7840,7 +7840,7 @@ void *data_collection_pt100_func(void *pv)
                     {
                         // 设置报警变量为ON
                         set_uval(SENSOR_2_ABNORMAL_ALARM, ON);
-
+                        set_val(P_EDIT_HM,0);
                         set_val(R_BTN_HM, OFF);
                         set_val(CONTROL_SPRAY, OFF);
                         set_val(TEST_SPRAY_MODE, OFF);
@@ -7852,7 +7852,7 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为ON
                             set_uval(SENSOR_3_ABNORMAL_ALARM, ON);
-
+                            set_val(P_EDIT_TP_RF1,0);
                             set_val(R_BTN_WC_RF1, OFF);
                             set_val(CONTROL_COOL2_1, OFF);
                             set_val(TEST_COOL2_1_MODE, OFF);
@@ -7870,7 +7870,7 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为ON
                             set_uval(SENSOR_4_ABNORMAL_ALARM, ON);
-
+                            set_val(P_EDIT_TP_RF2,0);
                             set_val(R_BTN_WC_RF2, OFF);
                             set_val(CONTROL_COOL2_2, OFF);
                             set_val(TEST_COOL2_2_MODE, OFF);
@@ -7888,7 +7888,7 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为ON
                             set_uval(SENSOR_5_ABNORMAL_ALARM, ON);
-
+                            set_val(P_EDIT_TP_RF3,0);
                             set_val(R_BTN_WC_RF3, OFF);
                             set_val(CONTROL_COOL2_3, OFF);
                             set_val(TEST_COOL2_3_MODE, OFF);
@@ -7906,7 +7906,7 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为OFF
                             set_uval(SENSOR_6_ABNORMAL_ALARM, ON);
-
+                            set_val(P_EDIT_TP_RF4,0);
                             set_val(R_BTN_WC_RF4, OFF);
                             set_val(CONTROL_COOL2_4, OFF);
                             set_val(TEST_COOL2_4_MODE, OFF);
