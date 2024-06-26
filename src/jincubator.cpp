@@ -278,6 +278,10 @@ void control_main_heat(int status)
         {
             set_val(CONTROL_MAIN_HEAT, status);
         }
+        else
+        {
+            set_val(CONTROL_MAIN_HEAT, OFF);
+        }
     }
 }
 
@@ -311,6 +315,10 @@ void control_cool2_1(int status)
         // 测试模式优先
         set_val(CONTROL_COOL2_1, status);
     }
+    else
+    {
+        set_val(CONTROL_COOL2_1, OFF);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -322,6 +330,10 @@ void control_cool2_2(int status)
     {
         // 测试模式优先
         set_val(CONTROL_COOL2_2, status);
+    }
+    else
+    {
+        set_val(CONTROL_COOL2_2, OFF);
     }
 }
 
@@ -335,6 +347,10 @@ void control_cool2_3(int status)
         // 测试模式优先
         set_val(CONTROL_COOL2_3, status);
     }
+    else
+    {
+        set_val(CONTROL_COOL2_3, OFF);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -346,6 +362,10 @@ void control_cool2_4(int status)
     {
         // 测试模式优先
         set_val(CONTROL_COOL2_4, status);
+    }
+    else
+    {
+        set_val(CONTROL_COOL2_4, OFF);
     }
 }
 
@@ -500,6 +520,10 @@ void control_spray(int status)
         if (!get_val(SENSOR_2_ABNORMAL_ALARM))
         {
             set_val(CONTROL_SPRAY, status);
+        }
+        else
+        {
+            set_val(CONTROL_SPRAY, OFF);
         }
     }
 }
