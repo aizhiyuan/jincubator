@@ -3887,7 +3887,7 @@ void test_control_mode()
         }
         case 0x04:
         {
-            if (get_val(DETECT_DAMPER_FULLY_OPEN) > 0)
+            if (get_val(DETECT_DAMPER_FULLY_OPEN) == 0)
             {
                 // 开门按钮
                 set_val(TEST_DAMPER_OPEN_MODE, ON);
@@ -3900,7 +3900,7 @@ void test_control_mode()
         }
         case 0x08:
         {
-            if (get_val(DETECT_DAMPER_FULLY_CLOSE) > 0)
+            if (get_val(DETECT_DAMPER_FULLY_CLOSE) == 0)
             {
                 // 关门按钮
                 set_val(TEST_DAMPER_CLOSE_MODE, ON);
