@@ -306,6 +306,13 @@
 #define P_CO2_GZS 188      // 二氧化碳工作时间
 #define P_HUMI_CONTROL 189 // 湿度工作温度差值//control
 
+#define P_EGG_FLIPPING_TIME 190             // 翻蛋时间
+#define P_EGG_FLIPPING_DIRECTION 191        // 翻蛋方向 (1为左 0为右)
+#define P_EGG_FLIPPING_EXECUTION_STATUS 192 // 翻蛋执行状态
+#define EGG_FLIPPING_TRIGGER_STATUS 193     // 翻蛋触发状态
+#define EGG_FLIPPING_ACCUMULATION_STATE 194 // 翻蛋累加状态
+#define EGG_FLIPPING_CONTROL_STATUS 195     // 翻蛋控制状态
+
 // 运行数据区
 #define RUN_INIT 200
 
@@ -319,11 +326,17 @@
 #define R_AI_TP_RF3 206                     // 回流温度测量值3
 #define R_AI_TP_RF4 207                     // 回流温度测量值4
 #define R_AI_TP_EGG 208                     // 翻蛋次数
-#define P_EGG_FLIPPING_TIME 209             // 翻蛋时间
-#define P_EGG_FLIPPING_DIRECTION 210        // 翻蛋方向 (1为左 0为右)
-#define P_EGG_FLIPPING_EXECUTION_STATUS 211 // 翻蛋执行状态
-#define EGG_FLIPPING_TRIGGER_STATUS 212     // 翻蛋触发状态
-#define EGG_FLIPPING_ACCUMULATION_STATE 213 // 翻蛋累加状态
+
+#define R_INIT_AI_TP_MAIN 210 // 温度
+#define R_INIT_AI_HM 211      // 湿度
+#define R_INIT_AI_CO 212      // CO2
+#define R_INIT_AI_AD 213      // 风门测量值
+#define R_INIT_AI_TP_RF_INIT 214
+#define R_INIT_AI_TP_RF1 215                     // 回流温度测量值1
+#define R_INIT_AI_TP_RF2 216                     // 回流温度测量值2
+#define R_INIT_AI_TP_RF3 217                     // 回流温度测量值3
+#define R_INIT_AI_TP_RF4 218                     // 回流温度测量值4
+
 // 测试按钮
 #define R_BTN_TP_MAIN 220  // 主加热按钮
 #define R_BTN_TP_AUX 221   // 附加热按钮

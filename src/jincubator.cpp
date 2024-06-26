@@ -3710,6 +3710,9 @@ void run_sys_time()
     // 将系统时间输出到共享内存中
     set_time(R_SYSTEM_TIME_HIGH, sys_new_time);
 
+    // 将风门值同步到原始值
+    set_val(R_INIT_AI_AD, get_val(R_AI_AD));
+
     // 更新风门校正值
     if ((get_old(P_EDIT_AD) != get_val(P_EDIT_AD)))
     {
@@ -7762,6 +7765,8 @@ void *data_collection_pt100_func(void *pv)
 
             if (run_ai_tp_len[i] == filter_len)
             {
+                // 初始化实际数据的序号
+                unsigned short init_index = 0;
                 // 实际数据的序号
                 unsigned short index = 0;
                 // 修正值的序号
@@ -7778,11 +7783,13 @@ void *data_collection_pt100_func(void *pv)
 
                 if (i > 1)
                 {
+                    init_index = R_INIT_AI_TP_MAIN + i + 2;
                     index = R_AI_TP_MAIN + i + 2;
                     shm_index = P_EDIT_TP_MAIN + i + 2;
                 }
                 else
                 {
+                    init_index = R_INIT_AI_TP_MAIN + i;
                     index = R_AI_TP_MAIN + i;
                     shm_index = P_EDIT_TP_MAIN + i;
                 }
@@ -7792,6 +7799,12 @@ void *data_collection_pt100_func(void *pv)
 
                 // 设置浮点精度
                 sprintf(d_tp_data, "%0.2f", run_ai_tp_aver);
+
+                // 原始值
+                float f_tp_data_init = atof(d_tp_data);
+                int run_ai_i_tp_init = f_tp_data_init * 100;
+                // 传输实际值
+                set_uval(init_index, run_ai_i_tp_init);
 
                 // 校准模式标志位
                 float f_tp_data = atof(d_tp_data) + get_fval(shm_index);
@@ -7844,6 +7857,11 @@ void *data_collection_pt100_func(void *pv)
                             set_val(CONTROL_COOL2_1, OFF);
                             set_val(TEST_COOL2_1_MODE, OFF);
                         }
+                        else
+                        {
+                            // 设置报警变量为OFF
+                            set_uval(SENSOR_3_ABNORMAL_ALARM, OFF);
+                        }
                         break;
                     }
                     case 3:
@@ -7856,6 +7874,11 @@ void *data_collection_pt100_func(void *pv)
                             set_val(R_BTN_WC_RF2, OFF);
                             set_val(CONTROL_COOL2_2, OFF);
                             set_val(TEST_COOL2_2_MODE, OFF);
+                        }
+                        else
+                        {
+                            // 设置报警变量为OFF
+                            set_uval(SENSOR_4_ABNORMAL_ALARM, OFF);
                         }
                         break;
                     }
@@ -7870,18 +7893,28 @@ void *data_collection_pt100_func(void *pv)
                             set_val(CONTROL_COOL2_3, OFF);
                             set_val(TEST_COOL2_3_MODE, OFF);
                         }
+                        else
+                        {
+                            // 设置报警变量为OFF
+                            set_uval(SENSOR_5_ABNORMAL_ALARM, OFF);
+                        }
                         break;
                     }
                     case 5:
                     {
                         if (get_uval(REFLUX_TEMPERATURE) & 0x08)
                         {
-                            // 设置报警变量为ON
+                            // 设置报警变量为OFF
                             set_uval(SENSOR_6_ABNORMAL_ALARM, ON);
 
                             set_val(R_BTN_WC_RF4, OFF);
                             set_val(CONTROL_COOL2_4, OFF);
                             set_val(TEST_COOL2_4_MODE, OFF);
+                        }
+                        else
+                        {
+                            // 设置报警变量为OFF
+                            set_uval(SENSOR_6_ABNORMAL_ALARM, OFF);
                         }
                         break;
                     }
@@ -7909,38 +7942,26 @@ void *data_collection_pt100_func(void *pv)
                     }
                     case 2:
                     {
-                        if (get_uval(REFLUX_TEMPERATURE) & 0x01)
-                        {
-                            // 设置报警变量为OFF
-                            set_uval(SENSOR_3_ABNORMAL_ALARM, OFF);
-                        }
+                        // 设置报警变量为OFF
+                        set_uval(SENSOR_3_ABNORMAL_ALARM, OFF);
                         break;
                     }
                     case 3:
                     {
-                        if (get_uval(REFLUX_TEMPERATURE) & 0x02)
-                        {
-                            // 设置报警变量为OFF
-                            set_uval(SENSOR_4_ABNORMAL_ALARM, OFF);
-                        }
+                        // 设置报警变量为OFF
+                        set_uval(SENSOR_4_ABNORMAL_ALARM, OFF);
                         break;
                     }
                     case 4:
                     {
-                        if (get_uval(REFLUX_TEMPERATURE) & 0x04)
-                        {
-                            // 设置报警变量为OFF
-                            set_uval(SENSOR_5_ABNORMAL_ALARM, OFF);
-                        }
+                        // 设置报警变量为OFF
+                        set_uval(SENSOR_5_ABNORMAL_ALARM, OFF);
                         break;
                     }
                     case 5:
                     {
-                        if (get_uval(REFLUX_TEMPERATURE) & 0x08)
-                        {
-                            // 设置报警变量为OFF
-                            set_uval(SENSOR_6_ABNORMAL_ALARM, OFF);
-                        }
+                        // 设置报警变量为OFF
+                        set_uval(SENSOR_6_ABNORMAL_ALARM, OFF);
                         break;
                     }
                     }
@@ -8031,14 +8052,16 @@ void *data_collection_co2_func(void *pv)
                     set_val(CARBON_DIOXIDE_CALIBRATION_STATUS, 0);
                 }
 
-                i_data_value -= get_val(P_EDIT_CO2_VALUE);
+                int i_out_data_value = i_data_value - get_val(P_EDIT_CO2_VALUE);
 
                 if (i_data_value >= 0 && i_data_value <= 20000)
                 {
                     // 传感器正常
                     set_val(SENSOR_CO2_ALARM, OFF);
                     // 将数据传输到实时位置
-                    set_val(R_AI_CO, i_data_value);
+                    set_val(R_AI_CO, i_out_data_value);
+                    // 将数据传输到实时位置
+                    set_val(R_INIT_AI_CO, i_data_value);
                 }
                 else
                 {
@@ -8162,6 +8185,24 @@ void *flip_egg_func(void *pv)
             sys_now_time_status = ON;
             set_uval(FILP_EGG_ON, OFF);
             set_uval(FILP_EGG_OFF, OFF);
+        }
+
+        if (get_val(DETECT_FLIP_EGG) == ON)
+        {
+            // 翻蛋控制状态为ON时，将翻蛋时间清空
+            if (get_val(EGG_FLIPPING_CONTROL_STATUS) == ON)
+            {
+                // 将翻蛋时间清空
+                set_uval(P_EGG_FLIPPING_TIME, 0);
+
+                // 将翻蛋控制状态为OFF
+                set_val(EGG_FLIPPING_CONTROL_STATUS, OFF);
+            }
+        }
+        else
+        {
+            // 未触发翻蛋时，将 翻蛋控制状态为ON
+            set_val(EGG_FLIPPING_CONTROL_STATUS, ON);
         }
 
         // 翻蛋触发状态为ON
