@@ -7829,7 +7829,7 @@ void *data_collection_pt100_func(void *pv)
                     {
                         // 设置报警变量为ON
                         set_uval(SENSOR_1_ABNORMAL_ALARM, ON);
-                        set_val(P_EDIT_TP_MAIN,0);
+                        set_val(P_EDIT_TP_MAIN, 0);
                         set_val(CONTROL_MAIN_HEAT, OFF);
                         set_val(TEST_MAIN_HEAT_MODE, OFF);
                         set_val(R_BTN_TP_MAIN, OFF);
@@ -7840,7 +7840,7 @@ void *data_collection_pt100_func(void *pv)
                     {
                         // 设置报警变量为ON
                         set_uval(SENSOR_2_ABNORMAL_ALARM, ON);
-                        set_val(P_EDIT_HM,0);
+                        set_val(P_EDIT_HM, 0);
                         set_val(R_BTN_HM, OFF);
                         set_val(CONTROL_SPRAY, OFF);
                         set_val(TEST_SPRAY_MODE, OFF);
@@ -7852,16 +7852,16 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为ON
                             set_uval(SENSOR_3_ABNORMAL_ALARM, ON);
-                            set_val(P_EDIT_TP_RF1,0);
-                            set_val(R_BTN_WC_RF1, OFF);
-                            set_val(CONTROL_COOL2_1, OFF);
-                            set_val(TEST_COOL2_1_MODE, OFF);
                         }
                         else
                         {
                             // 设置报警变量为OFF
                             set_uval(SENSOR_3_ABNORMAL_ALARM, OFF);
                         }
+                        set_val(P_EDIT_TP_RF1, 0);
+                        set_val(R_BTN_WC_RF1, OFF);
+                        set_val(CONTROL_COOL2_1, OFF);
+                        set_val(TEST_COOL2_1_MODE, OFF);
                         break;
                     }
                     case 3:
@@ -7870,16 +7870,16 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为ON
                             set_uval(SENSOR_4_ABNORMAL_ALARM, ON);
-                            set_val(P_EDIT_TP_RF2,0);
-                            set_val(R_BTN_WC_RF2, OFF);
-                            set_val(CONTROL_COOL2_2, OFF);
-                            set_val(TEST_COOL2_2_MODE, OFF);
                         }
                         else
                         {
                             // 设置报警变量为OFF
                             set_uval(SENSOR_4_ABNORMAL_ALARM, OFF);
                         }
+                        set_val(P_EDIT_TP_RF2, 0);
+                        set_val(R_BTN_WC_RF2, OFF);
+                        set_val(CONTROL_COOL2_2, OFF);
+                        set_val(TEST_COOL2_2_MODE, OFF);
                         break;
                     }
                     case 4:
@@ -7888,16 +7888,16 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为ON
                             set_uval(SENSOR_5_ABNORMAL_ALARM, ON);
-                            set_val(P_EDIT_TP_RF3,0);
-                            set_val(R_BTN_WC_RF3, OFF);
-                            set_val(CONTROL_COOL2_3, OFF);
-                            set_val(TEST_COOL2_3_MODE, OFF);
                         }
                         else
                         {
                             // 设置报警变量为OFF
                             set_uval(SENSOR_5_ABNORMAL_ALARM, OFF);
                         }
+                        set_val(P_EDIT_TP_RF3, 0);
+                        set_val(R_BTN_WC_RF3, OFF);
+                        set_val(CONTROL_COOL2_3, OFF);
+                        set_val(TEST_COOL2_3_MODE, OFF);
                         break;
                     }
                     case 5:
@@ -7906,16 +7906,16 @@ void *data_collection_pt100_func(void *pv)
                         {
                             // 设置报警变量为OFF
                             set_uval(SENSOR_6_ABNORMAL_ALARM, ON);
-                            set_val(P_EDIT_TP_RF4,0);
-                            set_val(R_BTN_WC_RF4, OFF);
-                            set_val(CONTROL_COOL2_4, OFF);
-                            set_val(TEST_COOL2_4_MODE, OFF);
                         }
                         else
                         {
                             // 设置报警变量为OFF
                             set_uval(SENSOR_6_ABNORMAL_ALARM, OFF);
                         }
+                        set_val(P_EDIT_TP_RF4, 0);
+                        set_val(R_BTN_WC_RF4, OFF);
+                        set_val(CONTROL_COOL2_4, OFF);
+                        set_val(TEST_COOL2_4_MODE, OFF);
                         break;
                     }
                     }
@@ -8538,6 +8538,9 @@ void *thread_alarm_func(void *pv)
                                  << 7); // 回流温度4 低温报警
 
         int ref_temp_mode = ref_temp_mode_high + ref_temp_mode_low;
+        set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_STATUS, ref_temp_mode_high);
+        set_uval(RETURN_TEMP_LOW_TEMP_ALARM_STATUS, ref_temp_mode_low);
+        set_uval(RETURN_TEMP_TOTAL_TEMP_ALARM_STATUS, ref_temp_mode);
         if (ref_temp_mode > 0)
         {
             if (ref_temp_mode != ref_temp_mode_old)
@@ -8581,6 +8584,9 @@ void *thread_alarm_func(void *pv)
             ref_temp_mode_old = 0;
             ref_temp_mode_high_old = 0;
             ref_temp_mode_low_old = 0;
+
+            set_uval(RETURN_TEMP_LOW_TEMP_ALARM_TIME, 0);
+            set_uval(RETURN_TEMP_HIGH_TEMP_ALARM_TIME, 0);
         }
 
         //----------------------------------------------------------------------------------------------------------
@@ -8957,6 +8963,7 @@ void *thread_alarm_func(void *pv)
 // 主线程
 void *thread_main_func(void *pv)
 {
+    int run_mode_time = 0;
     while (1)
     {
         //----------------------------------------------------------------------------------------------------------
@@ -9319,15 +9326,15 @@ void *thread_main_func(void *pv)
             }
 
             // 其他条件也进入到停止模式
-            else
-            {
-                // 开启停止模式
-                set_run_mode(STATUS_STOP_SENT);
+            // else
+            // {
+            //     // 开启停止模式
+            //     set_run_mode(STATUS_STOP_SENT);
 
-                // 设置预热时间为0
-                set_time(R_PRE_START_TIME_HIGH, 0);
-                set_time(R_PRE_STOP_TIME_HIGH, 0);
-            }
+            //     // 设置预热时间为0
+            //     set_time(R_PRE_START_TIME_HIGH, 0);
+            //     set_time(R_PRE_STOP_TIME_HIGH, 0);
+            // }
         }
 
         //----------------------------------------------------------------------------------------------------------
@@ -9501,12 +9508,14 @@ void *thread_main_func(void *pv)
         }
 
         // 默认模式为停止模式
+
         unsigned short run_mode_value = get_run_mode(0);
         if (!run_mode_value)
         {
             // 进入停止模式
             set_run_mode(STATUS_STOP_SENT);
         }
+        run_mode_time = 0;
 
         //----------------------------------------------------------------------------------------------------------
         // 测试控制模式
