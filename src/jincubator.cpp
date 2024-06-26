@@ -8860,12 +8860,12 @@ void *thread_alarm_func(void *pv)
             {
                 // 报警灯闪烁
                 control_warn_light(!get_val(CONTROL_WARN_LIGHT));
-                control_electric_light(ON);
+                control_electric_light(OFF);
             }
             else
             {
                 control_warn_light(ON);
-                control_electric_light(OFF);
+                control_electric_light(ON);
             }
         }
 
@@ -8874,7 +8874,7 @@ void *thread_alarm_func(void *pv)
         {
             // 报警灯常亮
             control_warn_light(ON);
-            control_electric_light(OFF);
+            control_electric_light(ON);
         }
 
         //----------------------------------------------------------------------------------------------------------
@@ -8883,7 +8883,7 @@ void *thread_alarm_func(void *pv)
         else if ((g_us_temp_mode == 0) && ((get_val(LOW_TEMP_ALARM_STATUS) + get_val(HIGH_HUMI_ALARM_STATUS) + get_val(LOW_HUMI_ALARM_STATUS) + get_val(OUT_ST_EGG_ALARM) + get_val(OUT_ST_FAN_ALARM) + get_val(OUT_ST_REF_TEMP_ALARM)) == 0))
         {
             control_warn_light(OFF);
-            control_electric_light(OFF);
+            control_electric_light(ON);
         }
 
         wait_ms(1000);
