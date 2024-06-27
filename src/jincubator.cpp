@@ -7464,7 +7464,7 @@ void timer_callback_func(int signo)
 //----------------------------------------------------------------------------------------------------------
 // 线程
 //----------------------------------------------------------------------------------------------------------
-// 线程 同步线程
+// 线程 同步线程 
 //----------------------------------------------------------------------------------------------------------
 void *sysn_thread_func(void *pv)
 {
@@ -7803,6 +7803,7 @@ void *data_collection_pt100_func(void *pv)
                 // 原始值
                 float f_tp_data_init = atof(d_tp_data);
                 int run_ai_i_tp_init = f_tp_data_init * 100;
+
                 // 传输实际值
                 set_uval(init_index, run_ai_i_tp_init);
 
@@ -8187,23 +8188,23 @@ void *flip_egg_func(void *pv)
             set_uval(FILP_EGG_OFF, OFF);
         }
 
-        if (get_val(DETECT_FLIP_EGG) == ON)
-        {
-            // 翻蛋控制状态为ON时，将翻蛋时间清空
-            if (get_val(EGG_FLIPPING_CONTROL_STATUS) == ON)
-            {
-                // 将翻蛋时间清空
-                set_uval(P_EGG_FLIPPING_TIME, 0);
+        // if (get_val(DETECT_FLIP_EGG) == ON)
+        // {
+        //     // 翻蛋控制状态为ON时，将翻蛋时间清空
+        //     if (get_val(EGG_FLIPPING_CONTROL_STATUS) == ON)
+        //     {
+        //         // 将翻蛋时间清空
+        //         set_uval(P_EGG_FLIPPING_TIME, 0);
 
-                // 将翻蛋控制状态为OFF
-                set_val(EGG_FLIPPING_CONTROL_STATUS, OFF);
-            }
-        }
-        else
-        {
-            // 未触发翻蛋时，将 翻蛋控制状态为ON
-            set_val(EGG_FLIPPING_CONTROL_STATUS, ON);
-        }
+        //         // 将翻蛋控制状态为OFF
+        //         set_val(EGG_FLIPPING_CONTROL_STATUS, OFF);
+        //     }
+        // }
+        // else
+        // {
+        //     // 未触发翻蛋时，将 翻蛋控制状态为ON
+        //     set_val(EGG_FLIPPING_CONTROL_STATUS, ON);
+        // }
 
         // 翻蛋触发状态为ON
         if (get_val(EGG_FLIPPING_TRIGGER_STATUS))
