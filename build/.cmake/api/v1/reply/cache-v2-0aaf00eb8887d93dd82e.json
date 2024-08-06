@@ -79,7 +79,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "27"
+			"value" : "25"
 		},
 		{
 			"name" : "CMAKE_CACHE_PATCH_VERSION",
@@ -91,7 +91,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "4"
+			"value" : "1"
 		},
 		{
 			"name" : "CMAKE_COLOR_MAKEFILE",
@@ -155,7 +155,7 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : ""
+					"value" : "(This variable does not exist and should not be used)"
 				}
 			],
 			"type" : "UNINITIALIZED",
@@ -283,7 +283,7 @@
 				},
 				{
 					"name" : "HELPSTRING",
-					"value" : ""
+					"value" : "(This variable does not exist and should not be used)"
 				}
 			],
 			"type" : "UNINITIALIZED",
@@ -955,7 +955,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/usr/share/cmake-3.27"
+			"value" : "/usr/share/cmake-3.25"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
@@ -1164,22 +1164,6 @@
 			],
 			"type" : "FILEPATH",
 			"value" : "/usr/local/arm-linux-gnueabihf/bin/arm-linux-gnueabihf-strip"
-		},
-		{
-			"name" : "CMAKE_TAPI",
-			"properties" : 
-			[
-				{
-					"name" : "ADVANCED",
-					"value" : "1"
-				},
-				{
-					"name" : "HELPSTRING",
-					"value" : "Path to a program."
-				}
-			],
-			"type" : "FILEPATH",
-			"value" : "CMAKE_TAPI-NOTFOUND"
 		},
 		{
 			"name" : "CMAKE_UNAME",

@@ -16,8 +16,9 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/zhiyuan/c/jincubator/src/serial.cpp" "src/CMakeFiles/jincubator.dir/serial.cpp.o" "gcc" "src/CMakeFiles/jincubator.dir/serial.cpp.o.d"
   )
 
-# Targets to which this target links which contain Fortran sources.
-set(CMAKE_Fortran_TARGET_LINKED_INFO_FILES
+# Targets to which this target links.
+set(CMAKE_TARGET_LINKED_INFO_FILES
+  "/home/zhiyuan/c/jincubator/build/zlog/CMakeFiles/zlog.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

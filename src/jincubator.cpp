@@ -3705,6 +3705,8 @@ void run_sys_time()
     {
         // 开启停止模式
         set_run_mode(STATUS_STOP_SENT);
+        // 启动初始化
+        set_run_mode(STATUS_INIT_SEND);
     }
 
     // 将系统时间输出到共享内存中
@@ -8049,6 +8051,7 @@ void *data_collection_co2_func(void *pv)
                 if (get_val(CARBON_DIOXIDE_CALIBRATION_STATUS))
                 {
                     short co2_difference = i_data_value - 400;
+                    co2_difference = (co2_difference >=0) ?co2_difference:0;
                     set_val(P_EDIT_CO2_VALUE, co2_difference);
                     set_val(CARBON_DIOXIDE_CALIBRATION_STATUS, 0);
                 }
@@ -8187,7 +8190,7 @@ void *flip_egg_func(void *pv)
             set_uval(FILP_EGG_ON, OFF);
             set_uval(FILP_EGG_OFF, OFF);
         }
-
+        
         // if (get_val(DETECT_FLIP_EGG) == ON)
         // {
         //     // 翻蛋控制状态为ON时，将翻蛋时间清空
@@ -9509,7 +9512,6 @@ void *thread_main_func(void *pv)
         }
 
         // 默认模式为停止模式
-
         unsigned short run_mode_value = get_run_mode(0);
         if (!run_mode_value)
         {
