@@ -6790,7 +6790,11 @@ void set_run_mode(unsigned short mode)
             // 消除报警接收地址
             (i == 8) ||
             // 消除报警时间
-            (i == 9))
+            (i == 9) ||
+            // 初始化发送地址
+            (i == 11) ||
+            // 初始化接收地址
+            (i == 12))
         {
             continue;
         }
@@ -7466,7 +7470,7 @@ void timer_callback_func(int signo)
 //----------------------------------------------------------------------------------------------------------
 // 线程
 //----------------------------------------------------------------------------------------------------------
-// 线程 同步线程 
+// 线程 同步线程
 //----------------------------------------------------------------------------------------------------------
 void *sysn_thread_func(void *pv)
 {
@@ -8051,7 +8055,7 @@ void *data_collection_co2_func(void *pv)
                 if (get_val(CARBON_DIOXIDE_CALIBRATION_STATUS))
                 {
                     short co2_difference = i_data_value - 400;
-                    co2_difference = (co2_difference >=0) ?co2_difference:0;
+                    co2_difference = (co2_difference >= 0) ? co2_difference : 0;
                     set_val(P_EDIT_CO2_VALUE, co2_difference);
                     set_val(CARBON_DIOXIDE_CALIBRATION_STATUS, 0);
                 }
@@ -8190,7 +8194,7 @@ void *flip_egg_func(void *pv)
             set_uval(FILP_EGG_ON, OFF);
             set_uval(FILP_EGG_OFF, OFF);
         }
-        
+
         // if (get_val(DETECT_FLIP_EGG) == ON)
         // {
         //     // 翻蛋控制状态为ON时，将翻蛋时间清空
