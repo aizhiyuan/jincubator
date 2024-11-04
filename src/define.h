@@ -353,6 +353,43 @@
 #define R_BTN_WC_FAN 232   // 风扇按钮
 #define R_BTN_TIME 233     // 测试时间
 
+//-------------------------------------------------------------------------------------------------
+// 同步电机内部控制数据
+//-------------------------------------------------------------------------------------------------
+// 同步电机地址
+#define SYNC_MOTOR_MB_EMAX_FREQ_ADDR 0xA00A             // 控制最大频率地址
+#define SYNC_MOTOR_MB_UPPER_LIMIT_FREQ_SOUR_ADDR 0xA00B // 控制上限频率源
+#define SYNC_MOTOR_MB_UPPER_LIMIT_FREQ_ADDR 0xA00C      // 控制上限频率
+#define SYNC_MOTOR_MB_LOWER_LIMIT_FREQ_ADDR 0xA00E      // 控制下限频率
+#define SYNC_MOTOR_MB_RUN_FREQ_ADDR 0x1000              // 控制运行频率地址
+#define SYNC_MOTOR_MB_CURRENT_FREQ_ADDR 0x1001          // 读取运行频率地址
+#define SYNC_MOTOR_MB_CONTROL_CMD_ADDR 0x2000           // 控制命令地址
+#define SYNC_MOTOR_MB_CONTROL_PARA_ADDR 0x3000          // 读取控制器状态地址
+#define SYNC_MOTOR_MB_CONTROL_FAULT_ADDR 0x8000         // 读取控制器故障地址
+#define SYNC_MOTOR_MB_ERROR_CODE_ADDR 0x8001            // 读取通信错误码地址
+
+// 同步电机控制功能
+#define SYNC_MOTOR_MB_CONTROL_JUST_RUN 0x0001    // 正转运行
+#define SYNC_MOTOR_MB_CONTROL_BACK_RUN 0x0002    // 反转运行
+#define SYNC_MOTOR_MB_CONTROL_FREE_STOP 0x0005   // 自由停机
+#define SYNC_MOTOR_MB_CONTROL_DECEL_STOP 0x0006  // 减速停机
+#define SYNC_MOTOR_MB_CONTROL_FAULT_RESET 0x0007 // 故障复位
+
+// 同步电机状态
+#define SYNC_MOTOR_MB_READ_JUST_RUN 0x0001 // 正转运行
+#define SYNC_MOTOR_MB_READ_BACK_RUN 0x0002 // 反转运行
+#define SYNC_MOTOR_MB_READ_STOP 0x0003     // 停机
+
+#define S_SYNC_MOTOR_UPPER_LIMIT_FREQ 238 // 上限频率
+#define S_SYNC_MOTOR_LOWER_LIMIT_FREQ 239 // 下限频率
+#define S_SYNC_MOTOR_CONTROL_CMD 240      // 控制命令
+#define S_SYNC_MOTOR_CONTROLRUN_FREQ 241  // 控制运行频率
+#define R_SYNC_MOTOR_CONTROL_PARA 242     // 读取控制器状态
+#define R_SYNC_MOTOR_CONTROL_FAULT 243    // 读取控制器故障
+#define R_SYNC_MOTOR_ERROR_CODE 244       // 读取通信错误码
+#define R_SYNC_MOTOR_CONNECT_STATUS 245   // 读取通信状态
+#define R_SYNC_MOTOR_CURRENT_FREQ 246     // 读取当前频率
+#define R_SYNC_MOTOR_MODE 247             // 电机模式
 // 控制逻辑
 #define SYSTEM_INIT 250
 #define R_START_SEND 250               // 启动发送地址
@@ -381,16 +418,24 @@
 #define R_PRE_STOP_TIME_LOW 273        // 预热时间停止时间-低位
 #define R_RUN_DAY 274                  // 运行天数和小时
 #define R_RUN_MAX_DAY 275              // 允许运行最大天数
-#define S_RUN_SECOND_HIGH 284          // 设置运行秒数-高位
-#define S_RUN_SECOND_LOW 285           // 设置运行秒数-低位
+#define R_RUN_SECOND_HIGH 276          // 运行秒数-高位
+#define R_RUN_SECOND_LOW 277           // 运行秒数-低位
 #define R_RUN_SECOND_STATUS 278        // 运行秒数-状态
 #define R_RUN_SYSTEM_SECOND_STATUS 279 // 系统运行秒数-状态
 #define R_RUN_SYSTEM_SECOND_HIGH 280   // 系统运行秒数-高位
 #define R_RUN_SYSTEM_SECOND_LOW 281    // 系统运行秒数-低位
 #define S_RUN_SYSTEM_SECOND_HIGH 282   // 设置系统运行秒数-高位
 #define S_RUN_SYSTEM_SECOND_LOW 283    // 设置系统运行秒数-低位
-#define R_RUN_SECOND_HIGH 276          // 运行秒数-高位
-#define R_RUN_SECOND_LOW 277           // 运行秒数-低位
+#define S_RUN_SECOND_HIGH 284          // 设置运行秒数-高位
+#define S_RUN_SECOND_LOW 285           // 设置运行秒数-低位
+#define R_BTN_DRY_SEND 286             // 干燥按钮
+#define R_BTN_DRY_RECV 287             // 干燥按钮
+#define R_DRYING_TIMER_HIGH 288        // 干燥计时-高位
+#define R_DRYING_TIMER_LOW 289         // 干燥计时-低位
+#define S_TIME_RESET_HIGH 290          // 初始化时间-高位
+#define S_TIME_RESET_LOW 291           // 初始化时间-低位
+#define S_SYNC_MOTOR_BASICS 292        // 风机基础值
+#define S_SYNC_MOTOR_STAGE 293         // 风机上升值
 
 #define P_PT1_AO1 300 // 第一个温度
 #define P_PT1_AO2 301 // 第二个温度

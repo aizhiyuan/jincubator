@@ -9,6 +9,7 @@ short g_us_pid_temp_arr[15] = {0}; // PID容器
 unsigned short g_sync_data[65535];
 char *g_filename = NULL;
 char g_filenaem_ini[256] = {0};
+int g_fan_status = 0;
 
 // int pid_temp_sum_en = 0;           // 温度PID积分项
 // int pid_humi_sum_en = 0;           // 湿度PID积分项
@@ -139,8 +140,10 @@ void init_ini_file(const char *ini_path, struct incubator_t *st_incubator)
     fprintf(stdout, "%s %-40sJLOG文件:%s\n", date_str, "[init_ini_file]", st_incubator->conf_zlog_file);
     strcpy(st_incubator->conf_sysc_file, ini["GENERAL SETTING"]["SYNC_CONF_FILE"]);
     fprintf(stdout, "%s %-40s同步文件:%s\n", date_str, "[init_ini_file]", st_incubator->conf_sysc_file);
-    strcpy(st_incubator->serial_device, ini["GENERAL SETTING"]["SERIAL_DEVICE"]);
-    fprintf(stdout, "%s %-40s串口设备:%s\n", date_str, "[init_ini_file]", st_incubator->serial_device);
+    strcpy(st_incubator->co2_serial_device, ini["GENERAL SETTING"]["CO2_SERIAL_DEVICE"]);
+    fprintf(stdout, "%s %-40s串口设备1:%s\n", date_str, "[init_ini_file]", st_incubator->co2_serial_device);
+    strcpy(st_incubator->motor_serial_device, ini["GENERAL SETTING"]["MOTOR_SERIAL_DEVICE"]);
+    fprintf(stdout, "%s %-40s串口设备2:%s\n", date_str, "[init_ini_file]", st_incubator->motor_serial_device);
 
     st_incubator->shmem_input_key = ini["GENERAL SETTING"]["SHMEM_INPUT_KEY"];
     fprintf(stdout, "%s %-40s输入共享内存KEY:%d\n", date_str, "[init_ini_file]", st_incubator->shmem_input_key);
@@ -4759,12 +4762,12 @@ void damper_control_func()
                     // 风门周期小于周期
                     if (get_time(PID_PERIOD_COUNT_MAIN_HEATER) < (get_uval(P_TEMP_TO)))
                     {
-                        if ((get_int(PID_ON_COUNT_DB_OPEN) > 0) && get_val(PID_AD_OPEN_STATUS) && (get_val(R_AI_TP_MAIN) > get_val(P_AO_TP_MAIN)))
+                       if ((get_time(PID_PERIOD_COUNT_MAIN_HEATER) > 0) && (get_time(PID_ON_COUNT_DB_OPEN) >= get_time(PID_PERIOD_COUNT_MAIN_HEATER)) && get_val(PID_AD_OPEN_STATUS) && (get_val(R_AI_TP_MAIN) > get_val(P_AO_TP_MAIN)))
                         {
                             control_damper(1, ON, 0);
                             zlog_debug(g_zlog_zc, "%-40s风门设定值>0 PID 风门开", "[damper_control_func]");
                         }
-                        else if ((get_int(PID_ON_COUNT_DB_CLOSE) > 0) && get_val(PID_AD_CLOSE_STATUS) && (get_val(R_AI_TP_MAIN) < get_val(P_AO_TP_MAIN)))
+                       else if ((get_time(PID_PERIOD_COUNT_MAIN_HEATER) > 0) && (get_time(PID_ON_COUNT_DB_CLOSE) >= get_time(PID_PERIOD_COUNT_MAIN_HEATER)) && get_val(PID_AD_CLOSE_STATUS) && (get_val(R_AI_TP_MAIN) < get_val(P_AO_TP_MAIN)))
                         {
                             control_damper(2, ON, 1);
                             zlog_debug(g_zlog_zc, "%-40s风门设定值>0 PID 风门关", "[damper_control_func]");
@@ -4816,6 +4819,9 @@ void logic_process_temp_func()
     short setting_temp_auh_value = get_val(P_AUH);
     // 获取温度PID参数的P/2值
     short setting_temp_pid_p_value = get_x10_val(P_TEMP_P) / 2;
+
+    // 获取高温报警状态
+    short high_temp_alarm_status = get_val(HIGH_TEMP_ALARM_STATUS);
 
     zlog_debug(g_zlog_zc, "%-40s进入到逻辑处理线程-主温度", "[logic_process_temp_func]");
     // 辅助加热依靠AUH辅助加热动作点（设定温度的相对值）。进行控制
@@ -4991,7 +4997,7 @@ void logic_process_temp_func()
         else
         {
             // 主加热
-            if ((get_time(PID_ON_COUNT_MAIN_HEATER) > 0) && (current_temp_value < setting_temp_value))
+            if ((get_time(PID_PERIOD_COUNT_MAIN_HEATER) > 0) && (get_time(PID_ON_COUNT_MAIN_HEATER) >= get_time(PID_PERIOD_COUNT_MAIN_HEATER)) && (current_temp_value < setting_temp_value))
             {
                 // 主加热-开启
                 control_main_heat(ON);
@@ -5002,7 +5008,7 @@ void logic_process_temp_func()
             }
 
             // 水冷
-            if ((get_time(PID_ON_COUNT_COOL) > 0) && (current_temp_value > setting_temp_value))
+            if ((get_time(PID_PERIOD_COUNT_MAIN_HEATER) > 0) && (get_time(PID_ON_COUNT_COOL) >= get_time(PID_PERIOD_COUNT_MAIN_HEATER)) && (current_temp_value > setting_temp_value))
             {
                 // 水冷电磁阀
                 control_cool(ON);
@@ -5029,6 +5035,41 @@ void logic_process_temp_func()
         set_time(PID_TEMP_SUM, 0);
         set_time(PID_PERIOD_COUNT_MAIN_HEATER, 0);
         set_val(PID_TEMP_MODE_STATUS, 0);
+    }
+
+    // 当PV2>SP2时，比如温度高于设定0.1度频率50%、高于0.2度频率51%
+    if (g_fan_status == 1)
+    {
+        if (current_temp_value >= setting_temp_value)
+        {
+            // 当高温报警的时候
+            if (high_temp_alarm_status)
+            {
+                // 将上限频率赋值给当前频率
+                shm_out[S_SYNC_MOTOR_CONTROLRUN_FREQ] = shm_out[S_SYNC_MOTOR_UPPER_LIMIT_FREQ];
+                zlog_debug(g_zlog_zc, "%-40s[PV2>SP2] 开启上限频率 %d%", "[logic_process_temp_func]", get_val(S_SYNC_MOTOR_CONTROLRUN_FREQ) / 100);
+            }
+            else
+            {
+                short temp_difference = (current_temp_value - setting_temp_value) / get_val(S_SYNC_MOTOR_STAGE);
+                int current_freq = get_val(S_SYNC_MOTOR_LOWER_LIMIT_FREQ) + temp_difference * get_val(S_SYNC_MOTOR_BASICS);
+                if (current_freq >= get_val(S_SYNC_MOTOR_UPPER_LIMIT_FREQ))
+                {
+                    current_freq = get_val(S_SYNC_MOTOR_UPPER_LIMIT_FREQ);
+                }
+                set_val(S_SYNC_MOTOR_CONTROLRUN_FREQ, current_freq);
+                zlog_debug(g_zlog_zc, "%-40s[PV2>SP2] 开启当前频率 %d%", "[logic_process_temp_func]", current_freq / 100);
+            }
+        }
+        else if (current_temp_value < setting_temp_value)
+        {
+            // 将下限频率赋值给当前频率
+            shm_out[S_SYNC_MOTOR_CONTROLRUN_FREQ] = shm_out[S_SYNC_MOTOR_LOWER_LIMIT_FREQ];
+            zlog_debug(g_zlog_zc, "%-40s[PV2>SP2] 开启下限频率 %d%", "[logic_process_temp_func]", get_val(S_SYNC_MOTOR_CONTROLRUN_FREQ) / 100);
+        }
+        else
+        {
+        }
     }
 }
 
@@ -5084,7 +5125,7 @@ void logic_process_humi_func()
             }
             else
             {
-                if ((get_time(PID_ON_COUNT_HUMI) > 0) && (current_humi_value < setting_humi_value))
+                if ((get_time(PID_PERIOD_COUNT_HUMI) > 0) && (get_time(PID_PERIOD_COUNT_HUMI) <= get_time(PID_ON_COUNT_HUMI)) && (current_humi_value < setting_humi_value))
                 {
                     // 加湿-开启
                     control_spray(ON);
@@ -7406,29 +7447,29 @@ void timer_callback_func(int signo)
             set_time(PID_PERIOD_COUNT_MAIN_HEATER, get_time(PID_PERIOD_COUNT_MAIN_HEATER) - 1);
         }
 
-        // 主加热时间
-        if (get_time(PID_ON_COUNT_MAIN_HEATER) > 0)
-        {
-            set_time(PID_ON_COUNT_MAIN_HEATER, get_time(PID_ON_COUNT_MAIN_HEATER) - 1);
-        }
+        // // 主加热时间
+        // if (get_time(PID_ON_COUNT_MAIN_HEATER) > 0)
+        // {
+        //     set_time(PID_ON_COUNT_MAIN_HEATER, get_time(PID_ON_COUNT_MAIN_HEATER) - 1);
+        // }
 
-        // 水冷时间
-        if (get_time(PID_ON_COUNT_COOL) > 0)
-        {
-            set_time(PID_ON_COUNT_COOL, get_time(PID_ON_COUNT_COOL) - 1);
-        }
+        // // 水冷时间
+        // if (get_time(PID_ON_COUNT_COOL) > 0)
+        // {
+        //     set_time(PID_ON_COUNT_COOL, get_time(PID_ON_COUNT_COOL) - 1);
+        // }
 
-        // 风门开时间
-        if (get_time(PID_ON_COUNT_DB_OPEN) > 0)
-        {
-            set_time(PID_ON_COUNT_DB_OPEN, get_time(PID_ON_COUNT_DB_OPEN) - 1);
-        }
+        // // 风门开时间
+        // if (get_time(PID_ON_COUNT_DB_OPEN) > 0)
+        // {
+        //     set_time(PID_ON_COUNT_DB_OPEN, get_time(PID_ON_COUNT_DB_OPEN) - 1);
+        // }
 
-        // 风门关时间
-        if (get_time(PID_ON_COUNT_DB_CLOSE) > 0)
-        {
-            set_time(PID_ON_COUNT_DB_CLOSE, get_time(PID_ON_COUNT_DB_CLOSE) - 1);
-        }
+        // // 风门关时间
+        // if (get_time(PID_ON_COUNT_DB_CLOSE) > 0)
+        // {
+        //     set_time(PID_ON_COUNT_DB_CLOSE, get_time(PID_ON_COUNT_DB_CLOSE) - 1);
+        // }
 
         // 湿度周期时间
         if (get_time(PID_PERIOD_COUNT_HUMI) > 0)
@@ -7437,10 +7478,10 @@ void timer_callback_func(int signo)
         }
 
         // 加湿时间
-        if (get_time(PID_ON_COUNT_HUMI) > 0)
-        {
-            set_time(PID_ON_COUNT_HUMI, get_time(PID_ON_COUNT_HUMI) - 1);
-        }
+        // if (get_time(PID_ON_COUNT_HUMI) > 0)
+        // {
+        //     set_time(PID_ON_COUNT_HUMI, get_time(PID_ON_COUNT_HUMI) - 1);
+        // }
 
         //----------------------------------------------------------------------------------------------------------
         // 风门校准时间
@@ -8013,7 +8054,7 @@ void *data_collection_co2_func(void *pv)
     int i_data_value = 0;
 
     unsigned short i_recv_data = 0;
-    char *c_seral_name = g_st_jincubator.serial_device;
+    char *c_seral_name = g_st_jincubator.co2_serial_device;
     zlog_info(g_zlog_zc, "%-40s正在打开串口!", "[data_collection_co2_func]");
     int i_serial_fd = SerialOpen(c_seral_name);
     if (i_serial_fd < 0)
@@ -8117,6 +8158,527 @@ void *data_collection_co2_func(void *pv)
             v_us_co2_old_val = 0;
             set_val(P_EDIT_CO, 0);
             set_val(CARBON_DIOXIDE_CALIBRATION_STATUS, 1);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------
+// 同步电机线程
+//----------------------------------------------------------------------------------------------------------
+void *synchronous_motor_func(void *pv)
+{
+    zlog_debug(g_zlog_zc, "%-40s同步电机控制线程启动", "[synchronous_motor_func]");
+
+    unsigned char b_cmd_sendbuf[1024] = {0x00};
+    unsigned char b_cmd_recvbuf[1024] = {0x00};
+
+    // 打开串口
+    int i_cmd_meterid = 0x01;
+    int i_cmd_func = 0x03;
+
+    int i_bandrate = 19200;
+    int i_parity = 2;
+    int i_databits = 8;
+    int i_stopbit = 1;
+
+    int i_cmd_wait_time_out = 500;
+    int i_cmd_read_time_out = 50;
+
+    int i_send_len = 0;
+    int i_recv_len = 0;
+    int i_data_len = 0;
+    int i_data_count = 0;
+    int i_data_value = 0;
+
+    int i_ret = 0;
+
+    int i_modbus_err_count = 0;
+    int i_modbus_err_status = 1;
+
+    unsigned char g_sync_motor_mode = 0xff;
+    unsigned char g_sync_motor_count = 0;
+
+    unsigned short i_recv_data = 0;
+    const char *c_seral_name = "ttyS2";
+    zlog_info(g_zlog_zc, "%-40s正在打开串口!", "[synchronous_motor_func]");
+    int i_serial_fd = SerialOpen(c_seral_name);
+    if (i_serial_fd < 0)
+    {
+        zlog_error(g_zlog_zc, "%-40s%s串口打开失败", "[synchronous_motor_func]", c_seral_name);
+        pthread_exit(NULL);
+    }
+    zlog_info(g_zlog_zc, "%-40s%s串口打开成功!", "[synchronous_motor_func]", c_seral_name);
+    // 设置波特率
+    SerialSetSpeed(i_serial_fd, i_bandrate);
+
+    // 设置校验、数据位、停止位
+    SerialSetParam(i_serial_fd, i_parity, i_databits, i_stopbit);
+    zlog_info(g_zlog_zc, "%-40s[%s] bandrate=%d parity=%d databits=%d stopbit=%d  open success!!", "[synchronous_motor_func]", c_seral_name, i_bandrate, i_parity, i_databits, i_stopbit);
+
+    while (ON)
+    {
+        char sync_motor_mode = get_val(R_SYNC_MOTOR_MODE);
+        zlog_debug(g_zlog_zc, "%-40s旧模式: %02x, 新模式：%02x, 状态:%02x", "[synchronous_motor_func]", g_sync_motor_mode, sync_motor_mode, g_fan_status);
+        if (0xff == g_sync_motor_mode)
+        {
+            g_sync_motor_mode = sync_motor_mode;
+        }
+        else
+        {
+            if (g_sync_motor_mode != sync_motor_mode)
+            {
+                if (g_sync_motor_count > 20)
+                {
+                    zlog_debug(g_zlog_zc, "%-40s模式改变程序退出，旧模式: %02x, 新模式：%02x", "[synchronous_motor_func]", g_sync_motor_mode, sync_motor_mode);
+                    exit(0);
+                }
+                // 退出程序
+                g_sync_motor_count++;
+                g_fan_status = 0;
+            }
+            else
+            {
+                g_fan_status = 1;
+                g_sync_motor_count = 0;
+            }
+        }
+
+        if (get_val(R_SYNC_MOTOR_MODE) == 1)
+        {
+            // 启动或者停止同步电机
+            if (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 1)
+            {
+                // 读取控制器故障地址
+                i_cmd_func = 0x06;
+                i_data_len = 0x01;
+                i_send_len = 0x08;
+
+                b_cmd_sendbuf[0] = i_cmd_meterid;                         // 设备号
+                b_cmd_sendbuf[1] = i_cmd_func;                            // 功能码
+                b_cmd_sendbuf[2] = SYNC_MOTOR_MB_CONTROL_CMD_ADDR >> 8;   // 读取控制状态地址高位
+                b_cmd_sendbuf[3] = SYNC_MOTOR_MB_CONTROL_CMD_ADDR & 0xff; // 读取控制状态地址低位
+                b_cmd_sendbuf[4] = SYNC_MOTOR_MB_CONTROL_JUST_RUN >> 8;   // 读取长度高位
+                b_cmd_sendbuf[5] = SYNC_MOTOR_MB_CONTROL_JUST_RUN & 0xff; // 读取长度高位
+
+                // 计算校验码
+                unsigned short check = crc_chk_value(b_cmd_sendbuf, i_send_len - 2);
+                memcpy(&b_cmd_sendbuf[6], &check, 2);
+                // b_cmd_sendbuf[6] = check >> 8;
+                // b_cmd_sendbuf[7] = check & 0xff;
+
+                zlog_debug(g_zlog_zc, "%-40s发送读取数据[8]:", "[synchronous_motor_func]");
+                hzlog_debug(g_zlog_zc, b_cmd_sendbuf, i_send_len);
+
+                // 刷新串口
+                SerialFlush(i_serial_fd);
+                // 发送数据
+                SerialWrite(i_serial_fd, b_cmd_sendbuf, i_send_len);
+                // 等待数据
+                i_recv_len = SerialRead(i_serial_fd, b_cmd_recvbuf, 8, i_cmd_wait_time_out, i_cmd_read_time_out);
+                if (i_recv_len < 8)
+                {
+                    if (i_recv_len < 0)
+                        i_recv_len = 0;
+                    i_ret = SerialRead(i_serial_fd, &b_cmd_recvbuf[i_recv_len], 8 - i_recv_len, i_cmd_wait_time_out, i_cmd_read_time_out);
+                    i_recv_len = i_recv_len + i_ret;
+                }
+
+                // 打印数据
+                zlog_debug(g_zlog_zc, "%-40s接收读取数据[%d]:", "[synchronous_motor_func]", i_recv_len);
+                hzlog_debug(g_zlog_zc, b_cmd_recvbuf, i_recv_len);
+
+                if (i_recv_len >= 8)
+                {
+                    if ((b_cmd_recvbuf[0] == i_cmd_meterid) && (b_cmd_recvbuf[1] == i_cmd_func))
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & ~(0x01));
+                        set_uval(S_SYNC_MOTOR_CONTROL_CMD, 0);
+                    }
+                    else
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x01);
+                    }
+                }
+                else
+                {
+                    set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x01);
+                }
+
+                wait_ms(500);
+            }
+
+            // 关闭电机
+            if (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 2)
+            {
+                // 读取控制器故障地址
+                i_cmd_func = 0x06;
+                i_data_len = 0x01;
+                i_send_len = 0x08;
+
+                b_cmd_sendbuf[0] = i_cmd_meterid;                           // 设备号
+                b_cmd_sendbuf[1] = i_cmd_func;                              // 功能码
+                b_cmd_sendbuf[2] = SYNC_MOTOR_MB_CONTROL_CMD_ADDR >> 8;     // 读取控制状态地址高位
+                b_cmd_sendbuf[3] = SYNC_MOTOR_MB_CONTROL_CMD_ADDR & 0xff;   // 读取控制状态地址低位
+                b_cmd_sendbuf[4] = SYNC_MOTOR_MB_CONTROL_DECEL_STOP >> 8;   // 读取长度高位
+                b_cmd_sendbuf[5] = SYNC_MOTOR_MB_CONTROL_DECEL_STOP & 0xff; // 读取长度高位
+
+                // 计算校验码
+                unsigned short check = crc_chk_value(b_cmd_sendbuf, i_send_len - 2);
+                memcpy(&b_cmd_sendbuf[6], &check, 2);
+                // b_cmd_sendbuf[6] = check >> 8;
+                // b_cmd_sendbuf[7] = check & 0xff;
+
+                zlog_debug(g_zlog_zc, "%-40s发送读取数据[8]:", "[synchronous_motor_func]");
+                hzlog_debug(g_zlog_zc, b_cmd_sendbuf, i_send_len);
+
+                // 刷新串口
+                SerialFlush(i_serial_fd);
+
+                // 发送数据
+                SerialWrite(i_serial_fd, b_cmd_sendbuf, i_send_len);
+
+                // 等待数据
+                i_recv_len = SerialRead(i_serial_fd, b_cmd_recvbuf, 8, i_cmd_wait_time_out, i_cmd_read_time_out);
+                if (i_recv_len < 8)
+                {
+                    if (i_recv_len < 0)
+                        i_recv_len = 0;
+                    i_ret = SerialRead(i_serial_fd, &b_cmd_recvbuf[i_recv_len], 8 - i_recv_len, i_cmd_wait_time_out, i_cmd_read_time_out);
+                    i_recv_len = i_recv_len + i_ret;
+                }
+
+                // 打印数据
+                zlog_debug(g_zlog_zc, "%-40s接收读取数据[%d]:", "[synchronous_motor_func]", i_recv_len);
+                hzlog_debug(g_zlog_zc, b_cmd_recvbuf, i_recv_len);
+
+                if (i_recv_len >= 8)
+                {
+                    if ((b_cmd_recvbuf[0] == i_cmd_meterid) && (b_cmd_recvbuf[1] == i_cmd_func))
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & ~(0x02));
+                        set_uval(S_SYNC_MOTOR_CONTROL_CMD, 0);
+                    }
+                    else
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x02);
+                    }
+                }
+                else
+                {
+                    set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x02);
+                }
+                wait_ms(500);
+            }
+
+            // 读取控制器状态
+            {
+                i_cmd_func = 0x03;
+                i_data_len = 0x01;
+                i_send_len = 0x08;
+
+                b_cmd_sendbuf[0] = i_cmd_meterid;                          // 设备号
+                b_cmd_sendbuf[1] = i_cmd_func;                             // 功能码
+                b_cmd_sendbuf[2] = SYNC_MOTOR_MB_CONTROL_PARA_ADDR >> 8;   // 读取控制状态地址高位
+                b_cmd_sendbuf[3] = SYNC_MOTOR_MB_CONTROL_PARA_ADDR & 0xff; // 读取控制状态地址低位
+                b_cmd_sendbuf[4] = i_data_len >> 8;                        // 读取长度高位
+                b_cmd_sendbuf[5] = i_data_len & 0xff;                      // 读取长度高位
+
+                // 计算校验码
+                unsigned short check = crc_chk_value(b_cmd_sendbuf, i_send_len - 2);
+                memcpy(&b_cmd_sendbuf[6], &check, 2);
+                // b_cmd_sendbuf[6] = check >> 8;
+                // b_cmd_sendbuf[7] = check & 0xff;
+
+                zlog_debug(g_zlog_zc, "%-40s发送读取数据[8]:", "[synchronous_motor_func]");
+                hzlog_debug(g_zlog_zc, b_cmd_sendbuf, i_send_len);
+
+                // 刷新串口
+                SerialFlush(i_serial_fd);
+                // 发送数据
+                SerialWrite(i_serial_fd, b_cmd_sendbuf, i_send_len);
+
+                // 等待数据
+                i_recv_len = SerialRead(i_serial_fd, b_cmd_recvbuf, 8, i_cmd_wait_time_out, i_cmd_read_time_out);
+                if (i_recv_len < 8)
+                {
+                    if (i_recv_len < 0)
+                        i_recv_len = 0;
+                    i_ret = SerialRead(i_serial_fd, &b_cmd_recvbuf[i_recv_len], 8 - i_recv_len, i_cmd_wait_time_out, i_cmd_read_time_out);
+                    i_recv_len = i_recv_len + i_ret;
+                }
+
+                // 打印数据
+                zlog_debug(g_zlog_zc, "%-40s接收读取数据[%d]:", "[synchronous_motor_func]", i_recv_len);
+                hzlog_debug(g_zlog_zc, b_cmd_recvbuf, i_recv_len);
+
+                if (i_recv_len >= 7)
+                {
+                    if ((b_cmd_recvbuf[0] == i_cmd_meterid) && (b_cmd_recvbuf[1] == i_cmd_func))
+                    {
+                        memcpy(&shm_out[R_SYNC_MOTOR_CONTROL_PARA], &b_cmd_recvbuf[3], 2);
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & ~(0x04));
+                    }
+                    else
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x04);
+                    }
+                }
+                else
+                {
+                    set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x04);
+                }
+                wait_ms(500);
+            }
+
+            // 修改设置频率
+            if ((get_val(S_SYNC_MOTOR_CONTROLRUN_FREQ) != get_old(S_SYNC_MOTOR_CONTROLRUN_FREQ)) && (get_uval(S_SYNC_MOTOR_CONTROLRUN_FREQ) != 0))
+            {
+                // memcpy(&shm_old[S_SYNC_MOTOR_CONTROLRUN_FREQ], &shm_out[S_SYNC_MOTOR_CONTROLRUN_FREQ], 2);
+                shm_old[S_SYNC_MOTOR_CONTROLRUN_FREQ] = shm_out[S_SYNC_MOTOR_CONTROLRUN_FREQ];
+
+                // 控制频率
+                // unsigned short i_run_freq = get_uval(S_SYNC_MOTOR_CONTROLRUN_FREQ);
+
+                // 读取控制器故障地址
+                i_cmd_func = 0x06;
+                i_data_len = 0x01;
+                i_send_len = 0x08;
+
+                b_cmd_sendbuf[0] = i_cmd_meterid;                      // 设备号
+                b_cmd_sendbuf[1] = i_cmd_func;                         // 功能码
+                b_cmd_sendbuf[2] = SYNC_MOTOR_MB_RUN_FREQ_ADDR >> 8;   // 读取控制状态地址高位
+                b_cmd_sendbuf[3] = SYNC_MOTOR_MB_RUN_FREQ_ADDR & 0xff; // 读取控制状态地址低位
+                // b_cmd_sendbuf[4] = i_run_freq >> 8;                    // 读取长度高位
+                // b_cmd_sendbuf[5] = i_run_freq & 0xff;                  // 读取长度高位
+                memcpy(&b_cmd_sendbuf[4], &shm_out[S_SYNC_MOTOR_CONTROLRUN_FREQ], 2);
+
+                // 计算校验码
+                unsigned short check = crc_chk_value(b_cmd_sendbuf, i_send_len - 2);
+                memcpy(&b_cmd_sendbuf[6], &check, 2);
+                // b_cmd_sendbuf[6] = check >> 8;
+                // b_cmd_sendbuf[7] = check & 0xff;
+
+                zlog_debug(g_zlog_zc, "%-40s发送读取数据[8]:", "[synchronous_motor_func]");
+                hzlog_debug(g_zlog_zc, b_cmd_sendbuf, i_send_len);
+
+                // 刷新串口
+                SerialFlush(i_serial_fd);
+                // 发送数据
+                SerialWrite(i_serial_fd, b_cmd_sendbuf, i_send_len);
+                // 等待数据
+                i_recv_len = SerialRead(i_serial_fd, b_cmd_recvbuf, 8, i_cmd_wait_time_out, i_cmd_read_time_out);
+                if (i_recv_len < 8)
+                {
+                    if (i_recv_len < 0)
+                        i_recv_len = 0;
+                    i_ret = SerialRead(i_serial_fd, &b_cmd_recvbuf[i_recv_len], 8 - i_recv_len, i_cmd_wait_time_out, i_cmd_read_time_out);
+                    i_recv_len = i_recv_len + i_ret;
+                }
+
+                // 打印数据
+                zlog_debug(g_zlog_zc, "%-40s接收读取数据[%d]:", "[synchronous_motor_func]", i_recv_len);
+                hzlog_debug(g_zlog_zc, b_cmd_recvbuf, i_recv_len);
+
+                if (i_recv_len >= 8)
+                {
+                    if ((b_cmd_recvbuf[0] == i_cmd_meterid) && (b_cmd_recvbuf[1] == i_cmd_func))
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & ~(0x08));
+                        // set_uval(S_SYNC_MOTOR_CONTROLRUN_FREQ, 0);
+                    }
+                    else
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x08);
+                    }
+                }
+                else
+                {
+                    set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x08);
+                }
+
+                wait_ms(500);
+            }
+
+            // 读取设置频率
+            {
+                i_cmd_func = 0x03;
+                i_data_len = 0x01;
+                i_send_len = 0x08;
+
+                b_cmd_sendbuf[0] = i_cmd_meterid;                      // 设备号
+                b_cmd_sendbuf[1] = i_cmd_func;                         // 功能码
+                b_cmd_sendbuf[2] = SYNC_MOTOR_MB_RUN_FREQ_ADDR >> 8;   // 读取运行频率地址高位
+                b_cmd_sendbuf[3] = SYNC_MOTOR_MB_RUN_FREQ_ADDR & 0xff; // 读取运行频率地址低位
+                b_cmd_sendbuf[4] = i_data_len >> 8;                    // 读取长度高位
+                b_cmd_sendbuf[5] = i_data_len & 0xff;                  // 读取长度高位
+
+                // 计算校验码
+                unsigned short check = crc_chk_value(b_cmd_sendbuf, i_send_len - 2);
+                memcpy(&b_cmd_sendbuf[6], &check, 2);
+                // b_cmd_sendbuf[6] = check >> 8;
+                // b_cmd_sendbuf[7] = check & 0xff;
+
+                zlog_debug(g_zlog_zc, "%-40s发送读取数据[8]:", "[synchronous_motor_func]");
+                hzlog_debug(g_zlog_zc, b_cmd_sendbuf, i_send_len);
+
+                // 刷新串口
+                SerialFlush(i_serial_fd);
+                // 发送数据
+                SerialWrite(i_serial_fd, b_cmd_sendbuf, i_send_len);
+                // 等待数据
+                i_recv_len = SerialRead(i_serial_fd, b_cmd_recvbuf, 8, i_cmd_wait_time_out, i_cmd_read_time_out);
+                if (i_recv_len < 8)
+                {
+                    if (i_recv_len < 0)
+                        i_recv_len = 0;
+                    i_ret = SerialRead(i_serial_fd, &b_cmd_recvbuf[i_recv_len], 8 - i_recv_len, i_cmd_wait_time_out, i_cmd_read_time_out);
+                    i_recv_len = i_recv_len + i_ret;
+                }
+
+                // 打印数据
+                zlog_debug(g_zlog_zc, "%-40s接收读取数据[%d]:", "[synchronous_motor_func]", i_recv_len);
+                hzlog_debug(g_zlog_zc, b_cmd_recvbuf, i_recv_len);
+
+                if (i_recv_len >= 7)
+                {
+                    if ((b_cmd_recvbuf[0] == i_cmd_meterid) && (b_cmd_recvbuf[1] == i_cmd_func))
+                    {
+                        memcpy(&shm_old[S_SYNC_MOTOR_CONTROLRUN_FREQ], &b_cmd_recvbuf[3], 2);
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & ~(0x10));
+                    }
+                    else
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x10);
+                    }
+                }
+                else
+                {
+                    set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x10);
+                }
+                wait_ms(500);
+            }
+
+            // 读取当前频率
+            {
+                i_cmd_func = 0x03;
+                i_data_len = 0x01;
+                i_send_len = 0x08;
+
+                b_cmd_sendbuf[0] = i_cmd_meterid;                          // 设备号
+                b_cmd_sendbuf[1] = i_cmd_func;                             // 功能码
+                b_cmd_sendbuf[2] = SYNC_MOTOR_MB_CURRENT_FREQ_ADDR >> 8;   // 读取控制状态地址高位
+                b_cmd_sendbuf[3] = SYNC_MOTOR_MB_CURRENT_FREQ_ADDR & 0xff; // 读取控制状态地址低位
+                b_cmd_sendbuf[4] = i_data_len >> 8;                        // 读取长度高位
+                b_cmd_sendbuf[5] = i_data_len & 0xff;                      // 读取长度高位
+
+                // 计算校验码
+                unsigned short check = crc_chk_value(b_cmd_sendbuf, i_send_len - 2);
+                memcpy(&b_cmd_sendbuf[6], &check, 2);
+                // b_cmd_sendbuf[6] = check >> 8;
+                // b_cmd_sendbuf[7] = check & 0xff;
+
+                zlog_debug(g_zlog_zc, "%-40s发送读取数据[8]:", "[synchronous_motor_func]");
+                hzlog_debug(g_zlog_zc, b_cmd_sendbuf, i_send_len);
+
+                // 刷新串口
+                SerialFlush(i_serial_fd);
+                // 发送数据
+                SerialWrite(i_serial_fd, b_cmd_sendbuf, i_send_len);
+                // 等待数据
+                i_recv_len = SerialRead(i_serial_fd, b_cmd_recvbuf, 8, i_cmd_wait_time_out, i_cmd_read_time_out);
+                if (i_recv_len < 8)
+                {
+                    if (i_recv_len < 0)
+                        i_recv_len = 0;
+                    i_ret = SerialRead(i_serial_fd, &b_cmd_recvbuf[i_recv_len], 8 - i_recv_len, i_cmd_wait_time_out, i_cmd_read_time_out);
+                    i_recv_len = i_recv_len + i_ret;
+                }
+
+                // 打印数据
+                zlog_debug(g_zlog_zc, "%-40s接收读取数据[%d]:", "[synchronous_motor_func]", i_recv_len);
+                hzlog_debug(g_zlog_zc, b_cmd_recvbuf, i_recv_len);
+
+                if (i_recv_len >= 7)
+                {
+                    if ((b_cmd_recvbuf[0] == i_cmd_meterid) && (b_cmd_recvbuf[1] == i_cmd_func))
+                    {
+                        memcpy(&shm_out[R_SYNC_MOTOR_CURRENT_FREQ], &b_cmd_recvbuf[3], 2);
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & ~(0x20));
+                    }
+                    else
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x20);
+                    }
+                }
+                else
+                {
+                    set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x20);
+                }
+                wait_ms(500);
+            }
+
+            // 读取控制器故障
+            {
+                i_cmd_func = 0x03;
+                i_data_len = 0x01;
+                i_send_len = 0x08;
+
+                b_cmd_sendbuf[0] = i_cmd_meterid;                           // 设备号
+                b_cmd_sendbuf[1] = i_cmd_func;                              // 功能码
+                b_cmd_sendbuf[2] = SYNC_MOTOR_MB_CONTROL_FAULT_ADDR >> 8;   // 读取控制状态地址高位
+                b_cmd_sendbuf[3] = SYNC_MOTOR_MB_CONTROL_FAULT_ADDR & 0xff; // 读取控制状态地址低位
+                b_cmd_sendbuf[4] = i_data_len >> 8;                         // 读取长度高位
+                b_cmd_sendbuf[5] = i_data_len & 0xff;                       // 读取长度高位
+
+                // 计算校验码
+                unsigned short check = crc_chk_value(b_cmd_sendbuf, i_send_len - 2);
+                memcpy(&b_cmd_sendbuf[6], &check, 2);
+                // b_cmd_sendbuf[6] = check >> 8;
+                // b_cmd_sendbuf[7] = check & 0xff;
+
+                zlog_debug(g_zlog_zc, "%-40s发送读取数据[8]:", "[synchronous_motor_func]");
+                hzlog_debug(g_zlog_zc, b_cmd_sendbuf, i_send_len);
+
+                // 刷新串口
+                SerialFlush(i_serial_fd);
+                // 发送数据
+                SerialWrite(i_serial_fd, b_cmd_sendbuf, i_send_len);
+                // 等待数据
+                i_recv_len = SerialRead(i_serial_fd, b_cmd_recvbuf, 8, i_cmd_wait_time_out, i_cmd_read_time_out);
+                if (i_recv_len < 8)
+                {
+                    if (i_recv_len < 0)
+                        i_recv_len = 0;
+                    i_ret = SerialRead(i_serial_fd, &b_cmd_recvbuf[i_recv_len], 8 - i_recv_len, i_cmd_wait_time_out, i_cmd_read_time_out);
+                    i_recv_len = i_recv_len + i_ret;
+                }
+
+                // 打印数据
+                zlog_debug(g_zlog_zc, "%-40s接收读取数据[%d]:", "[synchronous_motor_func]", i_recv_len);
+                hzlog_debug(g_zlog_zc, b_cmd_recvbuf, i_recv_len);
+
+                if (i_recv_len >= 7)
+                {
+                    if ((b_cmd_recvbuf[0] == i_cmd_meterid) && (b_cmd_recvbuf[1] == i_cmd_func))
+                    {
+                        memcpy(&shm_out[R_SYNC_MOTOR_CONTROL_FAULT], &b_cmd_recvbuf[3], 2);
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & ~(0x40));
+                    }
+                    else
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x40);
+                    }
+                }
+                else
+                {
+                    set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x40);
+                }
+                wait_ms(500);
+            }
+        }
+        else
+        {
+            wait_ms(500);
         }
     }
 }
@@ -8689,6 +9251,8 @@ void *thread_alarm_func(void *pv)
         //----------------------------------------------------------------------------------------------------------
         // 风扇停止 报警
         //----------------------------------------------------------------------------------------------------------
+
+#if 0
         // 先判断是否接通电源
         if (get_val(DETECT_FAN))
         {
@@ -8726,6 +9290,95 @@ void *thread_alarm_func(void *pv)
                 // 接收到风扇停止后
                 set_uval(FAN_ALARM_TIME, 0);
                 di_fan_mode = 1;
+            }
+        }
+#endif
+
+        if (g_fan_status == 1)
+        {
+            // 停止模式的时候
+            if ((get_val(DETECT_FAN) == OFF) || (get_val(R_SYNC_MOTOR_CONTROL_PARA) == 3))
+            {
+                // 立即报警
+                set_uval(OUT_ST_FAN_ALARM, ON);
+
+                // 如果是停止模式则10分钟后报警
+                if ((get_val(R_STOP_RECV) == ON))
+                {
+                    // 停止模式
+                    if (status_fan_mode)
+                    {
+                        // 风机停止报警时间
+                        set_uval(FAN_ALARM_TIME, get_val(P_HH7) * 60);
+
+                        di_fan_mode = 1;
+                        status_fan_mode = OFF;
+                    }
+                }
+                else
+                {
+                    // 风机停止报警时间
+                    status_fan_mode = ON;
+
+                    // 接收到风扇停止后
+                    set_uval(FAN_ALARM_TIME, 0);
+                    di_fan_mode = 1;
+                }
+            }
+            else
+            {
+                status_fan_mode = ON;
+                set_uval(FAN_ALARM_TIME, 0);
+                di_fan_mode = 0;
+                set_uval(OUT_ST_FAN_ALARM, OFF);
+                if (get_val(R_SYNC_MOTOR_CONTROL_FAULT) > 0)
+                {
+                    // 接收到风扇停止后
+                    di_fan_mode = 1;
+
+                    set_uval(OUT_ST_FAN_ALARM, ON);
+                }
+            }
+        }
+        else
+        {
+            if (get_val(DETECT_FAN))
+            {
+                status_fan_mode = ON;
+                set_uval(FAN_ALARM_TIME, 0);
+                di_fan_mode = 0;
+                set_uval(OUT_ST_FAN_ALARM, OFF);
+                // 接收到电流互感和风机停止信号立即报警
+                if ((get_val(DETECT_FAN_STOP) == ON) || (get_val(NANOPI_GPIO_PG_11) == ON))
+                {
+                    // 接收到风扇停止后
+                    di_fan_mode = 1;
+                    set_uval(OUT_ST_FAN_ALARM, ON);
+                }
+            }
+            else
+            {
+                // 立即报警
+                set_uval(OUT_ST_FAN_ALARM, ON);
+                // 如果是停止模式则10分钟后报警
+                if ((get_val(R_STOP_RECV) == ON))
+                {
+                    if (status_fan_mode)
+                    {
+                        // 风机停止报警时间
+                        set_uval(FAN_ALARM_TIME, get_val(P_HH7) * 60);
+                        di_fan_mode = 1;
+                        status_fan_mode = OFF;
+                    }
+                }
+                else
+                {
+                    // 风机停止报警时间
+                    status_fan_mode = ON;
+                    // 接收到风扇停止后
+                    set_uval(FAN_ALARM_TIME, 0);
+                    di_fan_mode = 1;
+                }
             }
         }
 
@@ -9017,7 +9670,7 @@ void *thread_main_func(void *pv)
             set_uval(REFLUX_TEMP_4_DELAY_TIME, 30);
 
             // 风机关闭
-            control_fan(OFF);
+            // control_fan(OFF);
 
             // 主加热-关闭
             control_main_heat(OFF);
@@ -9072,7 +9725,21 @@ void *thread_main_func(void *pv)
             update_set_para();
 
             // 启动风机
-            control_fan(ON);
+            // control_fan(ON);
+            if (g_fan_status == 1)
+            {
+                // 门开有信号
+                if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) == 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x01) == 0))
+                {
+                    zlog_info(g_zlog_zc, "%-40s启动电机", "[main]");
+                    set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x01);
+                }
+            }
+            else
+            {
+                // 启动风机
+                control_fan(ON);
+            }
 
             // 启动鼓风机
             control_blower(ON);
@@ -9131,7 +9798,22 @@ void *thread_main_func(void *pv)
             update_set_para();
 
             // 风机关闭
-            control_fan(OFF);
+            // control_fan(OFF);
+
+            if (g_fan_status == 1)
+            {
+                // 门开关没有信号
+                if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x02) == 0))
+                {
+                    zlog_info(g_zlog_zc, "%-40s关闭电机", "[main]");
+                    set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x02);
+                }
+            }
+            else
+            {
+                // 启动风机
+                control_fan(OFF);
+            }
 
             // 主加热-关闭
             control_main_heat(OFF);
@@ -9209,7 +9891,7 @@ void *thread_main_func(void *pv)
                         set_uval(R_PRE_STATUS, 0);
 
                         // 风机关闭
-                        control_fan(OFF);
+                        // control_fan(OFF);
 
                         // 主加热-关闭
                         control_main_heat(OFF);
@@ -9241,7 +9923,20 @@ void *thread_main_func(void *pv)
                     set_val(R_RUN_SECOND_STATUS, OFF);
 
                     // 启动风机
-                    control_fan(ON);
+                    if (g_fan_status == 1)
+                    {
+                        // 门开有信号
+                        if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) == 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x01) == 0))
+                        {
+                            zlog_info(g_zlog_zc, "%-40s启动电机", "[main]");
+                            set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x01);
+                        }
+                    }
+                    else
+                    {
+                        // 启动风机
+                        control_fan(ON);
+                    }
 
                     // 启动鼓风机
                     control_blower(ON);
@@ -9654,6 +10349,14 @@ int main(int argc, char *argv[])
     pthread_t co2_collection_thread;
     pthread_create(&co2_collection_thread, NULL, data_collection_co2_func, NULL);
     wait_ms(200);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 同步电机线程
+    //----------------------------------------------------------------------------------------------------------
+    pthread_t synchronous_motor_thread;
+    pthread_create(&synchronous_motor_thread, NULL, synchronous_motor_func, NULL);
+    wait_ms(200);
+
     //----------------------------------------------------------------------------------------------------------
     // 翻蛋线程
     //----------------------------------------------------------------------------------------------------------
@@ -9685,6 +10388,8 @@ int main(int argc, char *argv[])
     pthread_join(data_collection_thread, NULL);
     // 二氧化碳采集线程
     pthread_join(co2_collection_thread, NULL);
+    // 同步电机线程
+    pthread_join(synchronous_motor_thread, NULL);
     // 翻蛋线程
     pthread_join(flip_egg_thread, NULL);
     // 报警线程

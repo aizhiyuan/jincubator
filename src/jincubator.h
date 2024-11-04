@@ -48,7 +48,8 @@ struct incubator_t
     char conf_zlog_file[256];
     char conf_sysc_file[256];
 
-    char serial_device[256];
+    char co2_serial_device[256];
+    char motor_serial_device[256];
 
     int shmem_input_key;
     int shmem_output_key;
