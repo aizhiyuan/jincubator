@@ -2781,10 +2781,10 @@ void init_para()
     //----------------------------------------------------------------------------------------------------------
     // 回流温度模式
     //----------------------------------------------------------------------------------------------------------
-    if (get_uval(REFLUX_TEMPERATURE) == 0)
-    {
-        set_uval(REFLUX_TEMPERATURE, 15);
-    }
+    // if (get_uval(REFLUX_TEMPERATURE) == 0)
+    // {
+    //     set_uval(REFLUX_TEMPERATURE, 15);
+    // }
 
     //----------------------------------------------------------------------------------------------------------
     // 数据刷新时间
@@ -2854,6 +2854,11 @@ void init_para()
     set_val(PID_TEMP_MODE_STATUS, 0);
 
     memset(shm_old, 0, sizeof(short) * 1000);
+
+    //----------------------------------------------------------------------------------------------------------
+    // 电机初始化
+    //----------------------------------------------------------------------------------------------------------
+    memset(&shm_out[S_SYNC_MOTOR_CONTROL_CMD], 0, sizeof(short) * 7);
 
     //----------------------------------------------------------------------------------------------------------
     // 初始化DO输出为空
@@ -3247,16 +3252,25 @@ void update_set_para()
         {
             unsigned short next_para_time = get_uval(P_SET_TP_MAIN_DAY + (index + 1) * 2);
 
-            // 比对符合配置
-            if ((now_para_time >= head_para_time) && (now_para_time >= current_para_time) && ((now_para_time < next_para_time) || (next_para_time <= 0)))
+            if (now_para_time >= get_uval(P_SET_TP_MAIN_DAY))
             {
-                // 获取当前配置数值
-                short current_para_value = get_val(P_SET_TP_MAIN_VAL + index * 2);
-                zlog_info(g_zlog_zc, "%-40s更新温度配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
+                // 比对符合配置
+                if ((now_para_time >= head_para_time) && (now_para_time >= current_para_time) && ((now_para_time < next_para_time) || (next_para_time <= 0)))
+                {
+                    // 获取当前配置数值
+                    short current_para_value = get_val(P_SET_TP_MAIN_VAL + index * 2);
+                    zlog_info(g_zlog_zc, "%-40s更新温度配置 [%u]:%d", "[update_set_para]", current_para_time, current_para_value);
 
+                    // 设置配置
+                    set_uval(P_AO_TP_MAIN, current_para_value);
+                    break;
+                }
+            }
+            else
+            {
+                zlog_info(g_zlog_zc, "%-40s更新温度配置 [%u]:%d", "[update_set_para]", now_para_time, get_val(P_SET_TP_MAIN_VAL));
                 // 设置配置
-                set_uval(P_AO_TP_MAIN, current_para_value);
-                break;
+                set_uval(P_AO_TP_MAIN, get_val(P_SET_TP_MAIN_VAL));
             }
         }
         else
@@ -4762,12 +4776,12 @@ void damper_control_func()
                     // 风门周期小于周期
                     if (get_time(PID_PERIOD_COUNT_MAIN_HEATER) < (get_uval(P_TEMP_TO)))
                     {
-                       if ((get_time(PID_PERIOD_COUNT_MAIN_HEATER) > 0) && (get_time(PID_ON_COUNT_DB_OPEN) >= get_time(PID_PERIOD_COUNT_MAIN_HEATER)) && get_val(PID_AD_OPEN_STATUS) && (get_val(R_AI_TP_MAIN) > get_val(P_AO_TP_MAIN)))
+                        if ((get_time(PID_PERIOD_COUNT_MAIN_HEATER) > 0) && (get_time(PID_ON_COUNT_DB_OPEN) >= get_time(PID_PERIOD_COUNT_MAIN_HEATER)) && get_val(PID_AD_OPEN_STATUS) && (get_val(R_AI_TP_MAIN) > get_val(P_AO_TP_MAIN)))
                         {
                             control_damper(1, ON, 0);
                             zlog_debug(g_zlog_zc, "%-40s风门设定值>0 PID 风门开", "[damper_control_func]");
                         }
-                       else if ((get_time(PID_PERIOD_COUNT_MAIN_HEATER) > 0) && (get_time(PID_ON_COUNT_DB_CLOSE) >= get_time(PID_PERIOD_COUNT_MAIN_HEATER)) && get_val(PID_AD_CLOSE_STATUS) && (get_val(R_AI_TP_MAIN) < get_val(P_AO_TP_MAIN)))
+                        else if ((get_time(PID_PERIOD_COUNT_MAIN_HEATER) > 0) && (get_time(PID_ON_COUNT_DB_CLOSE) >= get_time(PID_PERIOD_COUNT_MAIN_HEATER)) && get_val(PID_AD_CLOSE_STATUS) && (get_val(R_AI_TP_MAIN) < get_val(P_AO_TP_MAIN)))
                         {
                             control_damper(2, ON, 1);
                             zlog_debug(g_zlog_zc, "%-40s风门设定值>0 PID 风门关", "[damper_control_func]");
@@ -7013,14 +7027,30 @@ void temp_update_para_data()
 void direction_func()
 {
     zlog_debug(g_zlog_zc, "%-40s进入LED灯控制函数!", "[direction_func]");
-    // 风机
-    if (get_uval(CONTROL_FAN))
+
+    if (g_fan_status == 1)
     {
-        set_uval(OUT_ST_FAN_STATUS, ON);
+        // 风机
+        if (get_uval(R_SYNC_MOTOR_CONTROL_PARA) == 1)
+        {
+            set_uval(OUT_ST_FAN_STATUS, ON);
+        }
+        else
+        {
+            set_uval(OUT_ST_FAN_STATUS, OFF);
+        }
     }
     else
     {
-        set_uval(OUT_ST_FAN_STATUS, OFF);
+        // 风机
+        if (get_uval(CONTROL_FAN))
+        {
+            set_uval(OUT_ST_FAN_STATUS, ON);
+        }
+        else
+        {
+            set_uval(OUT_ST_FAN_STATUS, OFF);
+        }
     }
 
     // 主加热
@@ -8227,19 +8257,18 @@ void *synchronous_motor_func(void *pv)
         {
             if (g_sync_motor_mode != sync_motor_mode)
             {
-                if (g_sync_motor_count > 20)
-                {
-                    zlog_debug(g_zlog_zc, "%-40s模式改变程序退出，旧模式: %02x, 新模式：%02x", "[synchronous_motor_func]", g_sync_motor_mode, sync_motor_mode);
-                    exit(0);
-                }
                 // 退出程序
-                g_sync_motor_count++;
-                g_fan_status = 0;
+                zlog_debug(g_zlog_zc, "%-40s模式改变程序退出，旧模式: %02x, 新模式：%02x", "[synchronous_motor_func]", g_sync_motor_mode, sync_motor_mode);
+                exit(0);
+            }
+
+            if (sync_motor_mode)
+            {
+                g_fan_status = 1;
             }
             else
             {
-                g_fan_status = 1;
-                g_sync_motor_count = 0;
+                g_fan_status = 0;
             }
         }
 
@@ -8823,6 +8852,9 @@ void *thread_alarm_func(void *pv)
     int di_fan_mode = ON;
     int status_fan_mode = ON;
 
+    // 门开关报警
+    int alarm_door_switch = 0;
+
     //----------------------------------------------------------------------------------------------------------
     // 有翻蛋信号初始化
     //----------------------------------------------------------------------------------------------------------
@@ -9293,92 +9325,100 @@ void *thread_alarm_func(void *pv)
             }
         }
 #endif
-
         if (g_fan_status == 1)
         {
-            // 停止模式的时候
-            if ((get_val(DETECT_FAN) == OFF) || (get_val(R_SYNC_MOTOR_CONTROL_PARA) == 3))
+            set_uval(REFLUX_TEMPERATURE, 0x00);
+        }
+
+        if (get_val(DETECT_FAN))
+        {
+            if (g_fan_status == 1)
             {
-                // 立即报警
-                set_uval(OUT_ST_FAN_ALARM, ON);
-
-                // 如果是停止模式则10分钟后报警
-                if ((get_val(R_STOP_RECV) == ON))
+                switch (get_val(R_SYNC_MOTOR_CONTROL_PARA))
                 {
-                    // 停止模式
-                    if (status_fan_mode)
+                case 2:
+                case 1:
+                    if (get_val(DETECT_DOOR_SWITCH) == OFF)
                     {
-                        // 风机停止报警时间
-                        set_uval(FAN_ALARM_TIME, get_val(P_HH7) * 60);
-
-                        di_fan_mode = 1;
-                        status_fan_mode = OFF;
+                        // 开启状态灯
+                        set_uval(OUT_ST_DOOR_SWITCH_ALARM, ON);
+                        // 触发报警
+                        alarm_door_switch = 1;
                     }
-                }
-                else
-                {
-                    // 风机停止报警时间
-                    status_fan_mode = ON;
+                    else
+                    {
+                        // 关闭状态灯
+                        set_uval(OUT_ST_DOOR_SWITCH_ALARM, OFF);
+                        // 关闭报警
+                        alarm_door_switch = 0;
+                    }
+
+                    set_uval(FAN_ALARM_TIME, 0);
+                    di_fan_mode = 0;
+                    set_uval(OUT_ST_FAN_ALARM, OFF);
+                    break;
+                default:
+                    // 关闭门开关状态灯
+                    set_uval(OUT_ST_DOOR_SWITCH_ALARM, OFF);
+                    // 关闭门开关报警
+                    alarm_door_switch = 0;
 
                     // 接收到风扇停止后
-                    set_uval(FAN_ALARM_TIME, 0);
                     di_fan_mode = 1;
+                    set_uval(OUT_ST_FAN_ALARM, ON);
+                    break;
                 }
             }
             else
             {
-                status_fan_mode = ON;
                 set_uval(FAN_ALARM_TIME, 0);
                 di_fan_mode = 0;
                 set_uval(OUT_ST_FAN_ALARM, OFF);
-                if (get_val(R_SYNC_MOTOR_CONTROL_FAULT) > 0)
-                {
-                    // 接收到风扇停止后
-                    di_fan_mode = 1;
 
-                    set_uval(OUT_ST_FAN_ALARM, ON);
-                }
+                // 关闭门开关状态灯
+                set_uval(OUT_ST_DOOR_SWITCH_ALARM, OFF);
+                // 关闭门开关报警
+                alarm_door_switch = 0;
+            }
+
+            status_fan_mode = ON;
+
+            // 接收到电流互感和风机停止信号立即报警
+            if ((get_val(DETECT_FAN_STOP) == ON) || (get_val(NANOPI_GPIO_PG_11) == ON))
+            {
+                // 接收到风扇停止后
+                di_fan_mode = 1;
+                set_uval(OUT_ST_FAN_ALARM, ON);
             }
         }
         else
         {
-            if (get_val(DETECT_FAN))
+            // 立即报警
+            set_uval(OUT_ST_FAN_ALARM, ON);
+
+            // 关闭门开关状态灯
+            set_uval(OUT_ST_DOOR_SWITCH_ALARM, OFF);
+            // 关闭门开关报警
+            alarm_door_switch = 0;
+
+            // 如果是停止模式则10分钟后报警
+            if ((get_val(R_STOP_RECV) == ON))
             {
-                status_fan_mode = ON;
-                set_uval(FAN_ALARM_TIME, 0);
-                di_fan_mode = 0;
-                set_uval(OUT_ST_FAN_ALARM, OFF);
-                // 接收到电流互感和风机停止信号立即报警
-                if ((get_val(DETECT_FAN_STOP) == ON) || (get_val(NANOPI_GPIO_PG_11) == ON))
+                if (status_fan_mode)
                 {
-                    // 接收到风扇停止后
+                    // 风机停止报警时间
+                    set_uval(FAN_ALARM_TIME, get_val(P_HH7) * 60);
                     di_fan_mode = 1;
-                    set_uval(OUT_ST_FAN_ALARM, ON);
+                    status_fan_mode = OFF;
                 }
             }
             else
             {
-                // 立即报警
-                set_uval(OUT_ST_FAN_ALARM, ON);
-                // 如果是停止模式则10分钟后报警
-                if ((get_val(R_STOP_RECV) == ON))
-                {
-                    if (status_fan_mode)
-                    {
-                        // 风机停止报警时间
-                        set_uval(FAN_ALARM_TIME, get_val(P_HH7) * 60);
-                        di_fan_mode = 1;
-                        status_fan_mode = OFF;
-                    }
-                }
-                else
-                {
-                    // 风机停止报警时间
-                    status_fan_mode = ON;
-                    // 接收到风扇停止后
-                    set_uval(FAN_ALARM_TIME, 0);
-                    di_fan_mode = 1;
-                }
+                // 风机停止报警时间
+                status_fan_mode = ON;
+                // 接收到风扇停止后
+                set_uval(FAN_ALARM_TIME, 0);
+                di_fan_mode = 1;
             }
         }
 
@@ -9399,10 +9439,10 @@ void *thread_alarm_func(void *pv)
         //----------------------------------------------------------------------------------------------------------
         unsigned short status_ref_temp_alarm = get_val(SENSOR_1_ABNORMAL_ALARM) +
                                                (get_val(SENSOR_2_ABNORMAL_ALARM) << 1) +
-                                               (get_val(SENSOR_3_ABNORMAL_ALARM) << 2) +
-                                               (get_val(SENSOR_4_ABNORMAL_ALARM) << 3) +
-                                               (get_val(SENSOR_5_ABNORMAL_ALARM) << 4) +
-                                               (get_val(SENSOR_6_ABNORMAL_ALARM) << 5) +
+                                               ((get_uval(REFLUX_TEMPERATURE) & 0x01) ? (get_val(SENSOR_3_ABNORMAL_ALARM) << 2) : 0) +
+                                               ((get_uval(REFLUX_TEMPERATURE) & 0x02) ? (get_val(SENSOR_4_ABNORMAL_ALARM) << 3) : 0) +
+                                               ((get_uval(REFLUX_TEMPERATURE) & 0x03) ? (get_val(SENSOR_5_ABNORMAL_ALARM) << 4) : 0) +
+                                               ((get_uval(REFLUX_TEMPERATURE) & 0x08) ? (get_val(SENSOR_6_ABNORMAL_ALARM) << 5) : 0) +
                                                (get_val(SENSOR_CO2_ALARM) << 6) +
                                                (us_pt100_val << 7) +
                                                (get_val(CARBON_DIOXIDE_WARNING_LIGHT) << 8);
@@ -9460,7 +9500,12 @@ void *thread_alarm_func(void *pv)
                 //----------------------------------------------------------------------------------------------------------
                 // 风扇 报警
                 //----------------------------------------------------------------------------------------------------------
-                get_val(OUT_ST_FAN_ALARM)) > 0)
+                get_val(OUT_ST_FAN_ALARM) +
+
+                //----------------------------------------------------------------------------------------------------------
+                // 门开关 报警
+                //----------------------------------------------------------------------------------------------------------
+                alarm_door_switch) > 0)
 
         {
 
@@ -9548,6 +9593,20 @@ void *thread_alarm_func(void *pv)
             {
                 g_us_temp_mode &= ~(0x80);
             }
+
+            //----------------------------------------------------------------------------------------------------------
+            // 门开关报警
+            //----------------------------------------------------------------------------------------------------------
+
+            if ((alarm_door_switch == ON) && (g_fan_status == 1))
+            {
+                // zlog_error(g_zlog_zc, "[报警线程]\t 翻蛋无信号 [%0.2x]", g_us_eggfilp_alarm_count);
+                g_us_temp_mode |= 0x100;
+            }
+            else
+            {
+                g_us_temp_mode &= ~(0x100);
+            }
         }
 
         // 将报警状态
@@ -9633,9 +9692,6 @@ void *thread_main_func(void *pv)
         // 时间函数
         run_sys_time();
 
-        // 开启运行灯
-        control_run_light(ON);
-
         //----------------------------------------------------------------------------------------------------------
         // 启动模式-初始化
         //----------------------------------------------------------------------------------------------------------
@@ -9715,6 +9771,9 @@ void *thread_main_func(void *pv)
         {
             zlog_info(g_zlog_zc, "%-40s执行启动模式!", "[main]");
 
+            // 开启运行灯
+            control_run_light(ON);
+
             // 开启入孵计时
             set_val(R_RUN_SECOND_STATUS, ON);
 
@@ -9725,21 +9784,30 @@ void *thread_main_func(void *pv)
             update_set_para();
 
             // 启动风机
-            // control_fan(ON);
             if (g_fan_status == 1)
             {
-                // 门开有信号
-                if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) == 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x01) == 0))
+                if (get_val(DETECT_DOOR_SWITCH) == ON)
                 {
-                    zlog_info(g_zlog_zc, "%-40s启动电机", "[main]");
-                    set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x01);
+                    // 门开有信号
+                    if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) == 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x01) == 0))
+                    {
+                        zlog_info(g_zlog_zc, "%-40s启动电机", "[main]");
+                        set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x01);
+                    }
+                }
+                else
+                {
+                    // 门开关没有信号
+                    if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x02) == 0))
+                    {
+                        zlog_info(g_zlog_zc, "%-40s关闭电机", "[main]");
+                        set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x02);
+                    }
                 }
             }
-            else
-            {
-                // 启动风机
-                control_fan(ON);
-            }
+
+            // 启动风机
+            control_fan(ON);
 
             // 启动鼓风机
             control_blower(ON);
@@ -9788,6 +9856,9 @@ void *thread_main_func(void *pv)
         {
             zlog_info(g_zlog_zc, "%-40s执行停止模式!", "[main]");
 
+            // 开启运行灯
+            control_run_light(OFF);
+
             // 开启入孵计时
             set_val(R_RUN_SECOND_STATUS, ON);
 
@@ -9809,11 +9880,9 @@ void *thread_main_func(void *pv)
                     set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x02);
                 }
             }
-            else
-            {
-                // 启动风机
-                control_fan(OFF);
-            }
+
+            // 启动风机
+            control_fan(OFF);
 
             // 主加热-关闭
             control_main_heat(OFF);
@@ -9922,21 +9991,33 @@ void *thread_main_func(void *pv)
                     // 停止入孵天数
                     set_val(R_RUN_SECOND_STATUS, OFF);
 
-                    // 启动风机
                     if (g_fan_status == 1)
                     {
-                        // 门开有信号
-                        if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) == 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x01) == 0))
+                        if (get_val(DETECT_DOOR_SWITCH) == ON)
                         {
-                            zlog_info(g_zlog_zc, "%-40s启动电机", "[main]");
-                            set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x01);
+                            // 门开有信号
+                            if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) == 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x01) == 0))
+                            {
+                                zlog_info(g_zlog_zc, "%-40s启动电机", "[main]");
+                                set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x01);
+                            }
+                        }
+                        else
+                        {
+                            // 门开关没有信号
+                            if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x02) == 0))
+                            {
+                                zlog_info(g_zlog_zc, "%-40s关闭电机", "[main]");
+                                set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x02);
+                            }
                         }
                     }
-                    else
-                    {
-                        // 启动风机
-                        control_fan(ON);
-                    }
+
+                    // 启动风机
+                    control_fan(ON);
+
+                    // 开启运行灯
+                    control_run_light(ON);
 
                     // 启动鼓风机
                     control_blower(ON);
@@ -10000,18 +10081,18 @@ void *thread_main_func(void *pv)
                 }
 
                 // 突然断开进入到停止模式
-                else
-                {
-                    // 开启停止模式
-                    set_run_mode(STATUS_STOP_SENT);
+                // else
+                // {
+                //     // 开启停止模式
+                //     set_run_mode(STATUS_STOP_SENT);
 
-                    // 开启入孵计时
-                    set_val(R_RUN_SECOND_STATUS, ON);
+                //     // 开启入孵计时
+                //     set_val(R_RUN_SECOND_STATUS, ON);
 
-                    // 设置预热时间为0
-                    set_time(R_PRE_START_TIME_HIGH, 0);
-                    set_time(R_PRE_STOP_TIME_HIGH, 0);
-                }
+                //     // 设置预热时间为0
+                //     set_time(R_PRE_START_TIME_HIGH, 0);
+                //     set_time(R_PRE_STOP_TIME_HIGH, 0);
+                // }
             }
 
             // 当预热开启时间等于预热停止时间，则进入到停止模式
@@ -10134,6 +10215,31 @@ void *thread_main_func(void *pv)
 
             // 运行模式
             set_run_mode(STATUS_CHECK_SEND | STATUS_CHECK_REVV);
+
+            if (g_fan_status == 1)
+            {
+                if (get_val(DETECT_DOOR_SWITCH) == ON)
+                {
+                    // 门开有信号
+                    if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) == 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x01) == 0))
+                    {
+                        zlog_info(g_zlog_zc, "%-40s启动电机", "[main]");
+                        set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x01);
+                    }
+                }
+                else
+                {
+                    // 门开关没有信号
+                    if ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 3) && (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 0) && ((get_val(R_SYNC_MOTOR_CONTROL_FAULT) & 0x02) == 0))
+                    {
+                        zlog_info(g_zlog_zc, "%-40s关闭电机", "[main]");
+                        set_val(S_SYNC_MOTOR_CONTROL_CMD, 0x02);
+                    }
+                }
+            }
+
+            // 启动风机
+            control_fan(ON);
 
             // 主加热-关闭
             control_main_heat(OFF);

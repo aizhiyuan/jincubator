@@ -59,56 +59,57 @@
 // logic_control
 // 原始IO区
 #define DI_INIT 0
-#define IO_I1 0 // 电压检测 100V
-#define IO_I2 1
-#define IO_I3 2 // 风门全开检测 OPEN
-#define IO_I4 3 // 风门全关检测 CLOSE
-#define IO_I5 4 // 风扇接触器吸合检测 M.SW
-#define IO_I6 5 // 辅助高温报警检测 H.AL
-#define IO_I7 6 // 风扇停止检测 FAN.LS
-#define IO_I8 7 // 门开关检测 DOOR.LS
-#define IO_I9 8
-#define IO_I10 9
-#define IO_I11 10
-#define IO_I12 11
-#define IO_I13 12
-#define IO_I14 13
-#define IO_I15 14
-#define IO_I16 15
-#define IO_I17 16 // 电压检测 220V
-#define IO_I18 17 // 风扇检测 FAN
-#define IO_I19 18
-#define IO_I20 19
-#define IO_I21 20 // 翻蛋检测 TURN（输入24V)
-#define IO_I22 21
-#define IO_I23 22
-#define IO_I24 23
+#define IO_I1 0   // J8_01 J8_01 电压检测 100V
+#define IO_I2 1   // J8_02
+#define IO_I3 2   // J8_03 风门全开检测 OPEN
+#define IO_I4 3   // J8_04 风门全关检测 CLOSE
+#define IO_I5 4   // J8_05 风扇接触器吸合检测 M.SW
+#define IO_I6 5   // J8_06 辅助高温报警检测 H.AL
+#define IO_I7 6   // J8_07 风扇停止检测 FAN.LS
+#define IO_I8 7   // J8_08 门开关检测 DOOR.LS
+#define IO_I9 8   // J8_09 DRY 干燥信号
+#define IO_I10 9  // J7_01 100V信号检测
+#define IO_I11 10 // J7_02
+#define IO_I12 11 // J7_03
+#define IO_I13 12 // J7_04
+#define IO_I14 13 // J7_05
+#define IO_I15 14 // J7_06
+#define IO_I16 15 // J7_07
+#define IO_I17 16 // J9_01、J9_02 电压检测 220V
+#define IO_I18 17 // J9_03、J9_04 风扇检测 FAN
+#define IO_I19 18 // J9_05、J9_06
+#define IO_I20 19 // J9_07、J6_08 翻蛋检测 TURN（输入24V)
+#define IO_I21 20 // J5_01 
+#define IO_I22 21 // J5_02
+#define IO_I23 22 // J5_03
+#define IO_I24 23 // J5_04
 
 #define DO_INIT 24
-#define IO_O1 24 // 运行灯输出（继电器）
-#define IO_O2 25 // 警报灯输出（继电器）
-#define IO_O3 26 // 主加热输出（SSR）
-#define IO_O4 27
-#define IO_O5 28
-#define IO_O6 29
-#define IO_O7 30
-#define IO_O8 31
-#define IO_O9 32  // 报警输出AL（继电器）
-#define IO_O10 33 // 辅助加热AUX（继电器）
-#define IO_O11 34
-#define IO_O12 35 // 风机运行输出（接触器）
-#define IO_O13 36 // 水冷电磁阀2-1 COOL2-1
-#define IO_O14 37 // 水冷电磁阀2-2 COOL2-2
-#define IO_O15 38 // 水冷电磁阀2-3 COOL2-3
-#define IO_O16 39 // 水冷电磁阀2-4 COOL2-4
-#define IO_O17 40 // 冷热水切换阀 W.WARM
-#define IO_O18 41 // 鼓风机 BLO（继电器）
-#define IO_O19 42 // 风门电机开 OPEN
-#define IO_O20 43 // 风门电机关 CLOSE
-#define IO_O21 44 // 水冷电磁阀 COOL
-#define IO_O22 45 // 加湿电磁阀 SPRAY
-#define IO_O23 46
-#define IO_O24 47
+#define IO_O1 24 // J10_04 运行灯输出（继电器）
+#define IO_O2 25 // J10_05 警报灯输出（继电器）
+#define IO_O3 26 // J10_06 主加热输出（SSR）
+#define IO_O4 27 // J5_05
+#define IO_O5 28 // J5_06
+#define IO_O6 29 // J5_07
+#define IO_O7 30 // J5_08
+#define IO_O8 31 // J5_09
+
+#define IO_O9 32  // J6_04、J6_05 报警输出AL（继电器）
+#define IO_O10 33 // J6_03 辅助加热AUX（继电器）
+#define IO_O11 34 // J6_02
+#define IO_O12 35 // J6_01 风机运行输出（接触器）
+#define IO_O13 36 // J1_01 水冷电磁阀2-1 COOL2-1
+#define IO_O14 37 // J1_02 水冷电磁阀2-2 COOL2-2
+#define IO_O15 38 // J1_03 水冷电磁阀2-3 COOL2-3
+#define IO_O16 39 // J1_04 水冷电磁阀2-4 COOL2-4
+#define IO_O17 40 // J1_05 冷热水切换阀 W.WARM
+#define IO_O18 41 // J1_06 鼓风机 BLO（继电器）
+#define IO_O19 42 // J2_01 风门电机开 OPEN
+#define IO_O20 43 // J2_02 风门电机关 CLOSE
+#define IO_O21 44 // J2_03 水冷电磁阀 COOL
+#define IO_O22 45 // J2_04 加湿电磁阀 SPRAY
+#define IO_O23 46 // J2_05 
+#define IO_O24 47 // J2_06 
 
 #define DETECT_VOL_100V IO_I1           // 检测100V电压
 #define DETECT_DAMPER_FULLY_OPEN IO_I3  // 风门全开检测
@@ -628,6 +629,8 @@
 
 #define OUT_ST_CO2_ALARM 628             // CO2报警灯
 #define OUT_ST_SENSOR_MUTATION_ALARM 629 // 传感器突变报警灯
+
+#define OUT_ST_DOOR_SWITCH_ALARM 630 // 门开关报警
 
 // filter
 #define FILTER_PID_TEMP_ARR 700 // PID过滤值
