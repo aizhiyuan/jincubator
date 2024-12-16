@@ -391,6 +391,7 @@
 #define R_SYNC_MOTOR_CONNECT_STATUS 245   // 读取通信状态
 #define R_SYNC_MOTOR_CURRENT_FREQ 246     // 读取当前频率
 #define R_SYNC_MOTOR_MODE 247             // 电机模式
+#define R_SYNC_HATCH_MODE 248             // 孵化模式
 // 控制逻辑
 #define SYSTEM_INIT 250
 #define R_START_SEND 250               // 启动发送地址
@@ -437,6 +438,7 @@
 #define S_TIME_RESET_LOW 291           // 初始化时间-低位
 #define S_SYNC_MOTOR_BASICS 292        // 风机基础值
 #define S_SYNC_MOTOR_STAGE 293         // 风机上升值
+
 
 #define P_PT1_AO1 300 // 第一个温度
 #define P_PT1_AO2 301 // 第二个温度

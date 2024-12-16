@@ -2136,6 +2136,16 @@ void init_para()
         }
     }
 
+    if (get_val(R_SYNC_HATCH_MODE) != 0)
+    {
+        while (1)
+        {
+            zlog_debug(g_zlog_zc, "当前模式无法打开孵化器", "[init_para]", sync_file_name);
+            wait_ms(60000);
+        }
+    }
+    wait_ms(5000);
+
     unsigned short para_tmp[100] = {0};
     memset(para_tmp, 0, sizeof(unsigned short) * 100);
 
@@ -7742,18 +7752,36 @@ void *sysn_thread_func(void *pv)
             memcpy(old_pt100_para, &shm_out[P_PT1_AO1], sizeof(short) * 30);
         }
 
-        // 当前备份文件序号 大于 10 重新赋值
-        if (sync_backup_index > 10)
-        {
-            sync_backup_index = 1;
-        }
-
-        snprintf(sync_backup_file, 512, "%s_%d", g_st_jincubator.conf_sysc_file, sync_backup_index);
+        snprintf(sync_backup_file, 512, "%s_1", g_st_jincubator.conf_sysc_file);
         int i_ret = syn_shm_to_ini(sync_backup_file, sync_data_start, sync_data_len);
         zlog_debug(g_zlog_zc, "%-40s文件名称: %s 数据起始地址：%d 数据长度：%d 备份状态: %s", "[sysn_thread_func]", sync_backup_file, sync_data_start, sync_data_len, (!i_ret) ? "备份成功" : "备份失败");
-
-        // 当前备份文件序号 自增
-        ++sync_backup_index;
+        snprintf(sync_backup_file, 512, "%s_2", g_st_jincubator.conf_sysc_file);
+        i_ret = syn_shm_to_ini(sync_backup_file, sync_data_start, sync_data_len);
+        zlog_debug(g_zlog_zc, "%-40s文件名称: %s 数据起始地址：%d 数据长度：%d 备份状态: %s", "[sysn_thread_func]", sync_backup_file, sync_data_start, sync_data_len, (!i_ret) ? "备份成功" : "备份失败");
+        snprintf(sync_backup_file, 512, "%s_3", g_st_jincubator.conf_sysc_file);
+        i_ret = syn_shm_to_ini(sync_backup_file, sync_data_start, sync_data_len);
+        zlog_debug(g_zlog_zc, "%-40s文件名称: %s 数据起始地址：%d 数据长度：%d 备份状态: %s", "[sysn_thread_func]", sync_backup_file, sync_data_start, sync_data_len, (!i_ret) ? "备份成功" : "备份失败");
+        snprintf(sync_backup_file, 512, "%s_4", g_st_jincubator.conf_sysc_file);
+        i_ret = syn_shm_to_ini(sync_backup_file, sync_data_start, sync_data_len);
+        zlog_debug(g_zlog_zc, "%-40s文件名称: %s 数据起始地址：%d 数据长度：%d 备份状态: %s", "[sysn_thread_func]", sync_backup_file, sync_data_start, sync_data_len, (!i_ret) ? "备份成功" : "备份失败");
+        snprintf(sync_backup_file, 512, "%s_5", g_st_jincubator.conf_sysc_file);
+        i_ret = syn_shm_to_ini(sync_backup_file, sync_data_start, sync_data_len);
+        zlog_debug(g_zlog_zc, "%-40s文件名称: %s 数据起始地址：%d 数据长度：%d 备份状态: %s", "[sysn_thread_func]", sync_backup_file, sync_data_start, sync_data_len, (!i_ret) ? "备份成功" : "备份失败");
+        snprintf(sync_backup_file, 512, "%s_6", g_st_jincubator.conf_sysc_file);
+        i_ret = syn_shm_to_ini(sync_backup_file, sync_data_start, sync_data_len);
+        zlog_debug(g_zlog_zc, "%-40s文件名称: %s 数据起始地址：%d 数据长度：%d 备份状态: %s", "[sysn_thread_func]", sync_backup_file, sync_data_start, sync_data_len, (!i_ret) ? "备份成功" : "备份失败");
+        snprintf(sync_backup_file, 512, "%s_7", g_st_jincubator.conf_sysc_file);
+        i_ret = syn_shm_to_ini(sync_backup_file, sync_data_start, sync_data_len);
+        zlog_debug(g_zlog_zc, "%-40s文件名称: %s 数据起始地址：%d 数据长度：%d 备份状态: %s", "[sysn_thread_func]", sync_backup_file, sync_data_start, sync_data_len, (!i_ret) ? "备份成功" : "备份失败");
+        snprintf(sync_backup_file, 512, "%s_8", g_st_jincubator.conf_sysc_file);
+        i_ret = syn_shm_to_ini(sync_backup_file, sync_data_start, sync_data_len);
+        zlog_debug(g_zlog_zc, "%-40s文件名称: %s 数据起始地址：%d 数据长度：%d 备份状态: %s", "[sysn_thread_func]", sync_backup_file, sync_data_start, sync_data_len, (!i_ret) ? "备份成功" : "备份失败");
+        snprintf(sync_backup_file, 512, "%s_9", g_st_jincubator.conf_sysc_file);
+        i_ret = syn_shm_to_ini(sync_backup_file, sync_data_start, sync_data_len);
+        zlog_debug(g_zlog_zc, "%-40s文件名称: %s 数据起始地址：%d 数据长度：%d 备份状态: %s", "[sysn_thread_func]", sync_backup_file, sync_data_start, sync_data_len, (!i_ret) ? "备份成功" : "备份失败");
+        snprintf(sync_backup_file, 512, "%s_10", g_st_jincubator.conf_sysc_file);
+        i_ret = syn_shm_to_ini(sync_backup_file, sync_data_start, sync_data_len);
+        zlog_debug(g_zlog_zc, "%-40s文件名称: %s 数据起始地址：%d 数据长度：%d 备份状态: %s", "[sysn_thread_func]", sync_backup_file, sync_data_start, sync_data_len, (!i_ret) ? "备份成功" : "备份失败");
 
         // 间隔1秒
         wait_ms(5000);
@@ -8226,7 +8254,6 @@ void *synchronous_motor_func(void *pv)
     int i_modbus_err_status = 1;
 
     unsigned char g_sync_motor_mode = 0xff;
-    unsigned char g_sync_motor_count = 0;
 
     unsigned short i_recv_data = 0;
     const char *c_seral_name = "ttyS2";
@@ -8248,31 +8275,18 @@ void *synchronous_motor_func(void *pv)
     while (ON)
     {
         char sync_motor_mode = get_val(R_SYNC_MOTOR_MODE);
-        zlog_debug(g_zlog_zc, "%-40s旧模式: %02x, 新模式：%02x, 状态:%02x", "[synchronous_motor_func]", g_sync_motor_mode, sync_motor_mode, g_fan_status);
-        if (0xff == g_sync_motor_mode)
+        zlog_debug(g_zlog_zc, "%-40s模式：%02x, 状态:%02x", "[synchronous_motor_func]", sync_motor_mode, g_fan_status);
+
+        if (sync_motor_mode)
         {
-            g_sync_motor_mode = sync_motor_mode;
+            g_fan_status = 1;
         }
         else
         {
-            if (g_sync_motor_mode != sync_motor_mode)
-            {
-                // 退出程序
-                zlog_debug(g_zlog_zc, "%-40s模式改变程序退出，旧模式: %02x, 新模式：%02x", "[synchronous_motor_func]", g_sync_motor_mode, sync_motor_mode);
-                exit(0);
-            }
-
-            if (sync_motor_mode)
-            {
-                g_fan_status = 1;
-            }
-            else
-            {
-                g_fan_status = 0;
-            }
+            g_fan_status = 0;
         }
 
-        if (get_val(R_SYNC_MOTOR_MODE) == 1)
+        if (g_fan_status)
         {
             // 启动或者停止同步电机
             if (get_val(S_SYNC_MOTOR_CONTROL_CMD) == 1)
