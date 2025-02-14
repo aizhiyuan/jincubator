@@ -17,6 +17,7 @@ int pid_calc1(int sp, int pv);
 int main_heater(int pid);
 char aux_heater();
 char cool(int pid);
+char blower(int pid);
 char db_open(int pid);
 char db_close(int pid);
 

@@ -79,7 +79,7 @@
 #define IO_I18 17 // J9_03、J9_04 风扇检测 FAN
 #define IO_I19 18 // J9_05、J9_06
 #define IO_I20 19 // J9_07、J6_08 翻蛋检测 TURN（输入24V)
-#define IO_I21 20 // J5_01 
+#define IO_I21 20 // J5_01
 #define IO_I22 21 // J5_02
 #define IO_I23 22 // J5_03
 #define IO_I24 23 // J5_04
@@ -108,8 +108,8 @@
 #define IO_O20 43 // J2_02 风门电机关 CLOSE
 #define IO_O21 44 // J2_03 水冷电磁阀 COOL
 #define IO_O22 45 // J2_04 加湿电磁阀 SPRAY
-#define IO_O23 46 // J2_05 
-#define IO_O24 47 // J2_06 
+#define IO_O23 46 // J2_05
+#define IO_O24 47 // J2_06
 
 #define DETECT_VOL_100V IO_I1           // 检测100V电压
 #define DETECT_DAMPER_FULLY_OPEN IO_I3  // 风门全开检测
@@ -322,21 +322,21 @@
 #define R_AI_CO 202      // CO2
 #define R_AI_AD 203      // 风门测量值
 #define R_AI_TP_RF_INIT 203
-#define R_AI_TP_RF1 204                     // 回流温度测量值1
-#define R_AI_TP_RF2 205                     // 回流温度测量值2
-#define R_AI_TP_RF3 206                     // 回流温度测量值3
-#define R_AI_TP_RF4 207                     // 回流温度测量值4
-#define R_AI_TP_EGG 208                     // 翻蛋次数
+#define R_AI_TP_RF1 204 // 回流温度测量值1
+#define R_AI_TP_RF2 205 // 回流温度测量值2
+#define R_AI_TP_RF3 206 // 回流温度测量值3
+#define R_AI_TP_RF4 207 // 回流温度测量值4
+#define R_AI_TP_EGG 208 // 翻蛋次数
 
 #define R_INIT_AI_TP_MAIN 210 // 温度
 #define R_INIT_AI_HM 211      // 湿度
 #define R_INIT_AI_CO 212      // CO2
 #define R_INIT_AI_AD 213      // 风门测量值
 #define R_INIT_AI_TP_RF_INIT 214
-#define R_INIT_AI_TP_RF1 215                     // 回流温度测量值1
-#define R_INIT_AI_TP_RF2 216                     // 回流温度测量值2
-#define R_INIT_AI_TP_RF3 217                     // 回流温度测量值3
-#define R_INIT_AI_TP_RF4 218                     // 回流温度测量值4
+#define R_INIT_AI_TP_RF1 215 // 回流温度测量值1
+#define R_INIT_AI_TP_RF2 216 // 回流温度测量值2
+#define R_INIT_AI_TP_RF3 217 // 回流温度测量值3
+#define R_INIT_AI_TP_RF4 218 // 回流温度测量值4
 
 // 测试按钮
 #define R_BTN_TP_MAIN 220  // 主加热按钮
@@ -438,7 +438,6 @@
 #define S_TIME_RESET_LOW 291           // 初始化时间-低位
 #define S_SYNC_MOTOR_BASICS 292        // 风机基础值
 #define S_SYNC_MOTOR_STAGE 293         // 风机上升值
-
 
 #define P_PT1_AO1 300 // 第一个温度
 #define P_PT1_AO2 301 // 第二个温度
@@ -641,34 +640,50 @@
 #define PID_TEMP_MODE_STATUS 900         // PID状态
 #define PID_TEMP_SUM 902                 // PID累加
 #define PID_TEMP_VALUE 904               // PID 温度 原始值
-#define PID_TEMP_FILTER_VALUE 906        // PID 温度 过滤值
-#define PID_TEMP_OLD_MAIN_HEATER 908     // PID 温度 旧的主加热
-#define PID_TEMP_NEW_MAIN_HEATER 910     // PID 温度 新的主加热
+#define PID_TEMP_OLD_FILTER_VALUE 906    // PID 温度 旧的过滤值
+#define PID_TEMP_NEW_FILTER_VALUE 908    // PID 温度 新的过滤值
+#define PID_TEMP_MAIN_HEATER 910         // PID 温度 新的主加热
 #define PID_PERIOD_COUNT_MAIN_HEATER 912 // PID 周期计数主加热
 #define PID_ON_COUNT_MAIN_HEATER 914     // PID 开启计数主加热
 #define PID_ON_COUNT_COOL 916            // PID 开启计数水冷
-#define PID_ON_COUNT_DB_OPEN 918         // PID 开启计数风门开
-#define PID_ON_COUNT_DB_CLOSE 920        // PID 开启计数风门关
-#define PID_TEMP_COOL 922                // PID 温度 水冷
-#define PID_TEMP_DB_OPEN 924             // PID 温度 风门开
-#define PID_TEMP_DB_CLOSE 926            // PID 温度 风门关
-#define PID_HUMI_MODE_STATUS 928         // PID状态
-#define PID_HUMI_SUM 930                 // PID累加
-#define PID_HUMI_VALUE 932               // PID 湿度 值
-#define PID_HUMI_HUMIDIFICATION 934      // PID 湿度 加湿
-#define PID_PERIOD_COUNT_HUMI 936        // PID 周期计数加湿
-#define PID_ON_COUNT_HUMI 938            // PID 开启计数加湿
+#define PID_ON_COUNT_BLOWER 918          // PID 开启计数鼓风机
+#define PID_ON_COUNT_DB_OPEN 920         // PID 开启计数风门开
+#define PID_ON_COUNT_DB_CLOSE 922        // PID 开启计数风门关
+#define PID_TEMP_COOL 924                // PID 温度 水冷
+#define PID_TEMP_BLOWER 926              // PID 温度 鼓风机
+#define PID_TEMP_DB_OPEN 928             // PID 温度 风门开
+#define PID_TEMP_DB_CLOSE 930            // PID 温度 风门关
+#define PID_HUMI_MODE_STATUS 932         // PID 状态
+#define PID_HUMI_SUM 934                 // PID 累加
+#define PID_HUMI_VALUE 936               // PID 湿度 值
+#define PID_HUMI_OLD_HUMIDIFICATION 938  // PID 旧值 湿度 加湿
+#define PID_HUMI_NEW_HUMIDIFICATION 940  // PID 新值 湿度 加湿
+#define PID_PERIOD_COUNT_HUMI 942        // PID 周期计数加湿
+#define PID_ON_COUNT_HUMI 944            // PID 开启计数加湿
 
-#define PID_AD_VALUE 940                         // PID风门值
-#define PID_AD_OPEN_STATUS 941                   // PID风门开控制状态
-#define PID_AD_CLOSE_STATUS 942                  // PID风门开控制状态
-#define CONTROL_DB_OPEN_CALIBRATION_STATUS 943   // 风门开到位校准状态
-#define CONTROL_DB_CLISE_CALIBRATION_STATUS 944  // 风门开到位校准状态
-#define CONTROL_DB_CLOSE_TO_OPEN_TIME 945        // 风门从关到开的时间
-#define CONTROL_DB_OPEN_TO_CLOSE_TIME 946        // 风门从开到关的时间
-#define CONTROL_DB_CLOSE_TO_OPEN_TIME_STATUS 947 // 风门从关到开的时间状态
-#define CONTROL_DB_OPEN_TO_CLOSE_TIME_STATUS 948 // 风门从开到关的时间状态
+#define PID_AD_VALUE 945                         // PID风门值
+#define PID_AD_OPEN_STATUS 946                   // PID风门开控制状态
+#define PID_AD_CLOSE_STATUS 947                  // PID风门开控制状态
+#define CONTROL_DB_OPEN_CALIBRATION_STATUS 948   // 风门开到位校准状态
+#define CONTROL_DB_CLISE_CALIBRATION_STATUS 949  // 风门开到位校准状态
+#define CONTROL_DB_CLOSE_TO_OPEN_TIME 950        // 风门从关到开的时间
+#define CONTROL_DB_OPEN_TO_CLOSE_TIME 951        // 风门从开到关的时间
+#define CONTROL_DB_CLOSE_TO_OPEN_TIME_STATUS 952 // 风门从关到开的时间状态
+#define CONTROL_DB_OPEN_TO_CLOSE_TIME_STATUS 953 // 风门从开到关的时间状态
 
+// 湿度
+// #define PID_TEMP_P 960
+// #define PID_TEMP_I 961
+// #define PID_TEMP_D 962
+#define PID_TEMP_PARA 963
+// #define PID_TEMP_TO 964
+
+// #define PID_HUMI_P 965
+// #define PID_HUMI_I 966
+// #define PID_HUMI_D 967
+#define PID_HUMI_PARA 968
+
+#define PID_LOOP 969
 // 设定参数初始化
 #define S_PRE_TP_MAIN 1 // 预热值-温度
 #define S_PRE_HM 2      // 预热值-湿度
