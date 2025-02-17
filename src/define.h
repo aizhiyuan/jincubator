@@ -310,6 +310,7 @@
 #define P_EGG_FLIPPING_TIME 190             // 翻蛋时间
 #define P_EGG_FLIPPING_DIRECTION 191        // 翻蛋方向 (1为左 0为右)
 #define P_EGG_FLIPPING_EXECUTION_STATUS 192 // 翻蛋执行状态
+
 #define EGG_FLIPPING_TRIGGER_STATUS 193     // 翻蛋触发状态
 #define EGG_FLIPPING_ACCUMULATION_STATE 194 // 翻蛋累加状态
 #define EGG_FLIPPING_CONTROL_STATUS 195     // 翻蛋控制状态

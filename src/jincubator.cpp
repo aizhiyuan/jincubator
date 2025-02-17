@@ -8390,6 +8390,8 @@ void *synchronous_motor_func(void *pv)
 
     int i_ret = 0;
 
+    int i_alarm_status = 0;
+
     int i_modbus_err_count = 0;
     int i_modbus_err_status = 1;
 
@@ -8611,15 +8613,40 @@ void *synchronous_motor_func(void *pv)
                     {
                         memcpy(&shm_out[R_SYNC_MOTOR_CONTROL_PARA], &b_cmd_recvbuf[3], 2);
                         set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & ~(0x04));
+                        i_alarm_status = 0;
                     }
                     else
                     {
-                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x04);
+                        if (++i_alarm_status >= UINT16_MAX)
+                        {
+                            i_alarm_status = 10;
+                        }
+
+                        if (i_alarm_status >= 10)
+                        {
+                            set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x04);
+                        }
+                        else
+                        {
+                            set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & ~(0x04));
+                        }
                     }
                 }
                 else
                 {
-                    set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x04);
+                    if (++i_alarm_status >= UINT16_MAX)
+                    {
+                        i_alarm_status = 10;
+                    }
+
+                    if (i_alarm_status >= 10)
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) | 0x04);
+                    }
+                    else
+                    {
+                        set_uval(R_SYNC_MOTOR_CONNECT_STATUS, get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & ~(0x04));
+                    }
                 }
                 wait_ms(i_wait_time);
             }
@@ -9567,7 +9594,9 @@ void *thread_alarm_func(void *pv)
             status_fan_mode = ON;
 
             // 接收到电流互感和风机停止信号立即报警
-            if ((get_val(DETECT_FAN_STOP) == ON) || (get_val(NANOPI_GPIO_PG_11) == ON))
+            if ((get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & 0x04) ||
+                (get_val(DETECT_FAN_STOP) == ON) ||
+                (get_val(NANOPI_GPIO_PG_11) == ON))
             {
                 // 接收到风扇停止后
                 di_fan_mode = 1;
