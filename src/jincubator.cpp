@@ -8073,7 +8073,7 @@ void *data_collection_pt100_func(void *pv)
                     {
                         // 设置报警变量为ON
                         set_uval(SENSOR_1_ABNORMAL_ALARM, ON);
-                        // set_val(P_EDIT_TP_MAIN, 0);
+                        set_val(P_EDIT_TP_MAIN, 0);
                         // set_val(CONTROL_MAIN_HEAT, OFF);
                         // set_val(TEST_MAIN_HEAT_MODE, OFF);
                         // set_val(R_BTN_TP_MAIN, OFF);
@@ -8084,7 +8084,7 @@ void *data_collection_pt100_func(void *pv)
                     {
                         // 设置报警变量为ON
                         set_uval(SENSOR_2_ABNORMAL_ALARM, ON);
-                        // set_val(P_EDIT_HM, 0);
+                        set_val(P_EDIT_HM, 0);
                         // set_val(R_BTN_HM, OFF);
                         // set_val(CONTROL_SPRAY, OFF);
                         // set_val(TEST_SPRAY_MODE, OFF);
@@ -8102,7 +8102,7 @@ void *data_collection_pt100_func(void *pv)
                             // 设置报警变量为OFF
                             set_uval(SENSOR_3_ABNORMAL_ALARM, OFF);
                         }
-                        // set_val(P_EDIT_TP_RF1, 0);
+                        set_val(P_EDIT_TP_RF1, 0);
                         // set_val(R_BTN_WC_RF1, OFF);
                         // set_val(CONTROL_COOL2_1, OFF);
                         // set_val(TEST_COOL2_1_MODE, OFF);
@@ -8120,7 +8120,7 @@ void *data_collection_pt100_func(void *pv)
                             // 设置报警变量为OFF
                             set_uval(SENSOR_4_ABNORMAL_ALARM, OFF);
                         }
-                        // set_val(P_EDIT_TP_RF2, 0);
+                        set_val(P_EDIT_TP_RF2, 0);
                         // set_val(R_BTN_WC_RF2, OFF);
                         // set_val(CONTROL_COOL2_2, OFF);
                         // set_val(TEST_COOL2_2_MODE, OFF);
@@ -8138,7 +8138,7 @@ void *data_collection_pt100_func(void *pv)
                             // 设置报警变量为OFF
                             set_uval(SENSOR_5_ABNORMAL_ALARM, OFF);
                         }
-                        // set_val(P_EDIT_TP_RF3, 0);
+                        set_val(P_EDIT_TP_RF3, 0);
                         // set_val(R_BTN_WC_RF3, OFF);
                         // set_val(CONTROL_COOL2_3, OFF);
                         // set_val(TEST_COOL2_3_MODE, OFF);
@@ -8156,7 +8156,7 @@ void *data_collection_pt100_func(void *pv)
                             // 设置报警变量为OFF
                             set_uval(SENSOR_6_ABNORMAL_ALARM, OFF);
                         }
-                        // set_val(P_EDIT_TP_RF4, 0);
+                        set_val(P_EDIT_TP_RF4, 0);
                         // set_val(R_BTN_WC_RF4, OFF);
                         // set_val(CONTROL_COOL2_4, OFF);
                         // set_val(TEST_COOL2_4_MODE, OFF);
@@ -8326,7 +8326,7 @@ void *data_collection_co2_func(void *pv)
             if (i_data_count >= 10)
             {
                 // P_CO2_STATUS 为1时消警
-                if (get_val(P_CO2_STATUS))
+                if (get_val(P_CO2_STATUS) == OFF)
                 {
                     set_val(SENSOR_CO2_ALARM, OFF);
                 }
@@ -9544,10 +9544,13 @@ void *thread_alarm_func(void *pv)
         {
             if (g_fan_status == 1)
             {
+                // zlog_debug(g_zlog_zc, "%-40sR_SYNC_MOTOR_CONTROL_PARA [%d]", "[thread_alarm_func]", get_val(R_SYNC_MOTOR_CONTROL_PARA));
                 switch (get_val(R_SYNC_MOTOR_CONTROL_PARA))
                 {
                 case 2:
                 case 1:
+                    // zlog_debug(g_zlog_zc, "%-40sDETECT_DOOR_SWITCH 1 [%d]", "[thread_alarm_func]", get_val(DETECT_DOOR_SWITCH));
+                    // zlog_debug(g_zlog_zc, "%-40sOUT_ST_DOOR_SWITCH_ALARM 1 [%d]", "[thread_alarm_func]", get_val(OUT_ST_DOOR_SWITCH_ALARM));
                     if (get_val(DETECT_DOOR_SWITCH) == OFF)
                     {
                         // 开启状态灯
@@ -9568,6 +9571,7 @@ void *thread_alarm_func(void *pv)
                     set_uval(OUT_ST_FAN_ALARM, OFF);
                     break;
                 default:
+                    // zlog_debug(g_zlog_zc, "%-40sOUT_ST_DOOR_SWITCH_ALARM 2 [%d]", "[thread_alarm_func]", get_val(OUT_ST_DOOR_SWITCH_ALARM));
                     // 关闭门开关状态灯
                     set_uval(OUT_ST_DOOR_SWITCH_ALARM, OFF);
                     // 关闭门开关报警
@@ -9581,6 +9585,7 @@ void *thread_alarm_func(void *pv)
             }
             else
             {
+                // zlog_debug(g_zlog_zc, "%-40sOUT_ST_DOOR_SWITCH_ALARM 3 [%d]", "[thread_alarm_func]", get_val(OUT_ST_DOOR_SWITCH_ALARM));
                 set_uval(FAN_ALARM_TIME, 0);
                 di_fan_mode = 0;
                 set_uval(OUT_ST_FAN_ALARM, OFF);
@@ -9598,6 +9603,7 @@ void *thread_alarm_func(void *pv)
                 (get_val(DETECT_FAN_STOP) == ON) ||
                 (get_val(NANOPI_GPIO_PG_11) == ON))
             {
+                // zlog_debug(g_zlog_zc, "%-40sOUT_ST_DOOR_SWITCH_ALARM 4 [%d]", "[thread_alarm_func]", get_val(OUT_ST_DOOR_SWITCH_ALARM));
                 // 接收到风扇停止后
                 di_fan_mode = 1;
                 set_uval(OUT_ST_FAN_ALARM, ON);
