@@ -286,7 +286,7 @@ void control_main_heat(int status)
         return;
     }
 
-    if (((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_MAIN_HEAT, OFF);
         return;
@@ -306,7 +306,7 @@ void control_aux_heat(int status)
         return;
     }
 
-    if (((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_AUX_HEAT, OFF);
         return;
@@ -333,7 +333,7 @@ void control_cool2_1(int status)
         return;
     }
 
-    if (((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_COOL2_1, OFF);
         return;
@@ -352,7 +352,7 @@ void control_cool2_2(int status)
         return;
     }
 
-    if (((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_COOL2_2, OFF);
         return;
@@ -371,7 +371,7 @@ void control_cool2_3(int status)
         return;
     }
 
-    if (((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_COOL2_3, OFF);
         return;
@@ -390,7 +390,7 @@ void control_cool2_4(int status)
         return;
     }
 
-    if (((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_COOL2_4, OFF);
     }
@@ -440,7 +440,7 @@ void control_blower(int status)
         return;
     }
 
-    if (((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_BLOWER, OFF);
         return;
@@ -512,6 +512,12 @@ void control_damper(int type, int status, int schedule)
         return;
     }
 
+    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    {
+        control_open_damper(OFF);
+        return;
+    }
+
     switch (type)
     {
     case 1:
@@ -534,7 +540,7 @@ void control_cool(int status)
         return;
     }
 
-    if (((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_COOL, OFF);
         return;
@@ -560,7 +566,7 @@ void control_spray(int status)
         return;
     }
 
-    if (((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_SPRAY, OFF);
         return;
