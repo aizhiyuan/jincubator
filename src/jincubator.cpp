@@ -274,15 +274,15 @@ void control_electric_light(int status)
 //----------------------------------------------------------------------------------------------------------
 void control_main_heat(int status)
 {
-    // 测试模式优先
-    if (get_val(TEST_MAIN_HEAT_MODE))
-    {
-        return;
-    }
-
     if (get_val(SENSOR_1_ABNORMAL_ALARM))
     {
         set_val(CONTROL_MAIN_HEAT, OFF);
+        return;
+    }
+
+    // 测试模式优先
+    if (get_val(TEST_MAIN_HEAT_MODE))
+    {
         return;
     }
 
@@ -333,6 +333,12 @@ void control_cool2_1(int status)
         return;
     }
 
+     // 测试模式优先
+     if (get_val(TEST_COOL2_1_MODE))
+     {
+         return;
+     }
+
     if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_COOL2_1, OFF);
@@ -348,6 +354,12 @@ void control_cool2_1(int status)
 void control_cool2_2(int status)
 {
     if (get_val(SENSOR_4_ABNORMAL_ALARM))
+    {
+        return;
+    }
+
+    // 测试模式优先
+    if (get_val(TEST_COOL2_2_MODE))
     {
         return;
     }
@@ -371,6 +383,12 @@ void control_cool2_3(int status)
         return;
     }
 
+    // 测试模式优先
+    if (get_val(TEST_COOL2_3_MODE))
+    {
+        return;
+    }
+
     if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
         set_val(CONTROL_COOL2_3, OFF);
@@ -386,6 +404,12 @@ void control_cool2_3(int status)
 void control_cool2_4(int status)
 {
     if (get_val(SENSOR_6_ABNORMAL_ALARM))
+    {
+        return;
+    }
+
+    // 测试模式优先
+    if (get_val(TEST_COOL2_4_MODE))
     {
         return;
     }
@@ -554,15 +578,15 @@ void control_cool(int status)
 //----------------------------------------------------------------------------------------------------------
 void control_spray(int status)
 {
-    // 测试模式优先
-    if (get_val(TEST_SPRAY_MODE))
-    {
-        return;
-    }
-
     if (get_val(SENSOR_2_ABNORMAL_ALARM))
     {
         set_val(CONTROL_SPRAY, OFF);
+        return;
+    }
+
+    // 测试模式优先
+    if (get_val(TEST_SPRAY_MODE))
+    {
         return;
     }
 
@@ -4072,7 +4096,8 @@ void test_control_mode()
 
             // 辅助水冷1按钮
             set_val(TEST_COOL2_1_MODE, ON);
-            control_cool2_1(ON);
+            // control_cool2_1(ON);
+            set_val(CONTROL_COOL2_1, ON);
             zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷1按钮", "[test_control_mode]");
             set_uval(TEST_CONTROL_MODE, status_test_control);
             set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
@@ -4085,7 +4110,7 @@ void test_control_mode()
 
             // 辅助水冷2按钮
             set_val(TEST_COOL2_2_MODE, ON);
-            control_cool2_2(ON);
+            set_val(CONTROL_COOL2_2, ON);
             zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷2按钮", "[test_control_mode]");
             set_uval(TEST_CONTROL_MODE, status_test_control);
             set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
@@ -4098,7 +4123,8 @@ void test_control_mode()
 
             // 辅助水冷3按钮
             set_val(TEST_COOL2_3_MODE, ON);
-            control_cool2_3(ON);
+            // control_cool2_3(ON);
+            set_val(CONTROL_COOL2_3, ON);
             zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷3按钮", "[test_control_mode]");
             set_uval(TEST_CONTROL_MODE, status_test_control);
             set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
@@ -4111,7 +4137,8 @@ void test_control_mode()
 
             // 辅助水冷4按钮
             set_val(TEST_COOL2_4_MODE, ON);
-            control_cool2_4(ON);
+            // control_cool2_4(ON);
+            set_val(CONTROL_COOL2_4, ON);
             zlog_debug(g_zlog_zc, "%-40s触发开启 辅助水冷4按钮", "[test_control_mode]");
             set_uval(TEST_CONTROL_MODE, status_test_control);
             set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
@@ -4212,7 +4239,8 @@ void test_control_mode()
         case 0x80:
         {
             // 辅助水冷1按钮
-            control_cool2_1(OFF);
+            // control_cool2_1(OFF);
+            set_val(CONTROL_COOL2_1, OFF);
             set_val(TEST_COOL2_1_MODE, OFF);
             set_test_mode(0);
             set_val(TEST_CONTROL_MODE, OFF);
@@ -4222,7 +4250,8 @@ void test_control_mode()
         case 0x100:
         {
             // 辅助水冷2按钮
-            control_cool2_2(OFF);
+            // control_cool2_2(OFF);
+            set_val(CONTROL_COOL2_2, OFF);
             set_val(TEST_COOL2_2_MODE, OFF);
             set_test_mode(0);
             set_val(TEST_CONTROL_MODE, OFF);
@@ -4232,7 +4261,8 @@ void test_control_mode()
         case 0x200:
         {
             // 辅助水冷3按钮
-            control_cool2_3(OFF);
+            // control_cool2_3(OFF);
+            set_val(CONTROL_COOL2_3, OFF);
             set_val(TEST_COOL2_3_MODE, OFF);
             set_test_mode(0);
             set_val(TEST_CONTROL_MODE, OFF);
@@ -4242,7 +4272,8 @@ void test_control_mode()
         case 0x400:
         {
             // 辅助水冷4按钮
-            control_cool2_4(OFF);
+            // control_cool2_4(OFF);
+            set_val(CONTROL_COOL2_4, OFF);
             set_val(TEST_COOL2_4_MODE, OFF);
             set_test_mode(0);
             set_val(TEST_CONTROL_MODE, OFF);
@@ -4344,7 +4375,8 @@ void test_control_mode()
             case 0x80:
             {
                 // 辅助水冷1按钮
-                control_cool2_1(OFF);
+                // control_cool2_1(OFF);
+                set_val(CONTROL_COOL2_1, OFF);
                 set_val(TEST_COOL2_1_MODE, OFF);
                 set_test_mode(0);
                 set_val(TEST_CONTROL_MODE, OFF);
@@ -4354,7 +4386,8 @@ void test_control_mode()
             case 0x100:
             {
                 // 辅助水冷2按钮
-                control_cool2_2(OFF);
+                // control_cool2_2(OFF);
+                set_val(CONTROL_COOL2_2, OFF);
                 set_val(TEST_COOL2_2_MODE, OFF);
                 set_test_mode(0);
                 set_val(TEST_CONTROL_MODE, OFF);
@@ -4364,7 +4397,8 @@ void test_control_mode()
             case 0x200:
             {
                 // 辅助水冷3按钮
-                control_cool2_3(OFF);
+                // control_cool2_3(OFF);
+                set_val(CONTROL_COOL2_3, OFF);
                 set_val(TEST_COOL2_3_MODE, OFF);
                 set_test_mode(0);
                 set_val(TEST_CONTROL_MODE, OFF);
@@ -4374,7 +4408,8 @@ void test_control_mode()
             case 0x400:
             {
                 // 辅助水冷4按钮
-                control_cool2_4(OFF);
+                // control_cool2_4(OFF);
+                set_val(CONTROL_COOL2_4, OFF);
                 set_val(TEST_COOL2_4_MODE, OFF);
                 set_test_mode(0);
                 set_val(TEST_CONTROL_MODE, OFF);
@@ -4431,19 +4466,23 @@ void test_control_mode()
         set_val(TEST_COOL_MODE, OFF);
 
         // 关闭 辅助水冷1
-        control_cool2_1(OFF);
+        // control_cool2_1(OFF);
+        set_val(CONTROL_COOL2_1, OFF);
         set_val(TEST_COOL2_1_MODE, OFF);
 
         // 关闭 辅助水冷2
-        control_cool2_2(OFF);
+        // control_cool2_2(OFF);
+        set_val(CONTROL_COOL2_2, OFF);
         set_val(TEST_COOL2_2_MODE, OFF);
 
         // 关闭 辅助水冷3
-        control_cool2_3(OFF);
+        // control_cool2_3(OFF);
+        set_val(CONTROL_COOL2_3, OFF);
         set_val(TEST_COOL2_3_MODE, OFF);
 
         // 关闭 辅助水冷4
-        control_cool2_4(OFF);
+        // control_cool2_4(OFF);
+        set_val(CONTROL_COOL2_4, OFF);
         set_val(TEST_COOL2_4_MODE, OFF);
 
         // 关闭  压板升
@@ -8402,6 +8441,7 @@ void *synchronous_motor_func(void *pv)
     int i_modbus_err_status = 1;
 
     unsigned char g_sync_motor_mode = 0xff;
+    // int bak_sync_motor_mode = -1;
 
     unsigned short i_recv_data = 0;
     const char *c_seral_name = "ttyS2";
@@ -8427,13 +8467,22 @@ void *synchronous_motor_func(void *pv)
         char sync_motor_mode = get_val(R_SYNC_MOTOR_MODE);
         zlog_debug(g_zlog_zc, "%-40s模式：%02x, 状态:%02x", "[synchronous_motor_func]", sync_motor_mode, g_fan_status);
 
+        // if((bak_sync_motor_mode != -1) && (bak_sync_motor_mode != sync_motor_mode))
+        // {
+        //     exit(EXIT_SUCCESS);
+        // }
+        
+        // bak_sync_motor_mode = sync_motor_mode;
+
         if (sync_motor_mode)
         {
             g_fan_status = 1;
+            set_val(R_SYNC_VERSION, R_SYNC_FREQ_NAME);
         }
         else
         {
             g_fan_status = 0;
+            set_val(R_SYNC_VERSION, R_SYNC_FIXED_NAME);
         }
 
         if (g_fan_status)
@@ -9605,14 +9654,30 @@ void *thread_alarm_func(void *pv)
             status_fan_mode = ON;
 
             // 接收到电流互感和风机停止信号立即报警
-            if ((get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & 0x04) ||
+            if ((get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & 0x04)&&(g_fan_status == 1) ||
                 (get_val(DETECT_FAN_STOP) == ON) ||
                 (get_val(NANOPI_GPIO_PG_11) == ON))
             {
                 // zlog_debug(g_zlog_zc, "%-40sOUT_ST_DOOR_SWITCH_ALARM 4 [%d]", "[thread_alarm_func]", get_val(OUT_ST_DOOR_SWITCH_ALARM));
                 // 接收到风扇停止后
-                di_fan_mode = 1;
-                set_uval(OUT_ST_FAN_ALARM, ON);
+                // 如果是停止模式则10分钟后报警
+                if ((get_val(R_STOP_RECV) == ON))
+                {
+                    if (status_fan_mode)
+                    {
+                        // 风机停止报警时间
+                        set_uval(FAN_ALARM_TIME, get_val(P_HH7) * 60);
+                        di_fan_mode = 1;
+                        status_fan_mode = OFF;
+                    }
+                }
+                else
+                {
+                    status_fan_mode = ON;
+                    di_fan_mode = 1;
+                    set_uval(OUT_ST_FAN_ALARM, ON);
+                    set_uval(FAN_ALARM_TIME, 0);
+                }
             }
         }
         else

@@ -393,6 +393,13 @@
 #define R_SYNC_MOTOR_CURRENT_FREQ 246     // 读取当前频率
 #define R_SYNC_MOTOR_MODE 247             // 电机模式
 #define R_SYNC_HATCH_MODE 248             // 孵化模式
+#define R_SYNC_VERSION 249                // 软件版本号
+
+//
+#define R_SYNC_FIXED_NAME 10002           // 定频
+#define R_SYNC_FREQ_NAME 20002           // 变频
+//
+
 // 控制逻辑
 #define SYSTEM_INIT 250
 #define R_START_SEND 250               // 启动发送地址
