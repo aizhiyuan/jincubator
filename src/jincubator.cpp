@@ -274,15 +274,22 @@ void control_electric_light(int status)
 //----------------------------------------------------------------------------------------------------------
 void control_main_heat(int status)
 {
+    // 测试模式优先
+    if (get_val(TEST_MAIN_HEAT_MODE))
+    {
+        return;
+    }
+
     if (get_val(SENSOR_1_ABNORMAL_ALARM))
     {
         set_val(CONTROL_MAIN_HEAT, OFF);
         return;
     }
 
-    // 测试模式优先
-    if (get_val(TEST_MAIN_HEAT_MODE))
+    // 高温报警
+    if (get_val(OUT_ST_TP_HIGH_ALARM))
     {
+        set_val(CONTROL_MAIN_HEAT, OFF);
         return;
     }
 
@@ -303,6 +310,13 @@ void control_aux_heat(int status)
     // 测试模式优先
     if (get_val(TEST_AUX_HEAT_MODE))
     {
+        return;
+    }
+
+    // 高温报警
+    if (get_val(OUT_ST_TP_HIGH_ALARM))
+    {
+        set_val(CONTROL_AUX_HEAT, OFF);
         return;
     }
 
@@ -328,16 +342,16 @@ void control_fan(int status)
 //----------------------------------------------------------------------------------------------------------
 void control_cool2_1(int status)
 {
-    if (get_val(SENSOR_3_ABNORMAL_ALARM))
+    // 测试模式优先
+    if (get_val(TEST_COOL2_1_MODE))
     {
         return;
     }
 
-     // 测试模式优先
-     if (get_val(TEST_COOL2_1_MODE))
-     {
-         return;
-     }
+    if (get_val(SENSOR_3_ABNORMAL_ALARM))
+    {
+        return;
+    }
 
     if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
     {
@@ -353,13 +367,13 @@ void control_cool2_1(int status)
 //----------------------------------------------------------------------------------------------------------
 void control_cool2_2(int status)
 {
-    if (get_val(SENSOR_4_ABNORMAL_ALARM))
+    // 测试模式优先
+    if (get_val(TEST_COOL2_2_MODE))
     {
         return;
     }
 
-    // 测试模式优先
-    if (get_val(TEST_COOL2_2_MODE))
+    if (get_val(SENSOR_4_ABNORMAL_ALARM))
     {
         return;
     }
@@ -378,13 +392,13 @@ void control_cool2_2(int status)
 //----------------------------------------------------------------------------------------------------------
 void control_cool2_3(int status)
 {
-    if (get_val(SENSOR_5_ABNORMAL_ALARM))
+    // 测试模式优先
+    if (get_val(TEST_COOL2_3_MODE))
     {
         return;
     }
 
-    // 测试模式优先
-    if (get_val(TEST_COOL2_3_MODE))
+    if (get_val(SENSOR_5_ABNORMAL_ALARM))
     {
         return;
     }
@@ -403,13 +417,13 @@ void control_cool2_3(int status)
 //----------------------------------------------------------------------------------------------------------
 void control_cool2_4(int status)
 {
-    if (get_val(SENSOR_6_ABNORMAL_ALARM))
+    // 测试模式优先
+    if (get_val(TEST_COOL2_4_MODE))
     {
         return;
     }
 
-    // 测试模式优先
-    if (get_val(TEST_COOL2_4_MODE))
+    if (get_val(SENSOR_6_ABNORMAL_ALARM))
     {
         return;
     }
@@ -578,15 +592,22 @@ void control_cool(int status)
 //----------------------------------------------------------------------------------------------------------
 void control_spray(int status)
 {
+    // 测试模式优先
+    if (get_val(TEST_SPRAY_MODE))
+    {
+        return;
+    }
+
     if (get_val(SENSOR_2_ABNORMAL_ALARM))
     {
         set_val(CONTROL_SPRAY, OFF);
         return;
     }
 
-    // 测试模式优先
-    if (get_val(TEST_SPRAY_MODE))
+    // 高湿报警
+    if (OUT_ST_HM_HIGH_ALARM)
     {
+        set_val(CONTROL_SPRAY, OFF);
         return;
     }
 
@@ -8471,7 +8492,7 @@ void *synchronous_motor_func(void *pv)
         // {
         //     exit(EXIT_SUCCESS);
         // }
-        
+
         // bak_sync_motor_mode = sync_motor_mode;
 
         if (sync_motor_mode)
@@ -9654,7 +9675,7 @@ void *thread_alarm_func(void *pv)
             status_fan_mode = ON;
 
             // 接收到电流互感和风机停止信号立即报警
-            if ((get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & 0x04)&&(g_fan_status == 1) ||
+            if ((get_uval(R_SYNC_MOTOR_CONNECT_STATUS) & 0x04) && (g_fan_status == 1) ||
                 (get_val(DETECT_FAN_STOP) == ON) ||
                 (get_val(NANOPI_GPIO_PG_11) == ON))
             {

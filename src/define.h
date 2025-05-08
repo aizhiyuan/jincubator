@@ -396,8 +396,8 @@
 #define R_SYNC_VERSION 249                // 软件版本号
 
 //
-#define R_SYNC_FIXED_NAME 10002           // 定频
-#define R_SYNC_FREQ_NAME 20002           // 变频
+#define R_SYNC_FIXED_NAME 10004           // 定频
+#define R_SYNC_FREQ_NAME 20004           // 变频
 //
 
 // 控制逻辑
