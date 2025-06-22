@@ -8063,7 +8063,8 @@ void *data_collection_pt100_func(void *pv)
             }
             else
             {
-                double tmp_ai_tp_data[filter_len] = {0.0};
+                double tmp_ai_tp_data[filter_len];
+                memset(tmp_ai_tp_data, 0, sizeof(tmp_ai_tp_data));
                 // 将滑动窗口的第一个剔除，
                 memcpy(&tmp_ai_tp_data, &run_ai_tp_data[i][1], sizeof(double) * (filter_len - 1));
                 // 将最新的数据保存到最后的位置
@@ -10655,6 +10656,8 @@ void *thread_main_func(void *pv)
 
 int main(int argc, char *argv[])
 {
+    // 防止启动文件异常和日志异常
+
     //----------------------------------------------------------------------------------------------------------
     // 定义变量
     //----------------------------------------------------------------------------------------------------------
