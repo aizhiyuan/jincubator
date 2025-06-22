@@ -274,6 +274,30 @@ serial.cpp.s:
 	cd /home/zhiyuan/c/jincubator/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/jincubator.dir/build.make src/CMakeFiles/jincubator.dir/serial.cpp.s
 .PHONY : serial.cpp.s
 
+updater_file.o: updater_file.cpp.o
+.PHONY : updater_file.o
+
+# target to build an object file
+updater_file.cpp.o:
+	cd /home/zhiyuan/c/jincubator/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/jincubator.dir/build.make src/CMakeFiles/jincubator.dir/updater_file.cpp.o
+.PHONY : updater_file.cpp.o
+
+updater_file.i: updater_file.cpp.i
+.PHONY : updater_file.i
+
+# target to preprocess a source file
+updater_file.cpp.i:
+	cd /home/zhiyuan/c/jincubator/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/jincubator.dir/build.make src/CMakeFiles/jincubator.dir/updater_file.cpp.i
+.PHONY : updater_file.cpp.i
+
+updater_file.s: updater_file.cpp.s
+.PHONY : updater_file.s
+
+# target to generate assembly for a file
+updater_file.cpp.s:
+	cd /home/zhiyuan/c/jincubator/build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/jincubator.dir/build.make src/CMakeFiles/jincubator.dir/updater_file.cpp.s
+.PHONY : updater_file.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -301,6 +325,9 @@ help:
 	@echo "... serial.o"
 	@echo "... serial.i"
 	@echo "... serial.s"
+	@echo "... updater_file.o"
+	@echo "... updater_file.i"
+	@echo "... updater_file.s"
 .PHONY : help
 
 

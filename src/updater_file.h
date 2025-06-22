@@ -18,4 +18,6 @@ int create_directories(void);
 int check_rc_local_contains_update(void);  // 新增函数声明
 int check_update_script_contains_jlog(void);   // 新增：检查update.sh是否包含jlog.conf
 int check_jlog_contains_jincubator(void);  // 新增函数声明
+
+void remove_log_file(); // 删除日志
 #endif // CONFIG_H

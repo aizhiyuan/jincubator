@@ -234,4 +234,5 @@ src/CMakeFiles/jincubator.dir/jincubator.cpp.o: \
  /usr/local/arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/assert.h \
  /home/zhiyuan/c/jincubator/src/define.h \
  /home/zhiyuan/c/jincubator/src/serial.h \
- /home/zhiyuan/c/jincubator/src/job.h
+ /home/zhiyuan/c/jincubator/src/job.h \
+ /home/zhiyuan/c/jincubator/src/updater_file.h

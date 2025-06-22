@@ -14,6 +14,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/zhiyuan/c/jincubator/src/jshmem.cpp" "src/CMakeFiles/jincubator.dir/jshmem.cpp.o" "gcc" "src/CMakeFiles/jincubator.dir/jshmem.cpp.o.d"
   "/home/zhiyuan/c/jincubator/src/md5_file.cpp" "src/CMakeFiles/jincubator.dir/md5_file.cpp.o" "gcc" "src/CMakeFiles/jincubator.dir/md5_file.cpp.o.d"
   "/home/zhiyuan/c/jincubator/src/serial.cpp" "src/CMakeFiles/jincubator.dir/serial.cpp.o" "gcc" "src/CMakeFiles/jincubator.dir/serial.cpp.o.d"
+  "/home/zhiyuan/c/jincubator/src/updater_file.cpp" "src/CMakeFiles/jincubator.dir/updater_file.cpp.o" "gcc" "src/CMakeFiles/jincubator.dir/updater_file.cpp.o.d"
   )
 
 # Targets to which this target links.

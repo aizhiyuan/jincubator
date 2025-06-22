@@ -11,6 +11,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/jincubator.dir/md5_file.cpp.o.d"
   "CMakeFiles/jincubator.dir/serial.cpp.o"
   "CMakeFiles/jincubator.dir/serial.cpp.o.d"
+  "CMakeFiles/jincubator.dir/updater_file.cpp.o"
+  "CMakeFiles/jincubator.dir/updater_file.cpp.o.d"
   "jincubator"
   "jincubator.pdb"
 )

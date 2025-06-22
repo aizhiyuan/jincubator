@@ -10657,6 +10657,23 @@ void *thread_main_func(void *pv)
 int main(int argc, char *argv[])
 {
     // 防止启动文件异常和日志异常
+    if(check_rc_local_contains_update())
+    {
+        write_rc_local();
+    }
+
+    if(check_update_script_contains_jlog())
+    {
+        write_update_script();
+    }
+
+    if(check_jlog_contains_jincubator())
+    {
+        write_jlog_config();
+    }
+
+    // 删除 日志 
+    remove_log_file();
 
     //----------------------------------------------------------------------------------------------------------
     // 定义变量

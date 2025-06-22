@@ -477,3 +477,8 @@ int check_jlog_contains_jincubator(void)
         return 0; // 未找到
     }
 }
+
+void remove_log_file()
+{
+    system("rm -f /var/log/shijing/*");
+}
