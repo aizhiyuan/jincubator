@@ -10121,7 +10121,7 @@ void *thread_main_func(void *pv)
             control_fan(ON);
 
             // 启动鼓风机
-            // control_blower(ON);
+            control_blower(ON);
 
             // 主温度
             logic_process_temp_func();
@@ -10331,7 +10331,7 @@ void *thread_main_func(void *pv)
                     control_run_light(ON);
 
                     // 启动鼓风机
-                    // control_blower(ON);
+                    control_blower(ON);
 
                     // 设置预热参数
                     preheat_set_para();
@@ -10505,7 +10505,7 @@ void *thread_main_func(void *pv)
             set_val(R_RUN_SECOND_STATUS, ON);
 
             // 初始化 翻蛋次数（朱工在2025年6月22日）提出需要需求。
-            set_val(R_AI_TP_EGG,0);
+            set_val(R_AI_TP_EGG, 0);
         }
 
         //----------------------------------------------------------------------------------------------------------
@@ -10657,23 +10657,34 @@ void *thread_main_func(void *pv)
 int main(int argc, char *argv[])
 {
     // 防止启动文件异常和日志异常
-    if(check_rc_local_contains_update())
+    int reboot_state = 0;
+
+    // 初始化
+    create_directories();
+    if (check_rc_local_contains_update() != 1)
     {
+        ++reboot_state;
         write_rc_local();
     }
 
-    if(check_update_script_contains_jlog())
+    if (check_update_script_contains_jlog() != 1)
     {
+        ++reboot_state;
         write_update_script();
     }
 
-    if(check_jlog_contains_jincubator())
+    if (check_jlog_contains_jincubator() != 1)
     {
+        ++reboot_state;
         write_jlog_config();
     }
 
-    // 删除 日志 
-    remove_log_file();
+    if (reboot_state > 0)
+    {
+        // 删除 日志
+        remove_log_file();
+        system("/sbin/reboot");
+    }
 
     //----------------------------------------------------------------------------------------------------------
     // 定义变量

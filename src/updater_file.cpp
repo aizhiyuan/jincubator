@@ -124,11 +124,11 @@ int write_jlog_config(void)
         "#default.*    >stdout; simple\n"
         "#*.*         \"tmp/log/%c.log\", 2MB*1; simple\n"
         "##my_.ERROR    >stderr;\n"
-        "jmbtcps4pn.ERROR   \"/var/log/shijing/%c_%d(%F).log\",20MB*1; normalms\n"
-        "jcoreio.ERROR   \"/var/log/shijing/%c_%d(%F).log\",20MB*1; normalms\n"
-        "jhatcher.ERROR   \"/var/log/shijing/%c_%d(%F).log\",20MB*1; normalms\n"
-        "jincubator.ERROR   \"/var/log/shijing/%c_%d(%F).log\",20MB*1; normalms\n"
-        "jlldp.ERROR   \"/var/log/shijing/%c_%d(%F).log\",20MB*1; normalms\n";
+        "jmbtcps4pn.ERROR   \"/var/log/shijing/%c.log\",20MB*1; normalms\n"
+        "jcoreio.ERROR   \"/var/log/shijing/%c.log\",20MB*1; normalms\n"
+        "jhatcher.ERROR   \"/var/log/shijing/%c.log\",20MB*1; normalms\n"
+        "jincubator.ERROR   \"/var/log/shijing/%c.log\",20MB*1; normalms\n"
+        "jlldp.ERROR   \"/var/log/shijing/%c.log\",20MB*1; normalms\n";
 
     // 确保日志目录存在
     const char *log_dir = "/var/log/shijing";
@@ -252,6 +252,8 @@ int write_update_script(void)
         "        ext=\"\"\n"
         "    fi\n"
         "    echo \"prog:$prog\"    \n"
+        "    gpio mode 1 out\n"
+        "    gpio write 1 1\n"
         "    if [[ $prog == \"update.sh\" ]];then\n"
         "        TARGET=\"$SH_DIR/$prog\"\n"
         "    elif [[ $prog == \"rc.local\" ]]; then\n"
@@ -259,7 +261,7 @@ int write_update_script(void)
         "    else\n"
         "        TARGET=\"$PROGRAM_DIR/$prog\"\n"
         "    fi \n\n"
-
+        "    gpio write 1 0\n"
         "    echo \"TARGET:$TARGET\"\n"
         "    \n"
         "        if [ -f $prog ]; then\n"
