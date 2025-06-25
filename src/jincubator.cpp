@@ -478,7 +478,7 @@ void control_blower(int status)
         return;
     }
 
-    if ((g_fan_status == 1) && ((get_val(R_SYNC_MOTOR_CONTROL_PARA) != 1) && (get_val(R_SYNC_MOTOR_CONTROL_PARA) != 2)))
+    if (g_fan_status == 1)
     {
         set_val(CONTROL_BLOWER, OFF);
         return;
@@ -4170,7 +4170,16 @@ void test_control_mode()
         {
             // 压板升按钮
             set_val(TEST_BLOWER_MODE, ON);
-            set_val(CONTROL_BLOWER, ON);
+            // 判断 风机状态 执行 压板控制
+            if (get_val(CONTROL_FAN) == ON)
+            {
+                set_val(CONTROL_BLOWER, OFF);
+            }
+            else
+            {
+                set_val(CONTROL_BLOWER, ON);
+            }
+
             zlog_debug(g_zlog_zc, "%-40s触发开启 鼓风机", "[test_control_mode]");
             set_uval(TEST_CONTROL_MODE, status_test_control);
             set_uval(TEST_BTN_TIME, get_val(P_HH3) * 60);
@@ -5007,7 +5016,7 @@ void logic_process_temp_func()
         // 水冷关闭
         control_cool(OFF);
 
-        control_blower(OFF);
+        // control_blower(OFF);
 
         set_time(PID_TEMP_SUM, 0);
         set_time(PID_PERIOD_COUNT_MAIN_HEATER, 0);
@@ -10058,7 +10067,7 @@ void *thread_main_func(void *pv)
             control_cool2(4, OFF);
 
             // 鼓风机关闭
-            control_blower(OFF);
+            // control_blower(OFF);
 
             // 风门关闭
             control_damper(1, OFF, 0);
@@ -10292,7 +10301,7 @@ void *thread_main_func(void *pv)
                         control_cool2(4, OFF);
 
                         // 鼓风机关闭
-                        control_blower(OFF);
+                        // control_blower(OFF);
 
                         // 风门关闭
                         control_damper(1, OFF, 0);
